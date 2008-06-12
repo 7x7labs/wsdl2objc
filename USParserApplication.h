@@ -6,6 +6,7 @@
 #import "USSimpleType.h"
 #import "USOrderedPair.h"
 #import "USAttribute.h"
+#import "USMessage.h"
 
 @interface USParserApplication : NSObject {
 	NSString *fileName;
@@ -25,6 +26,9 @@
 -(BOOL)usingURL;
 
 -(NSString*) translateAliasInFullTypeName: (NSString*)fullName;
+-(NSString*)translateAliasToNamespace: (NSString*)alias;
+-(NSString*)translateNamespaceToAlias: (NSString*)nsName;
+
 -(NSString*) fullNameForType:(NSString*)typeName inNamespace:(NSString*)nsName;
 -(NSString*) namespaceNameFromFullName:(NSString*)fullName;
 -(NSString*) typeNameFromFullName:(NSString*)fullName;
@@ -39,6 +43,7 @@
 
 -(void)magic;
 
+-(USMessage*)parseMessage: (NSXMLNode*)messageNode withParsedTypes: (NSDictionary*)parsedTypes;
 -(void)parseType: (USOrderedPair*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes andXMLTypeNodes: (NSDictionary*)xmlTypeNodes;
 -(void)parseSimpleType: (USSimpleType*)typeToParse named: (NSString*)fullName withParsedTypes: (NSDictionary*)parsedTypes andXMLNode: (NSXMLNode*)typeNode;
 -(void)parseComplexType: (USComplexType*)typeToParse named: (NSString*)fullName withParsedTypes: (NSDictionary*)parsedTypes andXMLNode: (NSXMLNode*)typeNode;

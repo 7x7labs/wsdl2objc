@@ -13,6 +13,7 @@
 		B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */; };
 		B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FECA70DF76C5A00145322 /* USAttribute.m */; };
 		B987A4C60DA863DC00487885 /* USSimpleType.m in Sources */ = {isa = PBXBuildFile; fileRef = B987A4C50DA863DC00487885 /* USSimpleType.m */; };
+		B9937F800DFF3136008A2B1D /* USMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B9937F7F0DFF3136008A2B1D /* USMessage.m */; };
 		B9ADEFD40DB1651A00998A45 /* USSequenceElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */; };
 		B9EDB5010DA826ED000C1FDE /* USComplexType.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EDB5000DA826ED000C1FDE /* USComplexType.m */; };
 		B9FA269C0DA6E901004C7479 /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
@@ -44,6 +45,8 @@
 		B97798C60DF45829000F758E /* USType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USType.h; sourceTree = "<group>"; };
 		B987A4C40DA863DC00487885 /* USSimpleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSimpleType.h; sourceTree = "<group>"; };
 		B987A4C50DA863DC00487885 /* USSimpleType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSimpleType.m; sourceTree = "<group>"; };
+		B9937F7E0DFF3136008A2B1D /* USMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USMessage.h; sourceTree = "<group>"; };
+		B9937F7F0DFF3136008A2B1D /* USMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USMessage.m; sourceTree = "<group>"; };
 		B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSequenceElement.h; sourceTree = "<group>"; };
 		B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSequenceElement.m; sourceTree = "<group>"; };
 		B9EDB4FF0DA826ED000C1FDE /* USComplexType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USComplexType.h; sourceTree = "<group>"; };
@@ -122,6 +125,8 @@
 				B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */,
 				B93FECA60DF76C5A00145322 /* USAttribute.h */,
 				B93FECA70DF76C5A00145322 /* USAttribute.m */,
+				B9937F7E0DFF3136008A2B1D /* USMessage.h */,
+				B9937F7F0DFF3136008A2B1D /* USMessage.m */,
 			);
 			name = "C\U001blasses";
 			sourceTree = "<group>";
@@ -185,6 +190,7 @@
 				B9ADEFD40DB1651A00998A45 /* USSequenceElement.m in Sources */,
 				B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */,
 				B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */,
+				B9937F800DFF3136008A2B1D /* USMessage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +242,7 @@
 					ppc,
 					i386,
 				);
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;

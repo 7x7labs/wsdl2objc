@@ -54,12 +54,12 @@
 -(void)parseArgs:  (const char **)argv andArgCount: (int) argc
 {
 	//I usually set a hardcoded file to use to make it easier to just Run the project
-	//self.fileName = @"/Users/willia4/projects/WSDLParser/wsdl.xml";
-	//self.url = @"";
+	self.fileName = @"/Users/willia4/projects/WSDLParser/wsdl.xml";
+	self.url = @"";
 	
-	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	self.fileName = [args stringForKey:@"f"];
-	self.url = [args stringForKey:@"u"];
+//	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
+//	self.fileName = [args stringForKey:@"f"];
+//	self.url = [args stringForKey:@"u"];
 }
 
 -(BOOL)usingFile
@@ -92,11 +92,28 @@
 {
 	NSString *typeName = [self typeNameFromFullName:fullName];
 	NSString *aliasName = [self namespaceNameFromFullName:fullName];
-	NSString *namespace = [namespaceAliases valueForKey:aliasName];
-	if(!namespace)
-		namespace = aliasName;
-	
+	NSString *namespace = [self translateAliasToNamespace:aliasName];
+
 	return [self fullNameForType:typeName inNamespace:namespace];
+}
+
+-(NSString*)translateAliasToNamespace: (NSString*)alias
+{
+	NSString *r = [namespaceAliases valueForKey:alias];
+	if(r && [r length] > 0)
+		return r;
+	return alias;
+}
+
+-(NSString*)translateNamespaceToAlias: (NSString*)nsName
+{
+	for(NSString *alias in namespaceAliases)
+	{
+		if([nsName compare:[namespaceAliases valueForKey:alias] options:NSLiteralSearch] == 0)
+			return alias;
+	}
+	
+	return nsName;
 }
 
 -(NSString*) fullNameForType:(NSString*)typeName inNamespace:(NSString*)nsName
@@ -133,7 +150,7 @@
 			NSString *targetNamespace = [USUtilities valueForAttributeNamed:@"targetNamespace" onNode:s];
 			NSArray *complexTypes = [USUtilities allXMLNodesWithLocalName:@"complexType" andParent:s];
 			NSArray *simpleTypes = [USUtilities allXMLNodesWithLocalName:@"simpleType" andParent:s];
-			
+			NSArray *elements = [USUtilities allXMLNodesWithLocalName:@"element" andParent:s];
 			for(NSXMLNode *complexType in complexTypes)
 			{
 				[r setValue:complexType forKey:[self fullNameForType:[USUtilities valueForAttributeNamed:@"name" onNode:complexType] inNamespace:targetNamespace]];
@@ -142,6 +159,56 @@
 			for(NSXMLNode *simpleType in simpleTypes)
 			{
 				[r setValue:simpleType forKey:[self fullNameForType:[USUtilities valueForAttributeNamed:@"name" onNode:simpleType] inNamespace:targetNamespace]];
+			}
+			
+			for(NSXMLNode *element in elements)
+			{
+				NSString *name = [USUtilities valueForAttributeNamed:@"name" onNode:element];
+				NSString *fullTypeName = [self fullNameForType:name inNamespace:targetNamespace];
+				
+				NSXMLNode *child = nil;
+				if([[element children] count] > 0)
+					child = [[element children] objectAtIndex:0];
+				
+				if(child)
+				{
+					if( ([[child localName] compare:@"complexType" options:NSLiteralSearch] == 0) ||
+					   ([[child localName] compare:@"simpleType" options:NSLiteralSearch] == 0))
+					{
+						if([r valueForKey:fullTypeName])
+							NSLog(@"Adding a type node for a type which already exists: %@!!", fullTypeName);
+						
+						[r setValue:child forKey:fullTypeName];					
+					}
+					
+				}
+				
+				//In this case, this element is basically describing a simple type. Construct a fake simpleType node to parse
+				//later. This is a tremendous hack and I apologize for it.
+				if(!child && ![r valueForKey:fullTypeName])
+				{
+					NSString *simpleTypeNamespace = [self translateNamespaceToAlias:@"http://www.w3.org/2001/XMLSchema"];
+					NSXMLNode *simpleTypeNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+					NSXMLNode *simpleTypeNameAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+					NSXMLNode *restrictionNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+					NSXMLNode *baseTypeAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+					
+					[baseTypeAttribute setName:@"base"];
+					[baseTypeAttribute setObjectValue:[USUtilities valueForAttributeNamed:@"type" onNode:element]];
+					
+					[restrictionNode setName:[NSString stringWithFormat:@"%@:restriction", simpleTypeNamespace]];
+					[(NSXMLElement*)restrictionNode addAttribute:baseTypeAttribute];
+					 
+					[simpleTypeNameAttribute setName:@"name"];
+					[simpleTypeNameAttribute setObjectValue:name];
+					
+					[simpleTypeNode setName:[NSString stringWithFormat:@"%@:simpleType",simpleTypeNamespace]];
+					[(NSXMLElement*)simpleTypeNode addAttribute:simpleTypeNameAttribute];
+					[(NSXMLElement*)simpleTypeNode addChild:restrictionNode];
+					
+					[r setValue:simpleTypeNode forKey:fullTypeName];
+				}
+					
 			}
 		}
 	}
@@ -199,6 +266,7 @@
 	NSString *targetNamespace = @"";
 	NSDictionary *typeNodes = [NSDictionary dictionary];
 	NSMutableDictionary *parsedTypes = [NSMutableDictionary dictionary];
+	NSMutableDictionary *parsedMessages = [NSMutableDictionary dictionary];
 	
 	NSXMLDocument *xml = [self getXML];
 	if(!xml) return;
@@ -245,16 +313,22 @@
 	}
 	
 	NSArray *unparsedTypes = [self allUnparsedTypesInTypeDictionary:parsedTypes];
+	while([unparsedTypes count] > 0)
 	{
-		while([unparsedTypes count] > 0)
+		for(USOrderedPair* unparsedType in unparsedTypes)
 		{
-			for(USOrderedPair* unparsedType in unparsedTypes)
-			{
-				[self parseType:unparsedType withParsedTypes:parsedTypes andXMLTypeNodes:typeNodes];				
-			}
-
-			unparsedTypes = [self allUnparsedTypesInTypeDictionary:parsedTypes];
+			[self parseType:unparsedType withParsedTypes:parsedTypes andXMLTypeNodes:typeNodes];				
 		}
+
+		unparsedTypes = [self allUnparsedTypesInTypeDictionary:parsedTypes];
+	}
+	
+	NSArray *messageNodes = [USUtilities allXMLNodesWithLocalName:@"message" andParent:definitions];
+	
+	for(NSXMLNode *messageNode in messageNodes)
+	{
+		USMessage *m = [self parseMessage:messageNode withParsedTypes:parsedTypes];
+		[parsedMessages setValue:m forKey:m.messageName];
 	}
 	
 	for(NSString *fullName in [parsedTypes allKeys])
@@ -283,7 +357,25 @@
 		}
 	}
 	
+	for(NSString *messageName in [parsedMessages allKeys])
+	{
+		USMessage *m = [parsedMessages valueForKey:messageName];
+		NSLog(@"%@ : %@", m.messageName, [m.partType typeName]);
+	}
 	NSLog(@"Magic done...");
+}
+
+-(USMessage*)parseMessage: (NSXMLNode*)messageNode withParsedTypes: (NSDictionary*)parsedTypes;
+{
+	USMessage *r = [[[USMessage alloc] init] autorelease];
+	r.messageName = [USUtilities valueForAttributeNamed:@"name" onNode:messageNode];
+	NSXMLNode *partNode = [USUtilities firstXMLNodeWithLocalName:@"part" andParent:messageNode];
+	r.partName = [USUtilities valueForAttributeNamed:@"name" onNode:partNode];
+	NSString *partType = [USUtilities valueForAttributeNamed:@"element" onNode:partNode];
+	partType = [self translateAliasInFullTypeName:partType];
+	r.partType = [parsedTypes valueForKey:partType];
+	
+	return r;
 }
 
 -(void)parseType: (USOrderedPair*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes andXMLTypeNodes: (NSDictionary*)xmlTypeNodes
@@ -344,6 +436,16 @@
 {
 	NSString *typeName = [self typeNameFromFullName:fullName];
 	typeToParse.typeName = typeName;
+	
+	if([[typeNode localName] compare:@"complexType" options:NSLiteralSearch] !=0)
+	{
+		NSLog(@"Oops");
+	}
+	
+	if([[typeNode localName] compare:@"element" options:NSLiteralSearch] == 0)
+	{
+		typeNode = [[typeNode children] objectAtIndex:0];
+	}
 	
 	NSXMLNode *complexContentNode = [USUtilities firstXMLNodeWithLocalName:@"complexContent" andParent:typeNode];
 	NSXMLNode *sequenceNode = [USUtilities firstXMLNodeWithLocalName:@"sequence" andParent:typeNode];
