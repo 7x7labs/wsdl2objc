@@ -353,7 +353,7 @@
 	else
 	{
 		//TODO What to do for complex types? 
-		NSLog(@"Found complex type");
+		NSLog(@"Found complex type in %@", fullName);
 	}
 	
 	NSArray *enumerationNodes = [USUtilities allXMLNodesWithLocalName:@"enumeration" andParent:restrictionNode];

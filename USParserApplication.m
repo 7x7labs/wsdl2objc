@@ -150,7 +150,7 @@
 		return;
 	}
 	
-	if(NO) //write out schemas
+	if(YES) //write out schemas
 	{
 		for(USSchema *schema in wsdl.schemas)
 		{
