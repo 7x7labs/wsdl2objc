@@ -18,6 +18,9 @@
 		B9EDB5010DA826ED000C1FDE /* USComplexType.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EDB5000DA826ED000C1FDE /* USComplexType.m */; };
 		B9FA269C0DA6E901004C7479 /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
 		B9FA271E0DA6FA45004C7479 /* USUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA271D0DA6FA45004C7479 /* USUtilities.m */; };
+		B9FEAA5D0E01F0C1002165CA /* USParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA5C0E01F0C1002165CA /* USParser.m */; };
+		B9FEAA880E01F4A0002165CA /* USWSDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA870E01F4A0002165CA /* USWSDL.m */; };
+		B9FEAA8D0E01F59B002165CA /* USSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA8C0E01F59B002165CA /* USSchema.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -55,6 +58,12 @@
 		B9FA269B0DA6E901004C7479 /* USParserApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USParserApplication.m; sourceTree = "<group>"; };
 		B9FA271C0DA6FA45004C7479 /* USUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USUtilities.h; sourceTree = "<group>"; };
 		B9FA271D0DA6FA45004C7479 /* USUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USUtilities.m; sourceTree = "<group>"; };
+		B9FEAA5B0E01F0C1002165CA /* USParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USParser.h; sourceTree = "<group>"; };
+		B9FEAA5C0E01F0C1002165CA /* USParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USParser.m; sourceTree = "<group>"; };
+		B9FEAA860E01F4A0002165CA /* USWSDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USWSDL.h; sourceTree = "<group>"; };
+		B9FEAA870E01F4A0002165CA /* USWSDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USWSDL.m; sourceTree = "<group>"; };
+		B9FEAA8B0E01F59B002165CA /* USSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSchema.h; sourceTree = "<group>"; };
+		B9FEAA8C0E01F59B002165CA /* USSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSchema.m; sourceTree = "<group>"; };
 		C6859EA3029092ED04C91782 /* WSDLParser.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = WSDLParser.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -127,6 +136,12 @@
 				B93FECA70DF76C5A00145322 /* USAttribute.m */,
 				B9937F7E0DFF3136008A2B1D /* USMessage.h */,
 				B9937F7F0DFF3136008A2B1D /* USMessage.m */,
+				B9FEAA5B0E01F0C1002165CA /* USParser.h */,
+				B9FEAA5C0E01F0C1002165CA /* USParser.m */,
+				B9FEAA860E01F4A0002165CA /* USWSDL.h */,
+				B9FEAA870E01F4A0002165CA /* USWSDL.m */,
+				B9FEAA8B0E01F59B002165CA /* USSchema.h */,
+				B9FEAA8C0E01F59B002165CA /* USSchema.m */,
 			);
 			name = "C\U001blasses";
 			sourceTree = "<group>";
@@ -191,6 +206,9 @@
 				B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */,
 				B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */,
 				B9937F800DFF3136008A2B1D /* USMessage.m in Sources */,
+				B9FEAA5D0E01F0C1002165CA /* USParser.m in Sources */,
+				B9FEAA880E01F4A0002165CA /* USWSDL.m in Sources */,
+				B9FEAA8D0E01F59B002165CA /* USSchema.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
