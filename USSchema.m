@@ -10,7 +10,7 @@
 {
 	if((self = [super init]))
 	{
-		fullName = [@"" copy];
+		fullName = @"";
 		types = [[NSArray array] retain];
 	}
 	return self;
@@ -19,7 +19,7 @@
 
 -(void)dealloc
 {
-//	[fullName release];
+	[fullName release];
 	[types release];
 	[super dealloc];
 }
