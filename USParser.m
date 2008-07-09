@@ -320,11 +320,7 @@
 {
 	USMessage *r = [[[USMessage alloc] init] autorelease];
 	r.messageName = [USUtilities valueForAttributeNamed:@"name" onNode:messageNode];
-	
-	if([r.messageName caseInsensitiveCompare:@"PingSimpleHttpGetIn"] == 0)
-	{
-		NSLog(@"EXTERMINATE!");
-	}
+
 
 	NSXMLNode *partNode = [USUtilities firstXMLNodeWithLocalName:@"part" andParent:messageNode];
 	r.partName = [USUtilities valueForAttributeNamed:@"name" onNode:partNode];
