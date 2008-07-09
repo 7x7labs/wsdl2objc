@@ -150,7 +150,7 @@
 		return;
 	}
 	
-	if(YES) //write out schemas
+	if(NO) //write out schemas
 	{
 		for(USSchema *schema in wsdl.schemas)
 		{
@@ -213,8 +213,11 @@
 		{
 			if([schema.types count] == 0)
 			{
-				NSLog(@"POTENTIAL ERROR -- Schema %@ does not contain any types!", schema.fullName);
 			}
+		}
+		
+		for(USMessage *message in wsdl.messages)
+		{
 		}
 	}
 }

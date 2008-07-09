@@ -41,17 +41,9 @@
 	
 	targetNamespace = [USUtilities valueForAttributeNamed:@"targetNamespace" onNode:definitions];
 	namespaceAliases = [[self allNamespacesFromXML:definitions] retain];
-	typeNodes = [self allTypeNodesFromXML:definitions];
 
-	for(USOrderedPair *p in [self builtInSchemas])
-	{
-		NSString *namespace = p.firstObject;
-		for(id<USType> type in (NSArray*)p.secondObject)
-		{
-			[parsedTypes setValue:type forKey:[self fullNameForType:[type typeName] inNamespace:namespace]];
-		}
-	}
-
+	typeNodes = [self allTypeNodesFromXML:definitions withAlreadyParsedTypes:parsedTypes];
+	
 	//Add placeholders for all the types that will eventually need to be parsed
 	for(NSString *fullName in [typeNodes allKeys])
 	{
@@ -178,14 +170,19 @@
 	return fullName;
 }
 
--(NSDictionary*) allTypeNodesFromXML: (NSXMLNode*) definitions
+-(NSDictionary*) allTypeNodesFromXML: (NSXMLNode*) definitions withAlreadyParsedTypes: (NSDictionary*) parsedTypes
 {
 	NSMutableDictionary *r = [NSMutableDictionary dictionary];
 	
 	NSArray *typeNodes = [USUtilities allXMLNodesWithLocalName:@"types" andParent:definitions];
 	for(NSXMLNode *t in typeNodes)
 	{
-		NSArray *schemaNodes = [USUtilities allXMLNodesWithLocalName:@"schema" andParent:t];
+		NSMutableArray *schemaNodes = [NSMutableArray arrayWithArray:[USUtilities allXMLNodesWithLocalName:@"schema" andParent:t]];
+		for(NSXMLNode *builtInSchema in [self builtInSchemas])
+		{
+			[schemaNodes insertObject:builtInSchema atIndex:0];
+		}
+		
 		for(NSXMLNode *s in schemaNodes)
 		{
 			NSString *targetNamespace = [USUtilities valueForAttributeNamed:@"targetNamespace" onNode:s];
@@ -213,6 +210,8 @@
 				
 				if(child)
 				{
+//					NSLog(@"Element complex type: %@", fullTypeName);
+					
 					if( ([[child localName] compare:@"complexType" options:NSLiteralSearch] == 0) ||
 					   ([[child localName] compare:@"simpleType" options:NSLiteralSearch] == 0))
 					{
@@ -221,35 +220,51 @@
 						
 						[r setValue:child forKey:fullTypeName];					
 					}
+				}
+				else
+				{
+					//This is "aliasing" an existing type. Try to find it!
+					NSString *typeName = [USUtilities valueForAttributeNamed:@"type" onNode:element];
+					
+					id aliasType = [r valueForKey:[self translateAliasInFullTypeName:typeName]];
+					if(!aliasType)
+					{
+						NSLog(@"Unable to find alias type for element: %@", fullTypeName);
+					}
+					else
+					{
+						NSLog(@"Adding alias type for element %@", fullTypeName);
+						[r setValue:aliasType forKey:fullTypeName];
+					}
 					
 				}
 				
 				//In this case, this element is basically describing a simple type. Construct a fake simpleType node to parse
 				//later. This is a tremendous hack and I apologize for it.
-				if(!child && ![r valueForKey:fullTypeName])
-				{
-					NSString *simpleTypeNamespace = [self translateNamespaceToAlias:@"http://www.w3.org/2001/XMLSchema"];
-					NSXMLNode *simpleTypeNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
-					NSXMLNode *simpleTypeNameAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
-					NSXMLNode *restrictionNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
-					NSXMLNode *baseTypeAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
-					
-					[baseTypeAttribute setName:@"base"];
-					[baseTypeAttribute setObjectValue:[USUtilities valueForAttributeNamed:@"type" onNode:element]];
-					
-					[restrictionNode setName:[NSString stringWithFormat:@"%@:restriction", simpleTypeNamespace]];
-					[(NSXMLElement*)restrictionNode addAttribute:baseTypeAttribute];
-					
-					[simpleTypeNameAttribute setName:@"name"];
-					[simpleTypeNameAttribute setObjectValue:name];
-					
-					[simpleTypeNode setName:[NSString stringWithFormat:@"%@:simpleType",simpleTypeNamespace]];
-					[(NSXMLElement*)simpleTypeNode addAttribute:simpleTypeNameAttribute];
-					[(NSXMLElement*)simpleTypeNode addChild:restrictionNode];
-					
-					[r setValue:simpleTypeNode forKey:fullTypeName];
-				}
-				
+//				if(!child && ![r valueForKey:fullTypeName])
+//				{
+//					NSString *simpleTypeNamespace = [self translateNamespaceToAlias:@"http://www.w3.org/2001/XMLSchema"];
+//					NSXMLNode *simpleTypeNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+//					NSXMLNode *simpleTypeNameAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+//					NSXMLNode *restrictionNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+//					NSXMLNode *baseTypeAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+//					
+//					[baseTypeAttribute setName:@"base"];
+//					[baseTypeAttribute setObjectValue:[USUtilities valueForAttributeNamed:@"type" onNode:element]];
+//					
+//					[restrictionNode setName:[NSString stringWithFormat:@"%@:restriction", simpleTypeNamespace]];
+//					[(NSXMLElement*)restrictionNode addAttribute:baseTypeAttribute];
+//					
+//					[simpleTypeNameAttribute setName:@"name"];
+//					[simpleTypeNameAttribute setObjectValue:name];
+//					
+//					[simpleTypeNode setName:[NSString stringWithFormat:@"%@:simpleType",simpleTypeNamespace]];
+//					[(NSXMLElement*)simpleTypeNode addAttribute:simpleTypeNameAttribute];
+//					[(NSXMLElement*)simpleTypeNode addChild:restrictionNode];
+//					
+//					[r setValue:simpleTypeNode forKey:fullTypeName];
+//				}
+//				
 			}
 		}
 	}
@@ -305,9 +320,19 @@
 {
 	USMessage *r = [[[USMessage alloc] init] autorelease];
 	r.messageName = [USUtilities valueForAttributeNamed:@"name" onNode:messageNode];
+	
+	if([r.messageName caseInsensitiveCompare:@"PingSimpleHttpGetIn"] == 0)
+	{
+		NSLog(@"EXTERMINATE!");
+	}
+
 	NSXMLNode *partNode = [USUtilities firstXMLNodeWithLocalName:@"part" andParent:messageNode];
 	r.partName = [USUtilities valueForAttributeNamed:@"name" onNode:partNode];
 	NSString *partType = [USUtilities valueForAttributeNamed:@"element" onNode:partNode];
+	
+	if(!partType) //If there wasn't an element attribute, there might be a "type" attribute (indicating a simpleType)
+		partType = [USUtilities valueForAttributeNamed:@"type" onNode:partNode];
+	
 	partType = [self translateAliasInFullTypeName:partType];
 	r.partType = [parsedTypes valueForKey:partType];
 	
@@ -345,15 +370,22 @@
 	NSString *baseTypeName = [self translateAliasInFullTypeName:baseAttribute];
 	id<USType> baseType = [parsedTypes objectForKey:baseTypeName];
 	
-	if([baseType isSimpleType])
+	if(baseType)
 	{
-		USSimpleType *st = (USSimpleType*)baseType;
-		typeToParse.representationClass = st.representationClass;
+		if([baseType isSimpleType])
+		{
+			USSimpleType *st = (USSimpleType*)baseType;
+			typeToParse.representationClass = st.representationClass;
+		}
+		else
+		{
+			//TODO What to do for complex types? 
+			NSLog(@"Found complex type in %@", fullName);
+		}		
 	}
 	else
 	{
-		//TODO What to do for complex types? 
-		NSLog(@"Found complex type in %@", fullName);
+		typeToParse.representationClass = baseTypeName; //For built in simple types, there's not going to be a corresponding parsed type. Because this is it.
 	}
 	
 	NSArray *enumerationNodes = [USUtilities allXMLNodesWithLocalName:@"enumeration" andParent:restrictionNode];
@@ -475,52 +507,101 @@
 
 -(NSArray*)builtInSchemas
 {
-	NSMutableArray *microsoft = [NSMutableArray array];
-	NSMutableArray *w3wsdl = [NSMutableArray array];
+	NSMutableArray *microsoftTypes = [NSMutableArray array];
+	NSMutableArray *w3Types = [NSMutableArray array];
 	
-	[microsoft addObject:[USSimpleType typeWithName:@"boolean" andRepresentationClass:@"USBoolean"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"unsignedByte" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"char" andRepresentationClass:@"NSString"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"dateTime" andRepresentationClass:@"NSDate"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"decimal" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"double" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"short" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"int" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"long" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"anyType" andRepresentationClass:@"NSObject"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"byte" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"float" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"string" andRepresentationClass:@"NSString"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"unsignedShort" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"unsignedInt" andRepresentationClass:@"NSNumber"]];
-	[microsoft addObject:[USSimpleType typeWithName:@"unsignedLong" andRepresentationClass:@"NSNumber"]];
-	//	[microsoft addObject:[USSimpleType typeWithName:@"guid" andRepresentationClass:@"USGuid"]];
+	NSString *microsoft = @"http://microsoft.com/wsdl/types/";
+	NSString *w3 = @"http://www.w3.org/2001/XMLSchema";
+
+
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"unsignedByte" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"char" withRepresentationClass:@"NSString"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"dateTime" withRepresentationClass:@"NSDate"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"decimal" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"double" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"short" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"int" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"long" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"anyType" withRepresentationClass:@"NSObject"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"byte" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"float" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"string" withRepresentationClass:@"NSString"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"unsignedShort" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"unsignedInt" withRepresentationClass:@"NSNumber"]];
+	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"unsignedLong" withRepresentationClass:@"NSNumber"]];
+//	[microsoftTypes addObject:[self constructSimpleTypeNodeNamed:@"guid" withRepresentationClass:@"USGuid"]];
 	
 	//TODO HACK It looks like http://www.w3.org/2001/XMLSchema has a lot of the same types as http://microsoft.com/wsdl/types. So 
 	//I just copy and pasted from above. Need to check the spec and actually do the right thing here.
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"boolean" withRepresentationClass:@"USBoolean"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"unsignedByte" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"char" withRepresentationClass:@"NSString"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"dateTime" withRepresentationClass:@"NSDate"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"decimal" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"double" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"short" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"int" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"long" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"anyType" withRepresentationClass:@"NSObject"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"byte" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"float" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"string" withRepresentationClass:@"NSString"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"unsignedShort" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"unsignedInt" withRepresentationClass:@"NSNumber"]];
+	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"unsignedLong" withRepresentationClass:@"NSNumber"]];
+//	[w3Types addObject:[self constructSimpleTypeNodeNamed:@"guid" withRepresentationClass:@"USGuid"]];
 	
-	[w3wsdl addObject:[USSimpleType typeWithName:@"boolean" andRepresentationClass:@"USBoolean"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"unsignedByte" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"char" andRepresentationClass:@"NSString"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"dateTime" andRepresentationClass:@"NSDate"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"decimal" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"double" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"short" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"int" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"long" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"anyType" andRepresentationClass:@"NSObject"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"byte" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"float" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"string" andRepresentationClass:@"NSString"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"unsignedShort" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"unsignedInt" andRepresentationClass:@"NSNumber"]];
-	[w3wsdl addObject:[USSimpleType typeWithName:@"unsignedLong" andRepresentationClass:@"NSNumber"]];
-	//[w3wsdl addObject:[USSimpleType typeWithName:@"guid" andRepresentationClass:@"USGuid"]];
-	
-	return [NSArray arrayWithObjects:[USOrderedPair orderPairWithFirstObject: @"http://microsoft.com/wsdl/types/" andSecondObject:microsoft], 
-			[USOrderedPair orderPairWithFirstObject: @"http://www.w3.org/2001/XMLSchema" andSecondObject:w3wsdl],
-			nil];
+	return [NSArray arrayWithObjects:[self constructSchemaNodeNamed:microsoft withTypeNodes:microsoftTypes], 
+			[self constructSchemaNodeNamed:w3 withTypeNodes:w3Types],
+			nil];	
 	
 }
 
+-(NSXMLNode*)constructSimpleTypeNodeNamed: (NSString*)simpleTypeName withRepresentationClass: (NSString*)representationClass
+{
+	NSString *simpleTypeNamespace = [self translateNamespaceToAlias:@"http://www.w3.org/2001/XMLSchema"];
+	NSXMLNode *simpleTypeNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+	NSXMLNode *simpleTypeNameAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+	NSXMLNode *restrictionNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+	NSXMLNode *baseTypeAttribute = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+	
+	[baseTypeAttribute setName:@"base"];
+	[baseTypeAttribute setObjectValue:representationClass];
+	
+	[restrictionNode setName:[NSString stringWithFormat:@"%@:restriction", simpleTypeNamespace]];
+	[(NSXMLElement*)restrictionNode addAttribute:baseTypeAttribute];
+	
+	[simpleTypeNameAttribute setName:@"name"];
+	[simpleTypeNameAttribute setObjectValue:simpleTypeName];
+	
+	[simpleTypeNode setName:[NSString stringWithFormat:@"%@:simpleType", simpleTypeNamespace]];
+	[(NSXMLElement*)simpleTypeNode addAttribute:simpleTypeNameAttribute];
+	[(NSXMLElement*)simpleTypeNode addChild:restrictionNode];
+	
+	return simpleTypeNode;
+	 
+}
+
+-(NSXMLNode*)constructSchemaNodeNamed: (NSString*)schemaName withTypeNodes: (NSArray*)typeNodes
+{
+	NSString *schemaNamespace = [self translateNamespaceToAlias:@"http://www.w3.org/2001/XMLSchema"];
+	NSXMLNode *schemaNode = [[[NSXMLNode alloc] initWithKind:NSXMLElementKind] autorelease];
+	NSXMLNode *elementAttributeNode = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+	NSXMLNode *targetNamespaceAttributeNode = [[[NSXMLNode alloc] initWithKind:NSXMLAttributeKind] autorelease];
+	
+	[elementAttributeNode setName:@"elementFormDefault"];
+	[elementAttributeNode setObjectValue:@"qualified"];
+	[targetNamespaceAttributeNode setName:@"targetNamespace"];
+	[targetNamespaceAttributeNode setObjectValue:schemaName];
+	
+	[schemaNode setName:[NSString stringWithFormat:@"%@:schema", schemaNamespace]];
+	[(NSXMLElement*)schemaNode addAttribute:elementAttributeNode];
+	[(NSXMLElement*)schemaNode addAttribute:targetNamespaceAttributeNode];
+	for(NSXMLNode *typeNode in typeNodes)
+	{
+		[(NSXMLElement*)schemaNode addChild:typeNode];
+	}
+	
+	return schemaNode;
+}
 @end

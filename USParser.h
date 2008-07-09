@@ -29,7 +29,7 @@
 -(NSString*) namespaceNameFromFullName:(NSString*)fullName;
 -(NSString*) typeNameFromFullName:(NSString*)fullName;
 
--(NSDictionary*) allTypeNodesFromXML: (NSXMLNode*) definitions;
+-(NSDictionary*) allTypeNodesFromXML: (NSXMLNode*) definitions withAlreadyParsedTypes: (NSDictionary*) parsedTypes;
 -(NSDictionary*) allNamespacesFromXML: (NSXMLNode*) definitions;
 
 -(BOOL) xmlNodeIsComplexType: (NSXMLNode*)node;
@@ -46,6 +46,6 @@
 -(void)parseComplexAttributes: (NSArray*)attributeNodes forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
 
 -(NSArray*)builtInSchemas;
-
-
+-(NSXMLNode*)constructSimpleTypeNodeNamed: (NSString*)simpleTypeName withRepresentationClass: (NSString*)representationClass;
+-(NSXMLNode*)constructSchemaNodeNamed: (NSString*)schemaName withTypeNodes: (NSArray*)typeNodes;
 @end
