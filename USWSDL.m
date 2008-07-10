@@ -5,6 +5,7 @@
 @implementation USWSDL
 @synthesize messages;
 @synthesize schemas;
+@synthesize ports;
 
 -(id)init
 {
@@ -12,6 +13,7 @@
 	{
 		self.messages = [NSArray array];
 		self.schemas = [NSArray array];
+		self.ports = [NSArray array];
 	}
 	return self;
 }

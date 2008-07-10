@@ -9,6 +9,8 @@
 #import "USMessage.h"
 #import "USSchema.h"
 #import "USWSDL.h"
+#import "USPort.h"
+#import "USOperation.h"
 
 @interface USParser : NSObject {
 	NSXMLDocument *wsdlXML;
@@ -44,6 +46,9 @@
 -(void)parseComplexContent: (NSXMLNode*)complexContent forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
 -(void)parseComplexSequence: (NSXMLNode*)sequenceNode forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
 -(void)parseComplexAttributes: (NSArray*)attributeNodes forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
+
+-(USPort*)parsePort: (NSXMLNode*)portNode withParsedMessages: (NSDictionary*)messages;
+-(USOperation*)parseOperation: (NSXMLNode*)operationNode withParsedMessages: (NSDictionary*)messages;
 
 -(NSArray*)builtInSchemas;
 -(NSXMLNode*)constructSimpleTypeNodeNamed: (NSString*)simpleTypeName withRepresentationClass: (NSString*)representationClass;
