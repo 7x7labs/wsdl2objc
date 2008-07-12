@@ -6,7 +6,6 @@
 #import "USSimpleType.h"
 #import "USOrderedPair.h"
 #import "USAttribute.h"
-#import "USMessage.h"
 #import "USParser.h"
 #import "USWSDL.h"
 #import "USSchema.h"

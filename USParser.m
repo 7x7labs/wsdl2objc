@@ -28,8 +28,6 @@
 	NSString *targetNamespace = @"";
 	NSDictionary *typeNodes = [NSDictionary dictionary];
 	NSMutableDictionary *parsedTypes = [NSMutableDictionary dictionary];
-	NSMutableDictionary *parsedMessages = [NSMutableDictionary dictionary];
-	NSMutableDictionary *parsedPorts = [NSMutableDictionary dictionary];
 	
 	NSXMLNode *definitions = [wsdlXML rootElement];
 	
@@ -75,21 +73,6 @@
 		unparsedTypes = [self allUnparsedTypesInTypeDictionary:parsedTypes];
 	}
 	
-	NSArray *messageNodes = [USUtilities allXMLNodesWithLocalName:@"message" andParent:definitions];
-	
-	for(NSXMLNode *messageNode in messageNodes)
-	{
-		USMessage *m = [self parseMessage:messageNode withParsedTypes:parsedTypes];
-		[parsedMessages setValue:m forKey:m.messageName];
-	}
-	
-	NSArray *portNodes = [USUtilities allXMLNodesWithLocalName:@"portType" andParent:definitions];
-	for(NSXMLNode *portNode in portNodes)
-	{
-		USPort *p = [self parsePort:portNode withParsedMessages:parsedMessages];
-		[parsedPorts setValue:p forKey:p.name];
-	}
-	
 	USWSDL *r = [[[USWSDL alloc] init] autorelease];
 	NSMutableArray *schemas = [NSMutableArray array];
 	
@@ -107,8 +90,6 @@
 	}
 	
 	r.schemas = schemas;
-	r.messages = [parsedMessages allValues];
-	r.ports = [parsedPorts allValues];
 	
 	return r;
 	
@@ -324,25 +305,6 @@
 	return r;
 }
 
--(USMessage*)parseMessage: (NSXMLNode*)messageNode withParsedTypes: (NSDictionary*)parsedTypes;
-{
-	USMessage *r = [[[USMessage alloc] init] autorelease];
-	r.messageName = [USUtilities valueForAttributeNamed:@"name" onNode:messageNode];
-
-
-	NSXMLNode *partNode = [USUtilities firstXMLNodeWithLocalName:@"part" andParent:messageNode];
-	r.partName = [USUtilities valueForAttributeNamed:@"name" onNode:partNode];
-	NSString *partType = [USUtilities valueForAttributeNamed:@"element" onNode:partNode];
-	
-	if(!partType) //If there wasn't an element attribute, there might be a "type" attribute (indicating a simpleType)
-		partType = [USUtilities valueForAttributeNamed:@"type" onNode:partNode];
-	
-	partType = [self translateAliasInFullTypeName:partType];
-	r.partType = [parsedTypes valueForKey:partType];
-	
-	return r;
-}
-
 -(void)parseType: (USOrderedPair*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes andXMLTypeNodes: (NSDictionary*)xmlTypeNodes
 {
 	id <USType> unparsedType = typeToParse.secondObject;
@@ -509,44 +471,6 @@
 	typeToParse.attributes = parsedAttributes;
 }
 
--(USPort*)parsePort: (NSXMLNode*)portNode withParsedMessages: (NSDictionary*)messages;
-{
-	USPort *r = [[[USPort alloc] init] autorelease];
-	r.name = [USUtilities valueForAttributeNamed:@"name" onNode:portNode];
-	
-	NSMutableArray *operations = [NSMutableArray array];
-	for(NSXMLNode *operationNode in [USUtilities allXMLNodesWithLocalName:@"operation" andParent:portNode])
-	{
-		[operations addObject:[self parseOperation:operationNode withParsedMessages:messages]];
-	}
-		
-	r.operations = operations;
-	
-	return r;
-}
-
--(USOperation*)parseOperation: (NSXMLNode*)operationNode withParsedMessages: (NSDictionary*)messages;
-{
-	USOperation *o = [[[USOperation alloc] init] autorelease];
-	o.name = [USUtilities valueForAttributeNamed:@"name" onNode:operationNode];
-	
-	NSXMLNode *inputNode = [USUtilities firstXMLNodeWithLocalName:@"input" andParent:operationNode];
-	NSXMLNode *outputNode = [USUtilities firstXMLNodeWithLocalName:@"output" andParent:operationNode];
-							 
-	if(inputNode)
-	{
-		NSString *inputMessageName =[self typeNameFromFullName:[USUtilities valueForAttributeNamed:@"message" onNode:inputNode]];
-		o.input = [messages valueForKey:inputMessageName];
-	}
-	
-	if(outputNode)
-	{
-		NSString *outputMessageName = [self typeNameFromFullName:[USUtilities valueForAttributeNamed:@"message" onNode:outputNode]];
-		o.output = [messages valueForKey:outputMessageName];
-	}
-	
-	return o;
-}
 
 -(NSArray*)builtInSchemas
 {

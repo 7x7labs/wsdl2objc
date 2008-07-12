@@ -13,11 +13,8 @@
 		B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */; };
 		B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FECA70DF76C5A00145322 /* USAttribute.m */; };
 		B987A4C60DA863DC00487885 /* USSimpleType.m in Sources */ = {isa = PBXBuildFile; fileRef = B987A4C50DA863DC00487885 /* USSimpleType.m */; };
-		B9937F800DFF3136008A2B1D /* USMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = B9937F7F0DFF3136008A2B1D /* USMessage.m */; };
 		B9ADEFD40DB1651A00998A45 /* USSequenceElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */; };
 		B9EDB5010DA826ED000C1FDE /* USComplexType.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EDB5000DA826ED000C1FDE /* USComplexType.m */; };
-		B9F2E8280E258B440071461C /* USPort.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F2E8270E258B440071461C /* USPort.m */; };
-		B9F2E82B0E258C930071461C /* USOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B9F2E82A0E258C930071461C /* USOperation.m */; };
 		B9FA269C0DA6E901004C7479 /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
 		B9FA271E0DA6FA45004C7479 /* USUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA271D0DA6FA45004C7479 /* USUtilities.m */; };
 		B9FEAA5D0E01F0C1002165CA /* USParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA5C0E01F0C1002165CA /* USParser.m */; };
@@ -50,16 +47,10 @@
 		B97798C60DF45829000F758E /* USType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USType.h; sourceTree = "<group>"; };
 		B987A4C40DA863DC00487885 /* USSimpleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSimpleType.h; sourceTree = "<group>"; };
 		B987A4C50DA863DC00487885 /* USSimpleType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSimpleType.m; sourceTree = "<group>"; };
-		B9937F7E0DFF3136008A2B1D /* USMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USMessage.h; sourceTree = "<group>"; };
-		B9937F7F0DFF3136008A2B1D /* USMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USMessage.m; sourceTree = "<group>"; };
 		B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSequenceElement.h; sourceTree = "<group>"; };
 		B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSequenceElement.m; sourceTree = "<group>"; };
 		B9EDB4FF0DA826ED000C1FDE /* USComplexType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USComplexType.h; sourceTree = "<group>"; };
 		B9EDB5000DA826ED000C1FDE /* USComplexType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USComplexType.m; sourceTree = "<group>"; };
-		B9F2E8260E258B440071461C /* USPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPort.h; sourceTree = "<group>"; };
-		B9F2E8270E258B440071461C /* USPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPort.m; sourceTree = "<group>"; };
-		B9F2E8290E258C930071461C /* USOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperation.h; sourceTree = "<group>"; };
-		B9F2E82A0E258C930071461C /* USOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperation.m; sourceTree = "<group>"; };
 		B9FA269A0DA6E901004C7479 /* USParserApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USParserApplication.h; sourceTree = "<group>"; };
 		B9FA269B0DA6E901004C7479 /* USParserApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USParserApplication.m; sourceTree = "<group>"; };
 		B9FA271C0DA6FA45004C7479 /* USUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USUtilities.h; sourceTree = "<group>"; };
@@ -140,18 +131,12 @@
 				B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */,
 				B93FECA60DF76C5A00145322 /* USAttribute.h */,
 				B93FECA70DF76C5A00145322 /* USAttribute.m */,
-				B9937F7E0DFF3136008A2B1D /* USMessage.h */,
-				B9937F7F0DFF3136008A2B1D /* USMessage.m */,
 				B9FEAA5B0E01F0C1002165CA /* USParser.h */,
 				B9FEAA5C0E01F0C1002165CA /* USParser.m */,
 				B9FEAA860E01F4A0002165CA /* USWSDL.h */,
 				B9FEAA870E01F4A0002165CA /* USWSDL.m */,
 				B9FEAA8B0E01F59B002165CA /* USSchema.h */,
 				B9FEAA8C0E01F59B002165CA /* USSchema.m */,
-				B9F2E8260E258B440071461C /* USPort.h */,
-				B9F2E8270E258B440071461C /* USPort.m */,
-				B9F2E8290E258C930071461C /* USOperation.h */,
-				B9F2E82A0E258C930071461C /* USOperation.m */,
 			);
 			name = "C\U001blasses";
 			sourceTree = "<group>";
@@ -215,12 +200,9 @@
 				B9ADEFD40DB1651A00998A45 /* USSequenceElement.m in Sources */,
 				B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */,
 				B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */,
-				B9937F800DFF3136008A2B1D /* USMessage.m in Sources */,
 				B9FEAA5D0E01F0C1002165CA /* USParser.m in Sources */,
 				B9FEAA880E01F4A0002165CA /* USWSDL.m in Sources */,
 				B9FEAA8D0E01F59B002165CA /* USSchema.m in Sources */,
-				B9F2E8280E258B440071461C /* USPort.m in Sources */,
-				B9F2E82B0E258C930071461C /* USOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

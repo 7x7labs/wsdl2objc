@@ -6,11 +6,8 @@
 #import "USSimpleType.h"
 #import "USOrderedPair.h"
 #import "USAttribute.h"
-#import "USMessage.h"
 #import "USSchema.h"
 #import "USWSDL.h"
-#import "USPort.h"
-#import "USOperation.h"
 
 @interface USParser : NSObject {
 	NSXMLDocument *wsdlXML;
@@ -39,16 +36,12 @@
 
 -(NSArray*)allUnparsedTypesInTypeDictionary: (NSDictionary*)types;
 
--(USMessage*)parseMessage: (NSXMLNode*)messageNode withParsedTypes: (NSDictionary*)parsedTypes;
 -(void)parseType: (USOrderedPair*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes andXMLTypeNodes: (NSDictionary*)xmlTypeNodes;
 -(void)parseSimpleType: (USSimpleType*)typeToParse named: (NSString*)fullName withParsedTypes: (NSDictionary*)parsedTypes andXMLNode: (NSXMLNode*)typeNode;
 -(void)parseComplexType: (USComplexType*)typeToParse named: (NSString*)fullName withParsedTypes: (NSDictionary*)parsedTypes andXMLNode: (NSXMLNode*)typeNode;
 -(void)parseComplexContent: (NSXMLNode*)complexContent forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
 -(void)parseComplexSequence: (NSXMLNode*)sequenceNode forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
 -(void)parseComplexAttributes: (NSArray*)attributeNodes forTypeToParse: (USComplexType*)typeToParse withParsedTypes: (NSDictionary*)parsedTypes;
-
--(USPort*)parsePort: (NSXMLNode*)portNode withParsedMessages: (NSDictionary*)messages;
--(USOperation*)parseOperation: (NSXMLNode*)operationNode withParsedMessages: (NSDictionary*)messages;
 
 -(NSArray*)builtInSchemas;
 -(NSXMLNode*)constructSimpleTypeNodeNamed: (NSString*)simpleTypeName withRepresentationClass: (NSString*)representationClass;

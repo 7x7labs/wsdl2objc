@@ -198,38 +198,7 @@
 			}
 		}
 		
-		if(NO) //write out messages
-		{
-			for(USMessage *message in wsdl.messages)
-			{
-				NSLog(@"Message: %@, Part name: %@, Part type: %@", message.messageName, message.partName, [message.partType typeName]);
 			}
-		}
-		
-		if(YES) //write out ports
-		{
-			for(USPort *port in wsdl.ports)
-			{
-				NSLog(@"Port: %@", port.name);
-				
-				if(YES) //write out operations on ports
-				{
-					for(USOperation *operation in port.operations)
-					{
-						NSLog(@"\tOperation: %@", operation.name);
-						if(operation.input)
-						{
-							NSLog(@"\t\tInput: %@", operation.input.messageName);
-						}
-						if(operation.output)
-						{
-							NSLog(@"\t\tOutput: %@", operation.output.messageName);
-						}
-					}
-				}
-			}
-		}
-	}
 	
 	if(YES) //write potential problems
 	{
@@ -240,9 +209,6 @@
 			}
 		}
 		
-		for(USMessage *message in wsdl.messages)
-		{
-		}
 	}
 }
 @end
