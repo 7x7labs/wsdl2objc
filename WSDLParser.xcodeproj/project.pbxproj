@@ -7,69 +7,177 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8DD76F9A0486AA7600D96B5E /* WSDLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* WSDLParser.m */; settings = {ATTRIBUTES = (); }; };
-		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
-		8DD76F9F0486AA7600D96B5E /* WSDLParser.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859EA3029092ED04C91782 /* WSDLParser.1 */; };
-		B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */; };
-		B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FECA70DF76C5A00145322 /* USAttribute.m */; };
-		B987A4C60DA863DC00487885 /* USSimpleType.m in Sources */ = {isa = PBXBuildFile; fileRef = B987A4C50DA863DC00487885 /* USSimpleType.m */; };
-		B9ADEFD40DB1651A00998A45 /* USSequenceElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */; };
-		B9EDB5010DA826ED000C1FDE /* USComplexType.m in Sources */ = {isa = PBXBuildFile; fileRef = B9EDB5000DA826ED000C1FDE /* USComplexType.m */; };
-		B9FA269C0DA6E901004C7479 /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
-		B9FA271E0DA6FA45004C7479 /* USUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA271D0DA6FA45004C7479 /* USUtilities.m */; };
-		B9FEAA5D0E01F0C1002165CA /* USParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA5C0E01F0C1002165CA /* USParser.m */; };
-		B9FEAA880E01F4A0002165CA /* USWSDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA870E01F4A0002165CA /* USWSDL.m */; };
-		B9FEAA8D0E01F59B002165CA /* USSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA8C0E01F59B002165CA /* USSchema.m */; };
+		621D446C0E6E0BD200CEF901 /* ComplexType_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F00A0E63954100DABBD6 /* ComplexType_H.template */; };
+		621D446D0E6E0BD200CEF901 /* ComplexType_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F00D0E63958E00DABBD6 /* ComplexType_M.template */; };
+		621D446E0E6E0BD200CEF901 /* SimpleType_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F0090E63953500DABBD6 /* SimpleType_H.template */; };
+		621D446F0E6E0BD200CEF901 /* SimpleType_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F00C0E63958100DABBD6 /* SimpleType_M.template */; };
+		621D44700E6E0BD200CEF901 /* Schema_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BFB2240E648CE100E19E18 /* Schema_H.template */; };
+		621D44710E6E0BD200CEF901 /* Schema_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BFB2250E648CE900E19E18 /* Schema_M.template */; };
+		621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */ = {isa = PBXBuildFile; fileRef = 621D44F10E6E119B00CEF901 /* USObjCKeywords.m */; };
+		62223EE40E76F2F5005D3D36 /* TouchXML_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349830E75DB590094F6F1 /* TouchXML_H.template */; };
+		62223EE50E76F2F5005D3D36 /* CXMLNode_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349850E75DB590094F6F1 /* CXMLNode_H.template */; };
+		62223EE60E76F2F5005D3D36 /* CXMLNode_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349840E75DB590094F6F1 /* CXMLNode_M.template */; };
+		62223EE70E76F2F5005D3D36 /* CXMLNode_XPathExtensions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349860E75DB590094F6F1 /* CXMLNode_XPathExtensions_H.template */; };
+		62223EE80E76F2F5005D3D36 /* CXMLNode_XPathExtensions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349870E75DB590094F6F1 /* CXMLNode_XPathExtensions_M.template */; };
+		62223EE90E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349880E75DB590094F6F1 /* CXMLNode_PrivateExtensions_H.template */; };
+		62223EEA0E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349890E75DB590094F6F1 /* CXMLNode_PrivateExtensions_M.template */; };
+		62223EEB0E76F2F5005D3D36 /* CXMLElement_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498B0E75DB590094F6F1 /* CXMLElement_H.template */; };
+		62223EEC0E76F2F5005D3D36 /* CXMLElement_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498A0E75DB590094F6F1 /* CXMLElement_M.template */; };
+		62223EED0E76F2F5005D3D36 /* CXMLDocument_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498D0E75DB590094F6F1 /* CXMLDocument_H.template */; };
+		62223EEE0E76F2F5005D3D36 /* CXMLDocument_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498C0E75DB590094F6F1 /* CXMLDocument_M.template */; };
+		62223EEF0E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498F0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_H.template */; };
+		62223EF00E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498E0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_M.template */; };
+		623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 623346320E759A5A0094F6F1 /* NSString+USAdditions.m */; };
+		6235EE6F0E63897300DABBD6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6235EE6E0E63897300DABBD6 /* MainMenu.xib */; };
+		6235EE970E638B7B00DABBD6 /* LIFO.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2666F0E6371F900AD9FC9 /* LIFO.m */; };
+		6235EE980E638B7B00DABBD6 /* STSNullError.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D266790E6371F900AD9FC9 /* STSNullError.m */; };
+		6235EE990E638B7B00DABBD6 /* STSStringOps.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2667B0E6371F900AD9FC9 /* STSStringOps.m */; };
+		6235EE9A0E638B7B00DABBD6 /* STSTemplateEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2667D0E6371F900AD9FC9 /* STSTemplateEngine.m */; };
+		6235EE9B0E638B7B00DABBD6 /* STSTemplateEngineErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2667F0E6371F900AD9FC9 /* STSTemplateEngineErrors.m */; };
+		6235EE9C0E638B7B00DABBD6 /* USAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FECA70DF76C5A00145322 /* USAttribute.m */; };
+		6235EE9F0E638B7B00DABBD6 /* USParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA5C0E01F0C1002165CA /* USParser.m */; };
+		6235EEA00E638B7B00DABBD6 /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
+		6235EEA10E638B7B00DABBD6 /* USSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA8C0E01F59B002165CA /* USSchema.m */; };
+		6235EEA20E638B7B00DABBD6 /* USSequenceElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */; };
+		6235EEA50E638B7B00DABBD6 /* USWSDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA870E01F4A0002165CA /* USWSDL.m */; };
+		6235EEA60E638B7B00DABBD6 /* WSDLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* WSDLParser.m */; };
+		624063690E70827A006BEB94 /* USPortType.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063680E70827A006BEB94 /* USPortType.m */; };
+		6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FA0E706800006BEB94 /* USParser+Messages.m */; };
+		6240636B0E708294006BEB94 /* USPart.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FD0E70687B006BEB94 /* USPart.m */; };
+		6240636C0E708294006BEB94 /* USMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063020E70692E006BEB94 /* USMessage.m */; };
+		6240636D0E708294006BEB94 /* USParser+PortTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063640E70816C006BEB94 /* USParser+PortTypes.m */; };
+		624063710E7082C9006BEB94 /* USOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063700E7082C9006BEB94 /* USOperation.m */; };
+		624063770E708572006BEB94 /* USOperationInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063760E708572006BEB94 /* USOperationInterface.m */; };
+		6240637E0E70877F006BEB94 /* USOperationFault.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240637D0E70877F006BEB94 /* USOperationFault.m */; };
+		624064730E709558006BEB94 /* USParser+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064720E709558006BEB94 /* USParser+Bindings.m */; };
+		624064770E709575006BEB94 /* USBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064760E709575006BEB94 /* USBinding.m */; };
+		6240648D0E709F6B006BEB94 /* USService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648C0E709F6B006BEB94 /* USService.m */; };
+		624064900E709FAC006BEB94 /* USPort.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648F0E709FAC006BEB94 /* USPort.m */; };
+		624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064950E70A0D1006BEB94 /* USParser+Services.m */; };
+		6240653B0E70A6B0006BEB94 /* Service_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 624065390E70A6A0006BEB94 /* Service_H.template */; };
+		6240653C0E70A6B0006BEB94 /* Service_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6240653A0E70A6A8006BEB94 /* Service_M.template */; };
+		624065F80E70B1F6006BEB94 /* Binding_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6240653F0E70A8C5006BEB94 /* Binding_H.template */; };
+		624065F90E70B1F6006BEB94 /* Binding_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 624065410E70A8D0006BEB94 /* Binding_M.template */; };
+		62ADD39A0E6890140052979D /* USParser+Types.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ADD3980E6890140052979D /* USParser+Types.m */; };
+		62BF41B90E72009F00FA8190 /* USAdditions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF41B20E72004900FA8190 /* USAdditions_H.template */; };
+		62BF41BA0E72009F00FA8190 /* USAdditions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF41B30E72004900FA8190 /* USAdditions_M.template */; };
+		62BF42350E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42030E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_H.template */; };
+		62BF42360E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42040E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_M.template */; };
+		62BF42370E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42050E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template */; };
+		62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */; };
+		62BFAF790E645D8500E19E18 /* USWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFAF770E645D8500E19E18 /* USWriter.m */; };
+		62BFB31E0E64D15900E19E18 /* USType.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFB31D0E64D15900E19E18 /* USType.m */; };
+		62E6332E0E676DF40072DBDD /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		8DD76F9E0486AA7600D96B5E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-				8DD76F9F0486AA7600D96B5E /* WSDLParser.1 in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		08FB7796FE84155DC02AAC07 /* WSDLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSDLParser.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSDLParser_Prefix.pch; sourceTree = "<group>"; };
-		8DD76FA10486AA7600D96B5E /* WSDLParser */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = WSDLParser; sourceTree = BUILT_PRODUCTS_DIR; };
-		B93FEB790DF74BFF00145322 /* USOrderedPair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOrderedPair.h; sourceTree = "<group>"; };
-		B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOrderedPair.m; sourceTree = "<group>"; };
+		621D44F00E6E119B00CEF901 /* USObjCKeywords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USObjCKeywords.h; sourceTree = "<group>"; };
+		621D44F10E6E119B00CEF901 /* USObjCKeywords.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USObjCKeywords.m; sourceTree = "<group>"; };
+		623346310E759A5A0094F6F1 /* NSString+USAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+USAdditions.h"; sourceTree = "<group>"; };
+		623346320E759A5A0094F6F1 /* NSString+USAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+USAdditions.m"; sourceTree = "<group>"; };
+		623349830E75DB590094F6F1 /* TouchXML_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TouchXML_H.template; sourceTree = "<group>"; };
+		623349840E75DB590094F6F1 /* CXMLNode_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_M.template; sourceTree = "<group>"; };
+		623349850E75DB590094F6F1 /* CXMLNode_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_H.template; sourceTree = "<group>"; };
+		623349860E75DB590094F6F1 /* CXMLNode_XPathExtensions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_XPathExtensions_H.template; sourceTree = "<group>"; };
+		623349870E75DB590094F6F1 /* CXMLNode_XPathExtensions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_XPathExtensions_M.template; sourceTree = "<group>"; };
+		623349880E75DB590094F6F1 /* CXMLNode_PrivateExtensions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_PrivateExtensions_H.template; sourceTree = "<group>"; };
+		623349890E75DB590094F6F1 /* CXMLNode_PrivateExtensions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_PrivateExtensions_M.template; sourceTree = "<group>"; };
+		6233498A0E75DB590094F6F1 /* CXMLElement_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLElement_M.template; sourceTree = "<group>"; };
+		6233498B0E75DB590094F6F1 /* CXMLElement_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLElement_H.template; sourceTree = "<group>"; };
+		6233498C0E75DB590094F6F1 /* CXMLDocument_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_M.template; sourceTree = "<group>"; };
+		6233498D0E75DB590094F6F1 /* CXMLDocument_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_H.template; sourceTree = "<group>"; };
+		6233498E0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_PrivateExtensions_M.template; sourceTree = "<group>"; };
+		6233498F0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_PrivateExtensions_H.template; sourceTree = "<group>"; };
+		6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WSDL2ObjC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6235ED0E0E63887A00DABBD6 /* WSDL2ObjC-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WSDL2ObjC-Info.plist"; sourceTree = "<group>"; };
+		6235EE6E0E63897300DABBD6 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
+		6235F0090E63953500DABBD6 /* SimpleType_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleType_H.template; sourceTree = "<group>"; };
+		6235F00A0E63954100DABBD6 /* ComplexType_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComplexType_H.template; sourceTree = "<group>"; };
+		6235F00C0E63958100DABBD6 /* SimpleType_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleType_M.template; sourceTree = "<group>"; };
+		6235F00D0E63958E00DABBD6 /* ComplexType_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComplexType_M.template; sourceTree = "<group>"; };
+		624062F90E706800006BEB94 /* USParser+Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Messages.h"; sourceTree = "<group>"; };
+		624062FA0E706800006BEB94 /* USParser+Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Messages.m"; sourceTree = "<group>"; };
+		624062FC0E70687B006BEB94 /* USPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPart.h; sourceTree = "<group>"; };
+		624062FD0E70687B006BEB94 /* USPart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPart.m; sourceTree = "<group>"; };
+		624063010E70692E006BEB94 /* USMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USMessage.h; sourceTree = "<group>"; };
+		624063020E70692E006BEB94 /* USMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USMessage.m; sourceTree = "<group>"; };
+		624063630E70816C006BEB94 /* USParser+PortTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+PortTypes.h"; sourceTree = "<group>"; };
+		624063640E70816C006BEB94 /* USParser+PortTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+PortTypes.m"; sourceTree = "<group>"; };
+		624063670E70827A006BEB94 /* USPortType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPortType.h; sourceTree = "<group>"; };
+		624063680E70827A006BEB94 /* USPortType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPortType.m; sourceTree = "<group>"; };
+		6240636F0E7082C9006BEB94 /* USOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperation.h; sourceTree = "<group>"; };
+		624063700E7082C9006BEB94 /* USOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperation.m; sourceTree = "<group>"; };
+		624063750E708572006BEB94 /* USOperationInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperationInterface.h; sourceTree = "<group>"; };
+		624063760E708572006BEB94 /* USOperationInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperationInterface.m; sourceTree = "<group>"; };
+		6240637C0E70877F006BEB94 /* USOperationFault.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperationFault.h; sourceTree = "<group>"; };
+		6240637D0E70877F006BEB94 /* USOperationFault.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperationFault.m; sourceTree = "<group>"; };
+		624064710E709558006BEB94 /* USParser+Bindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Bindings.h"; sourceTree = "<group>"; };
+		624064720E709558006BEB94 /* USParser+Bindings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Bindings.m"; sourceTree = "<group>"; };
+		624064750E709575006BEB94 /* USBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USBinding.h; sourceTree = "<group>"; };
+		624064760E709575006BEB94 /* USBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USBinding.m; sourceTree = "<group>"; };
+		6240648B0E709F6B006BEB94 /* USService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USService.h; sourceTree = "<group>"; };
+		6240648C0E709F6B006BEB94 /* USService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USService.m; sourceTree = "<group>"; };
+		6240648E0E709FAC006BEB94 /* USPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPort.h; sourceTree = "<group>"; };
+		6240648F0E709FAC006BEB94 /* USPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPort.m; sourceTree = "<group>"; };
+		624064940E70A0D1006BEB94 /* USParser+Services.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Services.h"; sourceTree = "<group>"; };
+		624064950E70A0D1006BEB94 /* USParser+Services.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Services.m"; sourceTree = "<group>"; };
+		624065390E70A6A0006BEB94 /* Service_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Service_H.template; sourceTree = "<group>"; };
+		6240653A0E70A6A8006BEB94 /* Service_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Service_M.template; sourceTree = "<group>"; };
+		6240653F0E70A8C5006BEB94 /* Binding_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Binding_H.template; sourceTree = "<group>"; };
+		624065410E70A8D0006BEB94 /* Binding_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Binding_M.template; sourceTree = "<group>"; };
+		62ADD3970E6890140052979D /* USParser+Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Types.h"; sourceTree = "<group>"; };
+		62ADD3980E6890140052979D /* USParser+Types.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Types.m"; sourceTree = "<group>"; };
+		62ADD8740E68C16B0052979D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		62BF41B20E72004900FA8190 /* USAdditions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAdditions_H.template; sourceTree = "<group>"; };
+		62BF41B30E72004900FA8190 /* USAdditions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAdditions_M.template; sourceTree = "<group>"; };
+		62BF42030E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Parsing_H.template"; sourceTree = "<group>"; };
+		62BF42040E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Parsing_M.template"; sourceTree = "<group>"; };
+		62BF42050E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Unparsing_H.template"; sourceTree = "<group>"; };
+		62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Unparsing_M.template"; sourceTree = "<group>"; };
+		62BFAF760E645D8500E19E18 /* USWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USWriter.h; sourceTree = "<group>"; };
+		62BFAF770E645D8500E19E18 /* USWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USWriter.m; sourceTree = "<group>"; };
+		62BFB2240E648CE100E19E18 /* Schema_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_H.template; sourceTree = "<group>"; };
+		62BFB2250E648CE900E19E18 /* Schema_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_M.template; sourceTree = "<group>"; };
+		62BFB31D0E64D15900E19E18 /* USType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USType.m; sourceTree = "<group>"; };
+		62D2666E0E6371F900AD9FC9 /* LIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LIFO.h; sourceTree = "<group>"; };
+		62D2666F0E6371F900AD9FC9 /* LIFO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LIFO.m; sourceTree = "<group>"; };
+		62D266700E6371F900AD9FC9 /* README.TEMPLATE_ENGINE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.TEMPLATE_ENGINE; sourceTree = "<group>"; };
+		62D266760E6371F900AD9FC9 /* STS Template Engine Documentation.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "STS Template Engine Documentation.pdf"; sourceTree = "<group>"; };
+		62D266770E6371F900AD9FC9 /* STS Template Engine License.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "STS Template Engine License.rtf"; sourceTree = "<group>"; };
+		62D266780E6371F900AD9FC9 /* STSNullError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STSNullError.h; sourceTree = "<group>"; };
+		62D266790E6371F900AD9FC9 /* STSNullError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STSNullError.m; sourceTree = "<group>"; };
+		62D2667A0E6371F900AD9FC9 /* STSStringOps.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STSStringOps.h; sourceTree = "<group>"; };
+		62D2667B0E6371F900AD9FC9 /* STSStringOps.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STSStringOps.m; sourceTree = "<group>"; };
+		62D2667C0E6371F900AD9FC9 /* STSTemplateEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STSTemplateEngine.h; sourceTree = "<group>"; };
+		62D2667D0E6371F900AD9FC9 /* STSTemplateEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STSTemplateEngine.m; sourceTree = "<group>"; };
+		62D2667E0E6371F900AD9FC9 /* STSTemplateEngineErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STSTemplateEngineErrors.h; sourceTree = "<group>"; };
+		62D2667F0E6371F900AD9FC9 /* STSTemplateEngineErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STSTemplateEngineErrors.m; sourceTree = "<group>"; };
+		62D266800E6371F900AD9FC9 /* Sunrise Telephone Systems.webloc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Sunrise Telephone Systems.webloc"; sourceTree = "<group>"; };
+		62E6332B0E676DF40072DBDD /* USElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USElement.h; sourceTree = "<group>"; };
+		62E6332C0E676DF40072DBDD /* USElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USElement.m; sourceTree = "<group>"; };
 		B93FECA60DF76C5A00145322 /* USAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USAttribute.h; sourceTree = "<group>"; };
 		B93FECA70DF76C5A00145322 /* USAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USAttribute.m; sourceTree = "<group>"; };
 		B97798C60DF45829000F758E /* USType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USType.h; sourceTree = "<group>"; };
-		B987A4C40DA863DC00487885 /* USSimpleType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSimpleType.h; sourceTree = "<group>"; };
-		B987A4C50DA863DC00487885 /* USSimpleType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSimpleType.m; sourceTree = "<group>"; };
 		B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSequenceElement.h; sourceTree = "<group>"; };
 		B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSequenceElement.m; sourceTree = "<group>"; };
-		B9EDB4FF0DA826ED000C1FDE /* USComplexType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USComplexType.h; sourceTree = "<group>"; };
-		B9EDB5000DA826ED000C1FDE /* USComplexType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USComplexType.m; sourceTree = "<group>"; };
 		B9FA269A0DA6E901004C7479 /* USParserApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USParserApplication.h; sourceTree = "<group>"; };
 		B9FA269B0DA6E901004C7479 /* USParserApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USParserApplication.m; sourceTree = "<group>"; };
-		B9FA271C0DA6FA45004C7479 /* USUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USUtilities.h; sourceTree = "<group>"; };
-		B9FA271D0DA6FA45004C7479 /* USUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USUtilities.m; sourceTree = "<group>"; };
 		B9FEAA5B0E01F0C1002165CA /* USParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USParser.h; sourceTree = "<group>"; };
 		B9FEAA5C0E01F0C1002165CA /* USParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USParser.m; sourceTree = "<group>"; };
 		B9FEAA860E01F4A0002165CA /* USWSDL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USWSDL.h; sourceTree = "<group>"; };
 		B9FEAA870E01F4A0002165CA /* USWSDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USWSDL.m; sourceTree = "<group>"; };
-		B9FEAA8B0E01F59B002165CA /* USSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USSchema.h; sourceTree = "<group>"; };
-		B9FEAA8C0E01F59B002165CA /* USSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USSchema.m; sourceTree = "<group>"; };
-		C6859EA3029092ED04C91782 /* WSDLParser.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = WSDLParser.1; sourceTree = "<group>"; };
+		B9FEAA8B0E01F59B002165CA /* USSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = USSchema.h; path = Types/USSchema.h; sourceTree = "<group>"; };
+		B9FEAA8C0E01F59B002165CA /* USSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = USSchema.m; path = Types/USSchema.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8DD76F9B0486AA7600D96B5E /* Frameworks */ = {
+		6235ED0A0E63887A00DABBD6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,11 +187,14 @@
 		08FB7794FE84155DC02AAC07 /* WSDLParser */ = {
 			isa = PBXGroup;
 			children = (
-				B9FA26940DA6E8DD004C7479 /* Classes */,
+				62D2666D0E6371F900AD9FC9 /* STSTemplateEngine */,
+				6235ECF60E6386D200DABBD6 /* Templates */,
+				B9FA26940DA6E8DD004C7479 /* Classes */,
 				08FB7795FE84155DC02AAC07 /* Source */,
-				C6859EA2029092E104C91782 /* Documentation */,
+				6235EE6D0E63896000DABBD6 /* Resources */,
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
+				6235ED0E0E63887A00DABBD6 /* WSDL2ObjC-Info.plist */,
 			);
 			name = WSDLParser;
 			sourceTree = "<group>";
@@ -91,8 +202,10 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				B9FA271C0DA6FA45004C7479 /* USUtilities.h */,
-				B9FA271D0DA6FA45004C7479 /* USUtilities.m */,
+				623346310E759A5A0094F6F1 /* NSString+USAdditions.h */,
+				623346320E759A5A0094F6F1 /* NSString+USAdditions.m */,
+				621D44F00E6E119B00CEF901 /* USObjCKeywords.h */,
+				621D44F10E6E119B00CEF901 /* USObjCKeywords.m */,
 				32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* WSDLParser.m */,
 			);
@@ -102,6 +215,7 @@
 		08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				62ADD8740E68C16B0052979D /* Cocoa.framework */,
 				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
 			);
 			name = "External Frameworks and Libraries";
@@ -110,65 +224,197 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FA10486AA7600D96B5E /* WSDLParser */,
+				6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		B9FA26940DA6E8DD004C7479 /* Classes */ = {
+		621D458A0E6E18A900CEF901 /* Messages */ = {
+			isa = PBXGroup;
+			children = (
+				624062F90E706800006BEB94 /* USParser+Messages.h */,
+				624062FA0E706800006BEB94 /* USParser+Messages.m */,
+				624063010E70692E006BEB94 /* USMessage.h */,
+				624063020E70692E006BEB94 /* USMessage.m */,
+				624062FC0E70687B006BEB94 /* USPart.h */,
+				624062FD0E70687B006BEB94 /* USPart.m */,
+			);
+			name = Messages;
+			sourceTree = "<group>";
+		};
+		621D458B0E6E18C500CEF901 /* PortTypes */ = {
+			isa = PBXGroup;
+			children = (
+				624063630E70816C006BEB94 /* USParser+PortTypes.h */,
+				624063640E70816C006BEB94 /* USParser+PortTypes.m */,
+				624063670E70827A006BEB94 /* USPortType.h */,
+				624063680E70827A006BEB94 /* USPortType.m */,
+				6240636F0E7082C9006BEB94 /* USOperation.h */,
+				624063700E7082C9006BEB94 /* USOperation.m */,
+				624063750E708572006BEB94 /* USOperationInterface.h */,
+				624063760E708572006BEB94 /* USOperationInterface.m */,
+				6240637C0E70877F006BEB94 /* USOperationFault.h */,
+				6240637D0E70877F006BEB94 /* USOperationFault.m */,
+			);
+			name = PortTypes;
+			sourceTree = "<group>";
+		};
+		621D458D0E6E195C00CEF901 /* Bindings */ = {
+			isa = PBXGroup;
+			children = (
+				624064710E709558006BEB94 /* USParser+Bindings.h */,
+				624064720E709558006BEB94 /* USParser+Bindings.m */,
+				624064750E709575006BEB94 /* USBinding.h */,
+				624064760E709575006BEB94 /* USBinding.m */,
+			);
+			name = Bindings;
+			sourceTree = "<group>";
+		};
+		621D458E0E6E196300CEF901 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				624064940E70A0D1006BEB94 /* USParser+Services.h */,
+				624064950E70A0D1006BEB94 /* USParser+Services.m */,
+				6240648B0E709F6B006BEB94 /* USService.h */,
+				6240648C0E709F6B006BEB94 /* USService.m */,
+				6240648E0E709FAC006BEB94 /* USPort.h */,
+				6240648F0E709FAC006BEB94 /* USPort.m */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
+		6233497E0E75DB430094F6F1 /* TouchXML */ = {
+			isa = PBXGroup;
+			children = (
+				623349830E75DB590094F6F1 /* TouchXML_H.template */,
+				623349850E75DB590094F6F1 /* CXMLNode_H.template */,
+				623349840E75DB590094F6F1 /* CXMLNode_M.template */,
+				623349860E75DB590094F6F1 /* CXMLNode_XPathExtensions_H.template */,
+				623349870E75DB590094F6F1 /* CXMLNode_XPathExtensions_M.template */,
+				623349880E75DB590094F6F1 /* CXMLNode_PrivateExtensions_H.template */,
+				623349890E75DB590094F6F1 /* CXMLNode_PrivateExtensions_M.template */,
+				6233498B0E75DB590094F6F1 /* CXMLElement_H.template */,
+				6233498A0E75DB590094F6F1 /* CXMLElement_M.template */,
+				6233498D0E75DB590094F6F1 /* CXMLDocument_H.template */,
+				6233498C0E75DB590094F6F1 /* CXMLDocument_M.template */,
+				6233498F0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_H.template */,
+				6233498E0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_M.template */,
+			);
+			name = TouchXML;
+			path = ../TouchXML;
+			sourceTree = "<group>";
+		};
+		6235ECF60E6386D200DABBD6 /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				62BFB2240E648CE100E19E18 /* Schema_H.template */,
+				62BFB2250E648CE900E19E18 /* Schema_M.template */,
+				6235F00A0E63954100DABBD6 /* ComplexType_H.template */,
+				6235F00D0E63958E00DABBD6 /* ComplexType_M.template */,
+				6235F0090E63953500DABBD6 /* SimpleType_H.template */,
+				6235F00C0E63958100DABBD6 /* SimpleType_M.template */,
+				6240653F0E70A8C5006BEB94 /* Binding_H.template */,
+				624065410E70A8D0006BEB94 /* Binding_M.template */,
+				624065390E70A6A0006BEB94 /* Service_H.template */,
+				6240653A0E70A6A8006BEB94 /* Service_M.template */,
+				62BF41B20E72004900FA8190 /* USAdditions_H.template */,
+				62BF41B30E72004900FA8190 /* USAdditions_M.template */,
+				62BF42030E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_H.template */,
+				62BF42040E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_M.template */,
+				62BF42050E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template */,
+				62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */,
+				6233497E0E75DB430094F6F1 /* TouchXML */,
+			);
+			path = Templates;
+			sourceTree = "<group>";
+		};
+		6235EE6D0E63896000DABBD6 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6235EE6E0E63897300DABBD6 /* MainMenu.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		62ADD38C0E688F290052979D /* Types */ = {
+			isa = PBXGroup;
+			children = (
+				62ADD3970E6890140052979D /* USParser+Types.h */,
+				62ADD3980E6890140052979D /* USParser+Types.m */,
+				B97798C60DF45829000F758E /* USType.h */,
+				62BFB31D0E64D15900E19E18 /* USType.m */,
+				B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */,
+				B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */,
+				B93FECA60DF76C5A00145322 /* USAttribute.h */,
+				B93FECA70DF76C5A00145322 /* USAttribute.m */,
+				62E6332B0E676DF40072DBDD /* USElement.h */,
+				62E6332C0E676DF40072DBDD /* USElement.m */,
+			);
+			path = Types;
+			sourceTree = "<group>";
+		};
+		62D2666D0E6371F900AD9FC9 /* STSTemplateEngine */ = {
+			isa = PBXGroup;
+			children = (
+				62D2666E0E6371F900AD9FC9 /* LIFO.h */,
+				62D2666F0E6371F900AD9FC9 /* LIFO.m */,
+				62D266700E6371F900AD9FC9 /* README.TEMPLATE_ENGINE */,
+				62D266760E6371F900AD9FC9 /* STS Template Engine Documentation.pdf */,
+				62D266770E6371F900AD9FC9 /* STS Template Engine License.rtf */,
+				62D266780E6371F900AD9FC9 /* STSNullError.h */,
+				62D266790E6371F900AD9FC9 /* STSNullError.m */,
+				62D2667A0E6371F900AD9FC9 /* STSStringOps.h */,
+				62D2667B0E6371F900AD9FC9 /* STSStringOps.m */,
+				62D2667C0E6371F900AD9FC9 /* STSTemplateEngine.h */,
+				62D2667D0E6371F900AD9FC9 /* STSTemplateEngine.m */,
+				62D2667E0E6371F900AD9FC9 /* STSTemplateEngineErrors.h */,
+				62D2667F0E6371F900AD9FC9 /* STSTemplateEngineErrors.m */,
+				62D266800E6371F900AD9FC9 /* Sunrise Telephone Systems.webloc */,
+			);
+			path = STSTemplateEngine;
+			sourceTree = "<group>";
+		};
+		B9FA26940DA6E8DD004C7479 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
 				B9FA269A0DA6E901004C7479 /* USParserApplication.h */,
 				B9FA269B0DA6E901004C7479 /* USParserApplication.m */,
-				B9EDB4FF0DA826ED000C1FDE /* USComplexType.h */,
-				B9EDB5000DA826ED000C1FDE /* USComplexType.m */,
-				B987A4C40DA863DC00487885 /* USSimpleType.h */,
-				B987A4C50DA863DC00487885 /* USSimpleType.m */,
-				B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */,
-				B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */,
-				B97798C60DF45829000F758E /* USType.h */,
-				B93FEB790DF74BFF00145322 /* USOrderedPair.h */,
-				B93FEB7A0DF74BFF00145322 /* USOrderedPair.m */,
-				B93FECA60DF76C5A00145322 /* USAttribute.h */,
-				B93FECA70DF76C5A00145322 /* USAttribute.m */,
 				B9FEAA5B0E01F0C1002165CA /* USParser.h */,
 				B9FEAA5C0E01F0C1002165CA /* USParser.m */,
+				62BFAF760E645D8500E19E18 /* USWriter.h */,
+				62BFAF770E645D8500E19E18 /* USWriter.m */,
 				B9FEAA860E01F4A0002165CA /* USWSDL.h */,
 				B9FEAA870E01F4A0002165CA /* USWSDL.m */,
 				B9FEAA8B0E01F59B002165CA /* USSchema.h */,
 				B9FEAA8C0E01F59B002165CA /* USSchema.m */,
+				62ADD38C0E688F290052979D /* Types */,
+				621D458A0E6E18A900CEF901 /* Messages */,
+				621D458B0E6E18C500CEF901 /* PortTypes */,
+				621D458D0E6E195C00CEF901 /* Bindings */,
+				621D458E0E6E196300CEF901 /* Services */,
 			);
-			name = "C\U001blasses";
-			sourceTree = "<group>";
-		};
-		C6859EA2029092E104C91782 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				C6859EA3029092ED04C91782 /* WSDLParser.1 */,
-			);
-			name = Documentation;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8DD76F960486AA7600D96B5E /* WSDLParser */ = {
+		6235ED0B0E63887A00DABBD6 /* WSDL2ObjC */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "WSDLParser" */;
+			buildConfigurationList = 6235ED110E63887B00DABBD6 /* Build configuration list for PBXNativeTarget "WSDL2ObjC" */;
 			buildPhases = (
-				8DD76F990486AA7600D96B5E /* Sources */,
-				8DD76F9B0486AA7600D96B5E /* Frameworks */,
-				8DD76F9E0486AA7600D96B5E /* CopyFiles */,
+				6235ED080E63887A00DABBD6 /* Resources */,
+				6235ED090E63887A00DABBD6 /* Sources */,
+				6235ED0A0E63887A00DABBD6 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = WSDLParser;
-			productInstallPath = "$(HOME)/bin";
-			productName = WSDLParser;
-			productReference = 8DD76FA10486AA7600D96B5E /* WSDLParser */;
-			productType = "com.apple.product-type.tool";
+			name = WSDL2ObjC;
+			productName = WSDL2ObjC;
+			productReference = 6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -182,72 +428,93 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F960486AA7600D96B5E /* WSDLParser */,
+				6235ED0B0E63887A00DABBD6 /* WSDL2ObjC */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		6235ED080E63887A00DABBD6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				621D44700E6E0BD200CEF901 /* Schema_H.template in Resources */,
+				621D44710E6E0BD200CEF901 /* Schema_M.template in Resources */,
+				621D446C0E6E0BD200CEF901 /* ComplexType_H.template in Resources */,
+				621D446D0E6E0BD200CEF901 /* ComplexType_M.template in Resources */,
+				621D446E0E6E0BD200CEF901 /* SimpleType_H.template in Resources */,
+				621D446F0E6E0BD200CEF901 /* SimpleType_M.template in Resources */,
+				624065F80E70B1F6006BEB94 /* Binding_H.template in Resources */,
+				624065F90E70B1F6006BEB94 /* Binding_M.template in Resources */,
+				6240653B0E70A6B0006BEB94 /* Service_H.template in Resources */,
+				6240653C0E70A6B0006BEB94 /* Service_M.template in Resources */,
+				6235EE6F0E63897300DABBD6 /* MainMenu.xib in Resources */,
+				62BF41B90E72009F00FA8190 /* USAdditions_H.template in Resources */,
+				62BF41BA0E72009F00FA8190 /* USAdditions_M.template in Resources */,
+				62BF42350E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_H.template in Resources */,
+				62BF42360E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_M.template in Resources */,
+				62BF42370E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template in Resources */,
+				62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */,
+				62223EE40E76F2F5005D3D36 /* TouchXML_H.template in Resources */,
+				62223EE50E76F2F5005D3D36 /* CXMLNode_H.template in Resources */,
+				62223EE60E76F2F5005D3D36 /* CXMLNode_M.template in Resources */,
+				62223EE70E76F2F5005D3D36 /* CXMLNode_XPathExtensions_H.template in Resources */,
+				62223EE80E76F2F5005D3D36 /* CXMLNode_XPathExtensions_M.template in Resources */,
+				62223EE90E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_H.template in Resources */,
+				62223EEA0E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_M.template in Resources */,
+				62223EEB0E76F2F5005D3D36 /* CXMLElement_H.template in Resources */,
+				62223EEC0E76F2F5005D3D36 /* CXMLElement_M.template in Resources */,
+				62223EED0E76F2F5005D3D36 /* CXMLDocument_H.template in Resources */,
+				62223EEE0E76F2F5005D3D36 /* CXMLDocument_M.template in Resources */,
+				62223EEF0E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_H.template in Resources */,
+				62223EF00E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_M.template in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		8DD76F990486AA7600D96B5E /* Sources */ = {
+		6235ED090E63887A00DABBD6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8DD76F9A0486AA7600D96B5E /* WSDLParser.m in Sources */,
-				B9FA269C0DA6E901004C7479 /* USParserApplication.m in Sources */,
-				B9FA271E0DA6FA45004C7479 /* USUtilities.m in Sources */,
-				B9EDB5010DA826ED000C1FDE /* USComplexType.m in Sources */,
-				B987A4C60DA863DC00487885 /* USSimpleType.m in Sources */,
-				B9ADEFD40DB1651A00998A45 /* USSequenceElement.m in Sources */,
-				B93FEB7B0DF74BFF00145322 /* USOrderedPair.m in Sources */,
-				B93FECA80DF76C5A00145322 /* USAttribute.m in Sources */,
-				B9FEAA5D0E01F0C1002165CA /* USParser.m in Sources */,
-				B9FEAA880E01F4A0002165CA /* USWSDL.m in Sources */,
-				B9FEAA8D0E01F59B002165CA /* USSchema.m in Sources */,
+				6235EE970E638B7B00DABBD6 /* LIFO.m in Sources */,
+				6235EE980E638B7B00DABBD6 /* STSNullError.m in Sources */,
+				6235EE990E638B7B00DABBD6 /* STSStringOps.m in Sources */,
+				6235EE9A0E638B7B00DABBD6 /* STSTemplateEngine.m in Sources */,
+				6235EE9B0E638B7B00DABBD6 /* STSTemplateEngineErrors.m in Sources */,
+				6235EE9C0E638B7B00DABBD6 /* USAttribute.m in Sources */,
+				6235EE9F0E638B7B00DABBD6 /* USParser.m in Sources */,
+				6235EEA00E638B7B00DABBD6 /* USParserApplication.m in Sources */,
+				6235EEA10E638B7B00DABBD6 /* USSchema.m in Sources */,
+				6235EEA20E638B7B00DABBD6 /* USSequenceElement.m in Sources */,
+				6235EEA50E638B7B00DABBD6 /* USWSDL.m in Sources */,
+				6235EEA60E638B7B00DABBD6 /* WSDLParser.m in Sources */,
+				62BFAF790E645D8500E19E18 /* USWriter.m in Sources */,
+				62BFB31E0E64D15900E19E18 /* USType.m in Sources */,
+				62E6332E0E676DF40072DBDD /* USElement.m in Sources */,
+				62ADD39A0E6890140052979D /* USParser+Types.m in Sources */,
+				624063690E70827A006BEB94 /* USPortType.m in Sources */,
+				621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */,
+				6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */,
+				6240636B0E708294006BEB94 /* USPart.m in Sources */,
+				6240636C0E708294006BEB94 /* USMessage.m in Sources */,
+				6240636D0E708294006BEB94 /* USParser+PortTypes.m in Sources */,
+				624063710E7082C9006BEB94 /* USOperation.m in Sources */,
+				624063770E708572006BEB94 /* USOperationInterface.m in Sources */,
+				6240637E0E70877F006BEB94 /* USOperationFault.m in Sources */,
+				624064730E709558006BEB94 /* USParser+Bindings.m in Sources */,
+				624064770E709575006BEB94 /* USBinding.m in Sources */,
+				6240648D0E709F6B006BEB94 /* USService.m in Sources */,
+				624064900E709FAC006BEB94 /* USPort.m in Sources */,
+				624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */,
+				623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		1DEB927508733DD40010E9CD /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DEBUGGING_SYMBOLS = full;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = WSDLParser_Prefix.pch;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
-				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
-				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
-				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_MISSING_PARENTHESES = YES;
-				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
-				GCC_WARN_SHADOW = YES;
-				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = WSDLParser;
-				WARNING_CFLAGS = "-Wall";
-				ZERO_LINK = YES;
-			};
-			name = Debug;
-		};
-		1DEB927608733DD40010E9CD /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = WSDLParser_Prefix.pch;
-				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = WSDLParser;
-			};
-			name = Release;
-		};
 		1DEB927908733DD40010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -273,23 +540,82 @@
 			};
 			name = Release;
 		};
+		6235ED0F0E63887B00DABBD6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "WSDL2ObjC-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = WSDL2ObjC;
+				WARNING_CFLAGS = "-Wall";
+			};
+			name = Debug;
+		};
+		6235ED100E63887B00DABBD6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH)";
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INFOPLIST_FILE = "WSDL2ObjC-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = WSDL2ObjC;
+				STRIP_INSTALLED_PRODUCT = YES;
+				WARNING_CFLAGS = "-Wall";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "WSDLParser" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1DEB927508733DD40010E9CD /* Debug */,
-				1DEB927608733DD40010E9CD /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "WSDLParser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927908733DD40010E9CD /* Debug */,
 				1DEB927A08733DD40010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6235ED110E63887B00DABBD6 /* Build configuration list for PBXNativeTarget "WSDL2ObjC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6235ED0F0E63887B00DABBD6 /* Debug */,
+				6235ED100E63887B00DABBD6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
