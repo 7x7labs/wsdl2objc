@@ -1,0 +1,92 @@
+/*
+ Copyright (c) 2008 LightSPEED Technologies, Inc.
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ */
+
+#import "USOperation.h"
+
+#import "USOperationInterface.h"
+#import "USPortType.h"
+#import "USOperationFault.h"
+#import "USPart.h"
+#import "USMessage.h"
+#import "USElement.h"
+#import "USType.h"
+
+@implementation USOperation
+
+@synthesize name;
+@synthesize soapAction;
+@synthesize input;
+@synthesize output;
+@synthesize faults;
+@synthesize portType;
+
+- (id)init
+{
+	if((self = [super init])) {
+		self.name = nil;
+		self.soapAction = nil;
+		self.input = [USOperationInterface operationInterfaceForOperation:self];
+		self.output = [USOperationInterface operationInterfaceForOperation:self];
+		self.faults = [NSMutableArray array];
+		self.portType = nil;
+	}
+	
+	return self;
+}
+
+- (USOperationFault *)faultForName:(NSString *)aName
+{
+	for(USOperationFault *fault in self.faults) {
+		if([fault.name isEqualToString:aName]) {
+			return fault;
+		}
+	}
+	
+	USOperationFault *newFault = [[USOperationFault new] autorelease];
+	newFault.operation = self;
+	newFault.name = aName;
+	[self.faults addObject:newFault];
+	
+	return newFault;
+}
+
+- (NSString *)invokeString
+{
+	NSMutableString *invokeString = [NSMutableString string];
+	
+	[invokeString appendFormat:@"%@Using", self.name];
+	
+	BOOL firstArgument = YES;
+	for(USPart *part in self.input.body.parts) {
+		[invokeString appendFormat:@"%@:(%@)a%@ ", (firstArgument ? [part uname] : part.name), [part.element.type classNameWithPtr], [part uname]];
+		firstArgument = NO;
+	}
+	
+	for(USElement *element in self.input.headers) {
+		[invokeString appendFormat:@"%@:(%@)a%@ ", (firstArgument ? [element uname] : element.name), [element.type classNameWithPtr], [element uname]];
+		firstArgument = NO;
+	}
+	
+	return invokeString;
+}
+
+@end
