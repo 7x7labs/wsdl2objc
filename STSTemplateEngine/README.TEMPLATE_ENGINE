@@ -1,0 +1,7 @@
+Documentation for the STS Template Engine is provided within the header file:
+
+STSTemplateEngine.h
+
+Documentation on how to print and log STS Template Engine error messages is provided in the header file:
+
+STSTemplateEngineErrors.h
