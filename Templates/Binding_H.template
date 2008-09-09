@@ -1,0 +1,36 @@
+@class %«name»Response;
+
+@interface %«name» : NSObject {
+	NSURL *address;
+	NSArray *cookies;
+}
+
+@property (copy) NSURL *address;
+
+- (id)initWithAddress:(NSString *)anAddress;
+
+%FOREACH operation in operations
+- (%«name»Response *)%«operation.invokeString»;
+%ENDFOR
+
+@end
+
+@interface %«name»_envelope : NSObject {
+
+}
+
++ (%«name»_envelope *)sharedInstance;
+
+- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements;
+
+@end
+
+@interface %«name»Response : NSObject {
+	NSArray *headers;
+	NSArray *bodyParts;
+}
+
+@property (retain) NSArray *headers;
+@property (retain) NSArray *bodyParts;
+
+@end

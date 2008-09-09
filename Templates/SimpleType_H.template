@@ -1,0 +1,19 @@
+% If this represents an enumeration
+
+%IFNEQ enumCount 0
+
+typedef enum {
+	%«className»_none = 0,
+%FOREACH value in enumerationValues
+	%«className»_%«value»,
+%ENDFOR
+} %«className»;
+
+%«className» %«className»_enumFromString(NSString *string);
+NSString * %«className»_stringFromEnum(%«className» enumValue);
+
+%ELSE
+
+typedef %«representationClass» %«className»;
+
+%ENDIF

@@ -1,0 +1,10 @@
+@implementation %«name»
+
+%FOREACH port in ports
++ (%«port.binding.name» *)%«port.binding.name»
+{
+	return [[[%«port.binding.name» alloc] initWithAddress:@"%«port.address»"] autorelease];
+}
+%ENDFOR
+
+@end

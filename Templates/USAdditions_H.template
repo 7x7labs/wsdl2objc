@@ -1,0 +1,39 @@
+//
+//  USAdditions.h
+//  WSDLParser
+//
+//  Created by John Ogle on 9/5/08.
+//  Copyright 2008 LightSPEED Technologies. All rights reserved.
+//
+//  NSData (MBBase64) category taken from "MiloBird" at http://www.cocoadev.com/index.pl?BaseSixtyFour
+//
+
+#import <Cocoa/Cocoa.h>
+
+
+@interface NSString (USAdditions)
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName;
++ (NSString *)deserializeString:(NSString *)xmlString;
+
+@end
+
+@interface NSCalendarDate (USAdditions)
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName;
++ (NSCalendarDate *)deserializeString:(NSString *)xmlString;
+
+@end
+
+@interface NSData (USAdditions)
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName;
++ (NSData *)deserializeString:(NSString *)xmlString;
+
+@end
+
+@interface NSData (MBBase64)
+
++ (id)dataWithBase64EncodedString:(NSString *)string;     //  Padding '=' characters are optional. Whitespace is ignored.
+- (NSString *)base64Encoding;
+@end

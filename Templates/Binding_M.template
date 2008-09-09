@@ -1,0 +1,262 @@
+@interface %«name» (Private)
+
+- (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;
+
+@end
+
+@implementation %«name»
+
+@synthesize address;
+
+- (id)init
+{
+	if((self = [super init])) {
+		address = nil;
+		cookies = nil;
+	}
+	
+	return self;
+}
+
+- (id)initWithAddress:(NSString *)anAddress
+{
+	if((self = [self init])) {
+		self.address = [NSURL URLWithString:anAddress];
+	}
+	
+	return self;
+}
+
+%FOREACH operation in operations
+- (%«name»Response *)%«operation.invokeString» {
+	%«name»Response *response = [[%«name»Response new] autorelease];
+	
+	%«name»_envelope *envelope = [%«name»_envelope sharedInstance];
+	
+	NSMutableDictionary *headerElements = nil;
+%IFDEF operation.input.headers
+	headerElements = [NSMutableDictionary dictionary];
+%FOREACH header in operation.input.headers
+	if(a%«header.uname» != nil) [headerElements setObject:a%«header.uname» forKey:@"%«header.name»"];
+%ENDFOR
+%ENDIF
+	
+	NSMutableDictionary *bodyElements = nil;
+%IFDEF operation.input.body.parts
+	bodyElements = [NSMutableDictionary dictionary];
+%FOREACH part in operation.input.body.parts
+	if(a%«part.uname» != nil) [bodyElements setObject:a%«part.uname» forKey:@"%«part.element.name»"];
+%ENDFOR
+%ENDIF
+	
+	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
+	
+	NSString *responseBody = [self sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»"];
+	
+	CXMLDocument *doc = [[CXMLDocument alloc] initWithXMLString:responseBody options:0 error:nil];
+	CXMLElement *el = [doc rootElement];
+	
+	for(CXMLNode *rootChildNode in [el children]) {
+		if([rootChildNode kind] == XML_ELEMENT_NODE) {
+			CXMLElement *rootChild = (CXMLElement*)rootChildNode;
+
+%IF operation.output.hasHeaders
+			if([[rootChild name] isEqualToString:@"Header"]) {
+				NSMutableArray *responseHeaders = [NSMutableArray array];
+				
+				for(CXMLNode *headerNode in [rootChild children]) {
+					if([headerNode kind] == XML_ELEMENT_NODE) {
+						CXMLElement *header = (CXMLElement*)headerNode;
+						
+%FOREACH header in operation.output.headers
+						if([[header name] isEqualToString:@"%«header.name»"]) {
+							NSString *headerText = [header XMLString];
+							%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeString:headerText];
+							[responseHeaders addObject:headerObject];
+						}
+%ENDFOR
+					}
+				}
+				
+				response.headers = responseHeaders;
+			}
+%ENDIF
+			
+			if([[rootChild name] isEqualToString:@"Body"]) {
+				NSMutableArray *responseBodyParts = [NSMutableArray array];
+				
+				for(CXMLNode *bodyNode in [rootChild children]) {
+					if([bodyNode kind] == XML_ELEMENT_NODE) {
+						CXMLElement *body = (CXMLElement*)bodyNode;
+						
+%FOREACH part in operation.output.body.parts
+						if([[body name] isEqualToString:@"%«part.element.name»"]) {
+							NSString *bodyText = [body XMLString];
+							%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeString:bodyText];
+							[responseBodyParts addObject:bodyObject];
+						}
+%ENDFOR
+					}
+				}
+				
+				response.bodyParts = responseBodyParts;
+			}
+		}
+	}
+	
+	
+	return response;
+}
+%ENDFOR
+
+@end
+
+@implementation %«name» (Private)
+
+- (NSString *)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction
+{
+	NSMutableDictionary *HTTPHeaders = [NSMutableDictionary dictionary];
+	if(cookies != nil) {
+		NSDictionary *fCookies = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
+		[HTTPHeaders addEntriesFromDictionary:fCookies];
+	}
+	[HTTPHeaders setObject:@"wsdl2objc" forKey:@"UserAgent"];
+	[HTTPHeaders setObject:soapAction forKey:@"SOAPAction"];
+	
+	CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)@"POST", (CFURLRef)self.address, kCFHTTPVersion1_1);
+	
+	CFDataRef bodyData = (CFDataRef)[outputBody dataUsingEncoding:NSUTF8StringEncoding];
+	CFHTTPMessageSetBody(request, bodyData);
+	
+	for(NSString *key in [HTTPHeaders allKeys]) {
+		CFHTTPMessageSetHeaderFieldValue(request, (CFStringRef)key, (CFStringRef)[HTTPHeaders objectForKey:key]);
+	}
+	
+	NSDictionary *outputHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(request);
+	
+	NSLog(@"OutputHeaders:\n%@", outputHeaders);
+	NSLog(@"OutputBody:\n%@", outputBody);
+	
+	CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
+	
+	if(!CFReadStreamOpen(readStream)) {
+		CFStreamError myErr = CFReadStreamGetError(readStream);
+		// An error has occurred.
+        if (myErr.domain == kCFStreamErrorDomainPOSIX) {
+        // Interpret myErr.error as a UNIX errno.
+        } else if (myErr.domain == kCFStreamErrorDomainMacOSStatus) {
+        // Interpret myErr.error as a MacOS error code.
+            //OSStatus macError = (OSStatus)myErr.error;
+        // Check other error domains.
+		}
+	}
+	
+	CFReadStreamSetProperty(readStream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue);
+	
+	//CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
+	//NSString *statusLine = (NSString*)CFHTTPMessageCopyResponseStatusLine(response);
+	
+	NSMutableString *responseBody = [NSMutableString string];
+	
+	static unsigned int kReadBufSize = 1024;
+	CFIndex numBytesRead;
+	do {
+		UInt8 buf[kReadBufSize];
+		numBytesRead = CFReadStreamRead(readStream, buf, sizeof(buf));
+		if( numBytesRead > 0 ) {
+			[responseBody appendString:[[[NSString alloc] initWithBytes:buf length:numBytesRead encoding:NSUTF8StringEncoding] autorelease]];
+		} else if( numBytesRead < 0 ) {
+			//CFStreamError error = CFReadStreamGetError(readStream);
+			//[[NSApplication sharedApplication] presentError:(NSError*)error];
+		}
+	} while( numBytesRead > 0 );
+	
+	CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
+	NSDictionary *responseHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(response);
+	[responseHeaders autorelease];
+	
+	if(cookies) [cookies release];
+	cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address];
+	
+	NSLog(@"ResponseHeaders:\n%@", responseHeaders);
+	NSLog(@"ResponseBody:\n%@", responseBody);
+	
+	return responseBody;
+}
+
+@end
+
+static %«name»_envelope *sharedEnvelopeInstance = nil;
+@implementation %«name»_envelope
+
++ (%«name»_envelope *)sharedInstance
+{
+	if(sharedEnvelopeInstance == nil) {
+		sharedEnvelopeInstance = [%«name»_envelope new];
+	}
+	
+	return sharedEnvelopeInstance;
+}
+
+- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements
+{
+	NSMutableString *serializedForm = [NSMutableString string];
+	
+	[serializedForm appendFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"];
+	[serializedForm appendFormat:@"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"];
+	[serializedForm appendFormat:@"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xsl:version=\"1.0\"\n"];
+	[serializedForm appendFormat:@"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"];
+%FOREACH schema in schema.wsdl.schemas
+	[serializedForm appendFormat:@"xmlns:%«schema.prefix»=\"%«schema.fullName»\"\n"];
+%ENDFOR
+	[serializedForm appendFormat:@">\n"];
+	
+	if(headerElements != nil) {
+		[serializedForm appendFormat:@"<soap:Header>\n"];
+		
+		for(NSString *key in [headerElements allKeys]) {
+			id header = [headerElements objectForKey:key];
+			NSString *elementName = [NSString stringWithFormat:@"%@:%@", [header nsPrefix], key];
+			
+			[serializedForm appendFormat:@"%@\n", [header serializedFormUsingElementName:elementName]];
+		}
+		
+		[serializedForm appendFormat:@"</soap:Header>"];
+	}
+	
+	if(bodyElements != nil) {
+		[serializedForm appendFormat:@"<soap:Body>\n"];
+		
+		for(NSString *key in [bodyElements allKeys]) {
+			id body = [bodyElements objectForKey:key];
+			NSString *elementName = [NSString stringWithFormat:@"%@:%@", [body nsPrefix], key];
+			
+			[serializedForm appendFormat:@"%@\n", [body serializedFormUsingElementName:elementName]];
+		}
+		
+		[serializedForm appendFormat:@"</soap:Body>\n"];
+	}
+	
+	[serializedForm appendFormat:@"</soap:Envelope>"];
+	
+	return serializedForm;
+}
+
+@end
+
+@implementation %«name»Response
+
+@synthesize headers;
+@synthesize bodyParts;
+
+- (id)init
+{
+	if((self = [super init])) {
+		headers = nil;
+		bodyParts = nil;
+	}
+	
+	return self;
+}
+
+@end

@@ -1,0 +1,56 @@
+%IFDEF className
+
+%IFDEF superClass
+@interface %«className» : %«superClass.className» {
+%ELSE
+@interface %«className» : NSObject {
+%ENDIF
+	
+/* elements */
+%IFDEF sequenceElements
+%FOREACH element in sequenceElements
+%IF element.useAnArray
+	NSMutableArray *%«element.name»;
+%ELSE
+	%«element.type.classNameWithPtr» %«element.name»;
+%ENDIF
+%ENDFOR
+%ENDIF
+
+/* attributes */
+%IFDEF attributes
+%FOREACH attribute in attributes
+	%«attribute.type.classNameWithPtr» %«attribute.name»;
+%ENDFOR
+%ENDIF
+
+}
+
+- (NSString *)nsPrefix;
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName;
++ (%«classNameWithPtr»)deserializeString:(NSString *)xmlString;
+
+/* elements */
+%IFDEF sequenceElements
+%FOREACH element in sequenceElements
+%IF element.useAnArray
+- (void)add%«element.uname»:(%«element.type.classNameWithPtr»)toAdd;
+@property (readonly) NSMutableArray * %«element.name»;
+%ELSE
+@property (%«element.type.assignOrRetain») %«element.type.classNameWithPtr» %«element.name»;
+%ENDIF
+%ENDFOR
+%ENDIF
+
+/* attributes */
+%IFDEF attributes
+- (NSDictionary *)attributes;
+%FOREACH attribute in attributes
+@property (%«attribute.type.assignOrRetain») %«attribute.type.classNameWithPtr» %«attribute.name»;
+%ENDFOR
+%ENDIF
+
+@end
+
+%ENDIF

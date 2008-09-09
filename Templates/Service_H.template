@@ -1,0 +1,20 @@
+/* Cookies handling provided by http://en.wikibooks.org/wiki/Programming:WebObjects/Web_Services/Web_Service_Provider */
+
+#import "TouchXML.h"
+%FOREACH schema in schema.wsdl.schemas
+#import "%«schema.prefix».h"
+%ENDFOR
+
+%FOREACH port in ports
+@class %«port.binding.name»;
+%ENDFOR
+
+@interface %«name» : NSObject {
+	
+}
+
+%FOREACH port in ports
++ (%«port.binding.name» *)%«port.binding.name»;
+%ENDFOR
+
+@end

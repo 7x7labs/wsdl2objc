@@ -1,0 +1,27 @@
+%IFNEQ enumCount 0
+
+%«className» %«className»_enumFromString(NSString *string)
+{
+%FOREACH value in enumerationValues
+	if([string isEqualToString:@"%«value»"]) {
+		return %«className»_%«value»;
+	}
+%ENDFOR	
+	
+	return %«className»_none;
+}
+
+NSString * %«className»_stringFromEnum(%«className» enumValue)
+{
+	switch (enumValue) {
+%FOREACH value in enumerationValues
+		case %«className»_%«value»:
+			return @"%«value»";
+			break;
+%ENDFOR
+		default:
+			return @"";
+	}
+}
+
+%ENDIF
