@@ -1,9 +1,3 @@
-@interface %«name» (Private)
-
-- (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;
-
-@end
-
 @implementation %«name»
 
 @synthesize address;

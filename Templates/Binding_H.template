@@ -8,6 +8,7 @@
 @property (copy) NSURL *address;
 
 - (id)initWithAddress:(NSString *)anAddress;
+- (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;
 
 %FOREACH operation in operations
 - (%«name»Response *)%«operation.invokeString»;
