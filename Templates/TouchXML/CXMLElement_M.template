@@ -25,7 +25,7 @@ THE SOFTWARE.
 //  TouchXML
 //
 //  Created by Jonathan Wight on 03/07/08.
-]//
+//
 
 #import "CXMLElement.h"
 
