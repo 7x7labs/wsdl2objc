@@ -103,10 +103,6 @@
 }
 %ENDFOR
 
-@end
-
-@implementation %«name» (Private)
-
 - (NSString *)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction
 {
 	NSMutableDictionary *HTTPHeaders = [NSMutableDictionary dictionary];
