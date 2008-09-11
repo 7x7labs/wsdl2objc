@@ -245,7 +245,7 @@
 				id newChild = [elementClass deserializeString:elementText];
 				
 %IF element.useAnArray
-				[newObject.%«element.name» addObject:newChild];
+				if(newChild != nil) [newObject.%«element.name» addObject:newChild];
 %ELSE
 				newObject.%«element.name» = newChild;
 %ENDIF
