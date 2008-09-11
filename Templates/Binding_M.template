@@ -54,7 +54,7 @@
 	
 	const char *buffer = [responseBody cStringUsingEncoding:NSUTF8StringEncoding];
 	
-	doc = xmlParseMemory(buffer, sizeof(buffer));
+	doc = xmlParseMemory(buffer, [responseBody length]);
 	
 	NSAssert(doc != NULL, @"Errors while parsing returned XML");
 	

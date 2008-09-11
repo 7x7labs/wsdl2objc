@@ -189,33 +189,35 @@
 %IF hasAttributes
 	xmlChar *attrValue = NULL;
 	NSString *attrString;
-	xmlFree(attrValue);
 	
 %FOREACH attribute in attributes
 	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.name»");
-	attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
+	if(attrValue != NULL) {
+		attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
 %IFEQ attribute.type.assignOrRetain retain
-	newObject.%«attribute.name» = attrString;
+		newObject.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName boolean
-	newObject.%«attribute.name» = ([attrString boolValue] ? YES : NO);
+		newObject.%«attribute.name» = ([attrString boolValue] ? YES : NO);
 %ELSIFEQ attribute.type.typeName long
-	newObject.%«attribute.name» = (long)[attrString longLongValue];
+		newObject.%«attribute.name» = (long)[attrString longLongValue];
 %ELSIFEQ attribute.type.typeName int
-	newObject.%«attribute.name» = [attrString intValue];
+		newObject.%«attribute.name» = [attrString intValue];
 %ELSIFEQ attribute.type.typeName double
-	newObject.%«attribute.name» = [attrString doubleValue];
+		newObject.%«attribute.name» = [attrString doubleValue];
 %ELSIFNEQ attribute.type.enumCount 0
-	newObject.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
+		newObject.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
 #warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName»
 %ENDIF
+		xmlFree(attrValue);
+	}
 %ENDFOR
 %ENDIF
 	
 %IF hasSequenceElements
 	for( cur = cur->children ; cur != NULL ; cur = cur->next ) {
 		if(cur->type == XML_ELEMENT_NODE) {
-			xmlChar *elementText = xmlNodeListGetString(cur->doc, cur, 1);
+			xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
 			NSString *elementString = nil;
 			
 			if(elementText != NULL) {

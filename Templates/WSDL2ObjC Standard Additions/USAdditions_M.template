@@ -22,7 +22,7 @@
 
 + (NSString *)deserializeNode:(xmlNodePtr)cur
 {
-	xmlChar *elementText = xmlNodeListGetString(cur->doc, cur, 1);
+	xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
 	NSString *elementString = nil;
 	
 	if(elementText != NULL) {
