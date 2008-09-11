@@ -1,6 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "USAdditions.h"
-#import "TouchXML.h"
+#import <libxml/tree.h>
 %FOREACH schema in imports
 #import "%«schema.prefix».h"
 %ENDFOR

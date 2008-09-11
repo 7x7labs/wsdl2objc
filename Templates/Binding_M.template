@@ -1,12 +1,14 @@
 @implementation %«name»
 
 @synthesize address;
+@synthesize logXMLInOut;
 
 - (id)init
 {
 	if((self = [super init])) {
 		address = nil;
 		cookies = nil;
+		logXMLInOut = NO;
 	}
 	
 	return self;
@@ -47,50 +49,55 @@
 	
 	NSString *responseBody = [self sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»"];
 	
-	CXMLDocument *doc = [[CXMLDocument alloc] initWithXMLString:responseBody options:0 error:nil];
-	CXMLElement *el = [doc rootElement];
+	xmlDocPtr doc;
+	xmlNodePtr cur;
 	
-	for(CXMLNode *rootChildNode in [el children]) {
-		if([rootChildNode kind] == XML_ELEMENT_NODE) {
-			CXMLElement *rootChild = (CXMLElement*)rootChildNode;
-
+	const char *buffer = [responseBody cStringUsingEncoding:NSUTF8StringEncoding];
+	
+	doc = xmlParseMemory(buffer, sizeof(buffer));
+	
+	NSAssert(doc != NULL, @"Errors while parsing returned XML");
+	
+	cur = xmlDocGetRootElement(doc);
+	cur = cur->children;
+	
+	for( ; cur != NULL ; cur = cur->next) {
+		if(cur->type == XML_ELEMENT_NODE) {
 %IF operation.output.hasHeaders
-			if([[rootChild name] isEqualToString:@"Header"]) {
+			if(xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
 				NSMutableArray *responseHeaders = [NSMutableArray array];
 				
-				for(CXMLNode *headerNode in [rootChild children]) {
-					if([headerNode kind] == XML_ELEMENT_NODE) {
-						CXMLElement *header = (CXMLElement*)headerNode;
-						
+				xmlNodePtr headerNode;
+				for(headerNode=cur->children ; headerNode != NULL ; headerNode = headerNode->next) {
+					if(cur->type == XML_ELEMENT_NODE) {
 %FOREACH header in operation.output.headers
-						if([[header name] isEqualToString:@"%«header.name»"]) {
-							NSString *headerText = [header XMLString];
-							%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeString:headerText];
+						if(xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.name»")) {
+							%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
+							NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
 							[responseHeaders addObject:headerObject];
 						}
-%ENDFOR
 					}
+%ENDFOR
 				}
 				
 				response.headers = responseHeaders;
 			}
 %ENDIF
 			
-			if([[rootChild name] isEqualToString:@"Body"]) {
+			if(xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
 				NSMutableArray *responseBodyParts = [NSMutableArray array];
 				
-				for(CXMLNode *bodyNode in [rootChild children]) {
-					if([bodyNode kind] == XML_ELEMENT_NODE) {
-						CXMLElement *body = (CXMLElement*)bodyNode;
-						
+				xmlNodePtr bodyNode;
+				for(bodyNode=cur->children ; bodyNode != NULL ; bodyNode = bodyNode->next) {
+					if(cur->type == XML_ELEMENT_NODE) {
 %FOREACH part in operation.output.body.parts
-						if([[body name] isEqualToString:@"%«part.element.name»"]) {
-							NSString *bodyText = [body XMLString];
-							%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeString:bodyText];
+						if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.name»")) {
+							%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
+							NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
 							[responseBodyParts addObject:bodyObject];
 						}
-%ENDFOR
 					}
+%ENDFOR
 				}
 				
 				response.bodyParts = responseBodyParts;
@@ -98,6 +105,9 @@
 		}
 	}
 	
+	xmlFreeDoc(doc);
+	
+	xmlCleanupParser();
 	
 	return response;
 }
@@ -124,8 +134,10 @@
 	
 	NSDictionary *outputHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(request);
 	
-	NSLog(@"OutputHeaders:\n%@", outputHeaders);
-	NSLog(@"OutputBody:\n%@", outputBody);
+	if(self.logXMLInOut) {
+		NSLog(@"OutputHeaders:\n%@", outputHeaders);
+		NSLog(@"OutputBody:\n%@", outputBody);
+	}
 	
 	CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
 	
@@ -168,8 +180,10 @@
 	if(cookies) [cookies release];
 	cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address];
 	
-	NSLog(@"ResponseHeaders:\n%@", responseHeaders);
-	NSLog(@"ResponseBody:\n%@", responseBody);
+	if(self.logXMLInOut) {
+		NSLog(@"ResponseHeaders:\n%@", responseHeaders);
+		NSLog(@"ResponseBody:\n%@", responseBody);
+	}
 	
 	return responseBody;
 }

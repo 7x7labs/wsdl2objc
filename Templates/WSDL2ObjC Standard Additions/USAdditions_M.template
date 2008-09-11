@@ -12,7 +12,6 @@
 #import "USAdditions.h"
 #import "NSCalendarDate+ISO8601Parsing.h"
 #import "NSCalendarDate+ISO8601Unparsing.h"
-#import "TouchXML.h"
 
 @implementation NSString (USAdditions)
 
@@ -21,12 +20,17 @@
 	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, self, elName];
 }
 
-+ (NSString *)deserializeString:(NSString *)xmlString
++ (NSString *)deserializeNode:(xmlNodePtr)cur
 {
-	CXMLDocument *doc = [[[CXMLDocument alloc] initWithXMLString:xmlString options:0 error:nil] autorelease];
-	CXMLElement *el = [doc rootElement];
+	xmlChar *elementText = xmlNodeListGetString(cur->doc, cur, 1);
+	NSString *elementString = nil;
 	
-	return [el stringValue];
+	if(elementText != NULL) {
+		elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
+		xmlFree(elementText);
+	}
+	
+	return elementString;
 }
 
 @end
@@ -38,9 +42,9 @@
 	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, [self ISO8601DateString], elName];
 }
 
-+ (NSCalendarDate *)deserializeString:(NSString *)xmlString
++ (NSCalendarDate *)deserializeNode:(xmlNodePtr)cur
 {
-	return [NSCalendarDate calendarDateWithString:xmlString];
+	return [NSCalendarDate calendarDateWithString:[NSString deserializeNode:cur]];
 }
 
 @end
@@ -52,9 +56,9 @@
 	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, [self base64Encoding], elName];
 }
 
-+ (NSData *)deserializeString:(NSString *)xmlString
++ (NSData *)deserializeNode:(xmlNodePtr)cur
 {
-	return [NSData dataWithBase64EncodedString:xmlString];
+	return [NSData dataWithBase64EncodedString:[NSString deserializeNode:cur]];
 }
 
 @end

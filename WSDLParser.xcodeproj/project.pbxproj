@@ -14,19 +14,6 @@
 		621D44700E6E0BD200CEF901 /* Schema_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BFB2240E648CE100E19E18 /* Schema_H.template */; };
 		621D44710E6E0BD200CEF901 /* Schema_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BFB2250E648CE900E19E18 /* Schema_M.template */; };
 		621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */ = {isa = PBXBuildFile; fileRef = 621D44F10E6E119B00CEF901 /* USObjCKeywords.m */; };
-		62223EE40E76F2F5005D3D36 /* TouchXML_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349830E75DB590094F6F1 /* TouchXML_H.template */; };
-		62223EE50E76F2F5005D3D36 /* CXMLNode_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349850E75DB590094F6F1 /* CXMLNode_H.template */; };
-		62223EE60E76F2F5005D3D36 /* CXMLNode_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349840E75DB590094F6F1 /* CXMLNode_M.template */; };
-		62223EE70E76F2F5005D3D36 /* CXMLNode_XPathExtensions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349860E75DB590094F6F1 /* CXMLNode_XPathExtensions_H.template */; };
-		62223EE80E76F2F5005D3D36 /* CXMLNode_XPathExtensions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349870E75DB590094F6F1 /* CXMLNode_XPathExtensions_M.template */; };
-		62223EE90E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349880E75DB590094F6F1 /* CXMLNode_PrivateExtensions_H.template */; };
-		62223EEA0E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 623349890E75DB590094F6F1 /* CXMLNode_PrivateExtensions_M.template */; };
-		62223EEB0E76F2F5005D3D36 /* CXMLElement_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498B0E75DB590094F6F1 /* CXMLElement_H.template */; };
-		62223EEC0E76F2F5005D3D36 /* CXMLElement_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498A0E75DB590094F6F1 /* CXMLElement_M.template */; };
-		62223EED0E76F2F5005D3D36 /* CXMLDocument_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498D0E75DB590094F6F1 /* CXMLDocument_H.template */; };
-		62223EEE0E76F2F5005D3D36 /* CXMLDocument_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498C0E75DB590094F6F1 /* CXMLDocument_M.template */; };
-		62223EEF0E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498F0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_H.template */; };
-		62223EF00E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6233498E0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_M.template */; };
 		623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 623346320E759A5A0094F6F1 /* NSString+USAdditions.m */; };
 		6235EE6F0E63897300DABBD6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6235EE6E0E63897300DABBD6 /* MainMenu.xib */; };
 		6235EE970E638B7B00DABBD6 /* LIFO.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2666F0E6371F900AD9FC9 /* LIFO.m */; };
@@ -78,19 +65,6 @@
 		621D44F10E6E119B00CEF901 /* USObjCKeywords.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USObjCKeywords.m; sourceTree = "<group>"; };
 		623346310E759A5A0094F6F1 /* NSString+USAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+USAdditions.h"; sourceTree = "<group>"; };
 		623346320E759A5A0094F6F1 /* NSString+USAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+USAdditions.m"; sourceTree = "<group>"; };
-		623349830E75DB590094F6F1 /* TouchXML_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TouchXML_H.template; sourceTree = "<group>"; };
-		623349840E75DB590094F6F1 /* CXMLNode_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_M.template; sourceTree = "<group>"; };
-		623349850E75DB590094F6F1 /* CXMLNode_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_H.template; sourceTree = "<group>"; };
-		623349860E75DB590094F6F1 /* CXMLNode_XPathExtensions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_XPathExtensions_H.template; sourceTree = "<group>"; };
-		623349870E75DB590094F6F1 /* CXMLNode_XPathExtensions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_XPathExtensions_M.template; sourceTree = "<group>"; };
-		623349880E75DB590094F6F1 /* CXMLNode_PrivateExtensions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_PrivateExtensions_H.template; sourceTree = "<group>"; };
-		623349890E75DB590094F6F1 /* CXMLNode_PrivateExtensions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLNode_PrivateExtensions_M.template; sourceTree = "<group>"; };
-		6233498A0E75DB590094F6F1 /* CXMLElement_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLElement_M.template; sourceTree = "<group>"; };
-		6233498B0E75DB590094F6F1 /* CXMLElement_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLElement_H.template; sourceTree = "<group>"; };
-		6233498C0E75DB590094F6F1 /* CXMLDocument_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_M.template; sourceTree = "<group>"; };
-		6233498D0E75DB590094F6F1 /* CXMLDocument_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_H.template; sourceTree = "<group>"; };
-		6233498E0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_PrivateExtensions_M.template; sourceTree = "<group>"; };
-		6233498F0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CXMLDocument_PrivateExtensions_H.template; sourceTree = "<group>"; };
 		6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WSDL2ObjC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6235ED0E0E63887A00DABBD6 /* WSDL2ObjC-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WSDL2ObjC-Info.plist"; sourceTree = "<group>"; };
 		6235EE6E0E63897300DABBD6 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
@@ -303,32 +277,11 @@
 			path = "WSDL2ObjC Standard Additions";
 			sourceTree = "<group>";
 		};
-		6233497E0E75DB430094F6F1 /* TouchXML */ = {
-			isa = PBXGroup;
-			children = (
-				623349830E75DB590094F6F1 /* TouchXML_H.template */,
-				623349850E75DB590094F6F1 /* CXMLNode_H.template */,
-				623349840E75DB590094F6F1 /* CXMLNode_M.template */,
-				623349860E75DB590094F6F1 /* CXMLNode_XPathExtensions_H.template */,
-				623349870E75DB590094F6F1 /* CXMLNode_XPathExtensions_M.template */,
-				623349880E75DB590094F6F1 /* CXMLNode_PrivateExtensions_H.template */,
-				623349890E75DB590094F6F1 /* CXMLNode_PrivateExtensions_M.template */,
-				6233498B0E75DB590094F6F1 /* CXMLElement_H.template */,
-				6233498A0E75DB590094F6F1 /* CXMLElement_M.template */,
-				6233498D0E75DB590094F6F1 /* CXMLDocument_H.template */,
-				6233498C0E75DB590094F6F1 /* CXMLDocument_M.template */,
-				6233498F0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_H.template */,
-				6233498E0E75DB590094F6F1 /* CXMLDocument_PrivateExtensions_M.template */,
-			);
-			path = TouchXML;
-			sourceTree = "<group>";
-		};
 		6235ECF60E6386D200DABBD6 /* Templates */ = {
 			isa = PBXGroup;
 			children = (
 				622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */,
 				6222413F0E7722A7005D3D36 /* NSCalendarDate + ISO8601 */,
-				6233497E0E75DB430094F6F1 /* TouchXML */,
 				62BFB2240E648CE100E19E18 /* Schema_H.template */,
 				62BFB2250E648CE900E19E18 /* Schema_M.template */,
 				6235F00A0E63954100DABBD6 /* ComplexType_H.template */,
@@ -470,19 +423,6 @@
 				62BF42360E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_M.template in Resources */,
 				62BF42370E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template in Resources */,
 				62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */,
-				62223EE40E76F2F5005D3D36 /* TouchXML_H.template in Resources */,
-				62223EE50E76F2F5005D3D36 /* CXMLNode_H.template in Resources */,
-				62223EE60E76F2F5005D3D36 /* CXMLNode_M.template in Resources */,
-				62223EE70E76F2F5005D3D36 /* CXMLNode_XPathExtensions_H.template in Resources */,
-				62223EE80E76F2F5005D3D36 /* CXMLNode_XPathExtensions_M.template in Resources */,
-				62223EE90E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_H.template in Resources */,
-				62223EEA0E76F2F5005D3D36 /* CXMLNode_PrivateExtensions_M.template in Resources */,
-				62223EEB0E76F2F5005D3D36 /* CXMLElement_H.template in Resources */,
-				62223EEC0E76F2F5005D3D36 /* CXMLElement_M.template in Resources */,
-				62223EED0E76F2F5005D3D36 /* CXMLDocument_H.template in Resources */,
-				62223EEE0E76F2F5005D3D36 /* CXMLDocument_M.template in Resources */,
-				62223EEF0E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_H.template in Resources */,
-				62223EF00E76F2F5005D3D36 /* CXMLDocument_PrivateExtensions_M.template in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

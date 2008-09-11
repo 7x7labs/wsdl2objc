@@ -29,7 +29,7 @@
 - (NSString *)nsPrefix;
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
-+ (%«classNameWithPtr»)deserializeString:(NSString *)xmlString;
++ (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur;
 
 /* elements */
 %IFDEF sequenceElements

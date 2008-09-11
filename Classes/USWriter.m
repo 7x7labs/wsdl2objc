@@ -307,21 +307,6 @@
 	[self writeResourceName:@"NSCalendarDate+ISO8601Parsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Parsing.m"];
 	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_H" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.h"];
 	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.m"];
-	
-	//Copy TouchXML
-	[self writeResourceName:@"TouchXML_H" resourceType:@"template" toFilename:@"TouchXML.h"];
-	[self writeResourceName:@"CXMLNode_H" resourceType:@"template" toFilename:@"CXMLNode.h"];
-	[self writeResourceName:@"CXMLNode_M" resourceType:@"template" toFilename:@"CXMLNode.m"];
-	[self writeResourceName:@"CXMLNode_XPathExtensions_H" resourceType:@"template" toFilename:@"CXMLNode_XPathExtensions.h"];
-	[self writeResourceName:@"CXMLNode_XPathExtensions_M" resourceType:@"template" toFilename:@"CXMLNode_XPathExtensions.m"];
-	[self writeResourceName:@"CXMLNode_PrivateExtensions_H" resourceType:@"template" toFilename:@"CXMLNode_PrivateExtensions.h"];
-	[self writeResourceName:@"CXMLNode_PrivateExtensions_M" resourceType:@"template" toFilename:@"CXMLNode_PrivateExtensions.m"];
-	[self writeResourceName:@"CXMLElement_H" resourceType:@"template" toFilename:@"CXMLElement.h"];
-	[self writeResourceName:@"CXMLElement_M" resourceType:@"template" toFilename:@"CXMLElement.m"];
-	[self writeResourceName:@"CXMLDocument_H" resourceType:@"template" toFilename:@"CXMLDocument.h"];
-	[self writeResourceName:@"CXMLDocument_M" resourceType:@"template" toFilename:@"CXMLDocument.m"];
-	[self writeResourceName:@"CXMLDocument_PrivateExtensions_H" resourceType:@"template" toFilename:@"CXMLDocument_PrivateExtensions.h"];
-	[self writeResourceName:@"CXMLDocument_PrivateExtensions_M" resourceType:@"template" toFilename:@"CXMLDocument_PrivateExtensions.m"];
 }
 
 - (void)writeResourceName:(NSString *)resourceName resourceType:(NSString *)resourceType toFilename:(NSString *)fileName

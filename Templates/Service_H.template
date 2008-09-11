@@ -1,6 +1,6 @@
 /* Cookies handling provided by http://en.wikibooks.org/wiki/Programming:WebObjects/Web_Services/Web_Service_Provider */
 
-#import "TouchXML.h"
+#import <libxml/parser.h>
 %FOREACH schema in schema.wsdl.schemas
 #import "%«schema.prefix».h"
 %ENDFOR

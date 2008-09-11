@@ -3,9 +3,11 @@
 @interface %«name» : NSObject {
 	NSURL *address;
 	NSArray *cookies;
+	BOOL logXMLInOut;
 }
 
 @property (copy) NSURL *address;
+@property (assign) BOOL logXMLInOut;
 
 - (id)initWithAddress:(NSString *)anAddress;
 - (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;

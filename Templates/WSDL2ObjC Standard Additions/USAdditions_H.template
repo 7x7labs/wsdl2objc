@@ -9,26 +9,26 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import <libxml/tree.h>
 
 @interface NSString (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
-+ (NSString *)deserializeString:(NSString *)xmlString;
++ (NSString *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
 @interface NSCalendarDate (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
-+ (NSCalendarDate *)deserializeString:(NSString *)xmlString;
++ (NSCalendarDate *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
 @interface NSData (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
-+ (NSData *)deserializeString:(NSString *)xmlString;
++ (NSData *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 

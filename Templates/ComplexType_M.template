@@ -182,67 +182,62 @@
 %ENDIF
 
 
-+ (%«className» *)deserializeString:(NSString *)xmlString
++ (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur
 {
 	%«className» *newObject = [[%«className» new] autorelease];
-
-%IF hasAttributes
-	CXMLDocument *doc = [[CXMLDocument alloc] initWithXMLString:xmlString options:0 error:nil];
-	CXMLElement *el = [doc rootElement];
-%ELSIF hasSequenceElements
-	CXMLDocument *doc = [[CXMLDocument alloc] initWithXMLString:xmlString options:0 error:nil];
-	CXMLElement *el = [doc rootElement];
-%ENDIF
 	
 %IF hasAttributes
-	for(CXMLNode *attribute in [el attributes]) {
-		NSString *attributeName = [attribute name];
+	xmlChar *attrValue = NULL;
+	NSString *attrString;
+	xmlFree(attrValue);
+	
 %FOREACH attribute in attributes
-		if([attributeName isEqualToString:@"%«attribute.name»"]) {
+	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.name»");
+	attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
 %IFEQ attribute.type.assignOrRetain retain
-			newObject.%«attribute.name» = [attribute stringValue];
+	newObject.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName boolean
-			newObject.%«attribute.name» = ([[attribute stringValue] boolValue] ? YES : NO);
+	newObject.%«attribute.name» = ([attrString boolValue] ? YES : NO);
 %ELSIFEQ attribute.type.typeName long
-			newObject.%«attribute.name» = (long)[[attribute stringValue] longLongValue];
+	newObject.%«attribute.name» = (long)[attrString longLongValue];
 %ELSIFEQ attribute.type.typeName int
-			newObject.%«attribute.name» = [[attribute stringValue] intValue];
+	newObject.%«attribute.name» = [attrString intValue];
 %ELSIFEQ attribute.type.typeName double
-			newObject.%«attribute.name» = [[attribute stringValue] doubleValue];
+	newObject.%«attribute.name» = [attrString doubleValue];
 %ELSIFNEQ attribute.type.enumCount 0
-			newObject.%«attribute.name» = %«attribute.type.className»_enumFromString([attribute stringValue]);
+	newObject.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
 #warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName»
 %ENDIF
-		}
 %ENDFOR
-	}
 %ENDIF
 	
 %IF hasSequenceElements
-	for(CXMLNode *childNode in [el children]) {
-		if([childNode kind] == XML_ELEMENT_NODE) {
-		CXMLElement *child = (CXMLElement*)childNode;
-		NSString *elementName = [child name];
-		
+	for( cur = cur->children ; cur != NULL ; cur = cur->next ) {
+		if(cur->type == XML_ELEMENT_NODE) {
+			xmlChar *elementText = xmlNodeListGetString(cur->doc, cur, 1);
+			NSString *elementString = nil;
+			
+			if(elementText != NULL) {
+				elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
+				xmlFree(elementText);
+			}
 %FOREACH element in sequenceElements
-			if([elementName isEqualToString:@"%«element.name»"]) {
-
+			if(xmlStrEqual(cur->name, (const xmlChar *) "%«element.name»")) {
 %IFEQ element.type.assignOrRetain retain
 				
 				Class elementClass = nil;
-				CXMLNode *typeNode = [child attributeForName:@"type"];
-				if(typeNode == nil) {
+				xmlChar *type = xmlGetProp(cur, (const xmlChar *) "type");
+				if(type == NULL) {
 					elementClass = [%«element.type.classNameWithoutPtr» class];
 				} else {
-					NSString *elementTypeString = [typeNode stringValue];
+					NSString *elementTypeString = [NSString stringWithCString:(char*)type encoding:NSUTF8StringEncoding];
 					NSString *elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_" options:0 range:NSMakeRange(0, [elementTypeString length])];
 					elementClass = NSClassFromString(elementClassString);
+					xmlFree(type);
 				}
 				
-				NSString *elementText = [child XMLString];
-				
-				id newChild = [elementClass deserializeString:elementText];
+				id newChild = [elementClass deserializeNode:cur];
 				
 %IF element.useAnArray
 				if(newChild != nil) [newObject.%«element.name» addObject:newChild];
@@ -251,21 +246,22 @@
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-				newObject.%«element.name» = ([[child stringValue] boolValue] ? YES : NO);
+				
+				
+				newObject.%«element.name» = ([elementString boolValue] ? YES : NO);
 
 %ELSIFEQ element.type.typeName long
-				newObject.%«element.name» = (long)[[child stringValue] longLongValue];
+				newObject.%«element.name» = (long)[elementString longLongValue];
 
 %ELSIFEQ element.type.typeName int
-				newObject.%«element.name» = [[child stringValue] intValue];
+				newObject.%«element.name» = [elementString intValue];
 
 %ELSIFEQ element.type.typeName double
-				newObject.%«element.name» = [[child stringValue] doubleValue];
+				newObject.%«element.name» = [elementString doubleValue];
 
 %ELSIFNEQ element.type.enumCount 0
 				
-				NSString *stringRepresentation = [child stringValue];
-				%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(stringRepresentation);
+				%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(elementString);
 %IF element.useAnArray
 				NSNumber *intRepresentation = [NSNumber numberWithInt:(int)enumRepresentation];
 				[newObject.%«element.name» addObject:intRepresentation];
