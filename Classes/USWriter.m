@@ -124,11 +124,7 @@
 - (void)doWriteSchema:(USSchema *)schema
 {
 	if(schema.hasBeenWritten == YES) return;
-	if([schema.types count] == 0 &&
-	   [schema.elements count] == 0 &&
-	   [schema.imports count] == 0 &&
-	   [schema.bindings count] == 0 &&
-	   [schema.services count] == 0) return;
+	if([schema shouldNotWrite]) return;
 	
 	//Write out any imports first so they can have a prefix generated for them if needed
 	for(USSchema *import in schema.imports) {

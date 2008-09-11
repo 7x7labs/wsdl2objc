@@ -2,5 +2,7 @@
 #import "USAdditions.h"
 #import <libxml/tree.h>
 %FOREACH schema in imports
+%IFNOT schema.shouldNotWriteString
 #import "%«schema.prefix».h"
+%ENDIF
 %ENDFOR

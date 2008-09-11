@@ -188,6 +188,22 @@
 	type.hasBeenParsed = YES;
 }
 
+- (BOOL)shouldNotWrite
+{
+	if([self.types count] == 0 &&
+	   [self.elements count] == 0 &&
+	   [self.imports count] == 0 &&
+	   [self.bindings count] == 0 &&
+	   [self.services count] == 0) return YES;
+	
+	return NO;
+}
+
+- (NSString *)shouldNotWriteString
+{
+	return ([self shouldNotWrite] ? @"true" : @"false");
+}
+
 - (NSString *)templateFileHPath
 {
 	return [[NSBundle mainBundle] pathForResource:@"Schema_H" ofType:@"template"];

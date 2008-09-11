@@ -72,6 +72,9 @@
 - (void)addSimpleClassWithName:(NSString *)aName representationClass:(NSString *)aClass;
 - (void)addComplexClassWithName:(NSString *)aName representationClass:(NSString *)aClass;
 
+- (BOOL)shouldNotWrite;
+- (NSString *)shouldNotWriteString;
+
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;
 - (NSDictionary *)templateKeyDictionary;
