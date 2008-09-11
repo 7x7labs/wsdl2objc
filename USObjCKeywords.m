@@ -22,7 +22,7 @@
 
 #import "USObjCKeywords.h"
 
-USObjCKeywords *sharedInstance = nil;
+static USObjCKeywords *sharedInstance = nil;
 
 @implementation USObjCKeywords
 

@@ -23,6 +23,7 @@
 #import "USType.h"
 
 #import "USSequenceElement.h"
+#import "USAssignTypes.h"
 
 @implementation USType
 
@@ -104,7 +105,9 @@
 - (NSString *)assignOrRetain
 {
 	if(self.behavior == TypeBehavior_simple) {
-		if([[self classNameWithPtr] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound) {
+		USAssignTypes *assignTypes = [USAssignTypes sharedInstance];
+		if([[self classNameWithPtr] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound ||
+			[assignTypes isAssignType:self.typeName]) {
 			return @"assign";
 		}
 	}

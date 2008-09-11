@@ -60,24 +60,21 @@
 
 %IFDEF attributes
 %FOREACH attribute in attributes
-
-%IFEQ attribute.type.assignOrRetain retain
 	if(self.%«attribute.name» != 0) {
+%IFEQ attribute.type.assignOrRetain retain
 		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", self.%«attribute.name»];
-	}
 %ELSIFEQ attribute.type.typeName boolean
-	[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", (self.%«attribute.name» ? @"true" : @"false")];
+		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", (*self.%«attribute.name» ? @"true" : @"false")];
 %ELSIFEQ attribute.type.typeName long
-	[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", self.%«attribute.name»];
+		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
 %ELSIFEQ attribute.type.typeName int
-	[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", self.%«attribute.name»];
+		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
 %ELSIFEQ attribute.type.typeName double
-	[serializedForm appendFormat:@" %«attribute.name»=\"%f\"", self.%«attribute.name»];
+		[serializedForm appendFormat:@" %«attribute.name»=\"%f\"", *self.%«attribute.name»];
 %ELSIFNEQ attribute.type.enumCount 0
-	if(self.%«attribute.name» != %«attribute.type.className»_none) {
 		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", %«attribute.type.className»_stringFromEnum(self.%«attribute.name»)];
-	}
 %ENDIF
+	}
 
 %ENDFOR
 %ENDIF
@@ -86,42 +83,38 @@
 	
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
-
+	if(self.%«element.name» != 0) {
 %IFEQ element.type.assignOrRetain retain
 
 %IF element.useAnArray
-	for(%«element.type.classNameWithPtr» child in self.%«element.name») {
-		[serializedForm appendFormat:@"\n%@", [child serializedFormUsingElementName:@"%«element.name»"]];
-	}
+		for(%«element.type.classNameWithPtr» child in self.%«element.name») {
+			[serializedForm appendFormat:@"\n%@", [child serializedFormUsingElementName:@"%«element.name»"]];
+		}
 %ELSE
-	if(self.%«element.name» != 0) {
 		[serializedForm appendFormat:@"\n%@", [self.%«element.name» serializedFormUsingElementName:@"%«element.name»"]];
-	}
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-	[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", (self.%«element.name» ? @"true" : @"false")];
+		[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", (*self.%«element.name» ? @"true" : @"false")];
 %ELSIFEQ element.type.typeName long
-	[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", self.%«element.name»];
+		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
 %ELSIFEQ element.type.typeName int
-	[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", self.%«element.name»];
+		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
 %ELSIFEQ element.type.typeName double
-	[serializedForm appendFormat:@"\n<%«element.name»>%f</%«element.name»>", self.%«element.name»];
+		[serializedForm appendFormat:@"\n<%«element.name»>%f</%«element.name»>", *self.%«element.name»];
 %ELSIFNEQ element.type.enumCount 0
 
 %IF element.useAnArray
-	for(NSNumber *intRepresentation in self.%«element.name») {
-		%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
-		[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", %«element.type.className»_stringFromEnum(enumRepresentation)];
-	}
+		for(NSNumber *intRepresentation in self.%«element.name») {
+			%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
+			[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", %«element.type.className»_stringFromEnum(enumRepresentation)];
+		}
 %ELSE
-	if(self.%«element.name» != %«element.type.className»_none) {
 		[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", %«element.type.className»_stringFromEnum(self.%«element.name»)];
+%ENDIF
+
+%ENDIF
 	}
-%ENDIF
-
-%ENDIF
-
 %ENDFOR
 %ENDIF
 	
@@ -197,13 +190,17 @@
 %IFEQ attribute.type.assignOrRetain retain
 		newObject.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName boolean
-		newObject.%«attribute.name» = ([attrString boolValue] ? YES : NO);
+		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*newObject.%«attribute.name» = ([attrString boolValue] ? YES : NO);
 %ELSIFEQ attribute.type.typeName long
-		newObject.%«attribute.name» = (long)[attrString longLongValue];
+		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*newObject.%«attribute.name» = (long)[attrString longLongValue];
 %ELSIFEQ attribute.type.typeName int
-		newObject.%«attribute.name» = [attrString intValue];
+		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*newObject.%«attribute.name» = [attrString intValue];
 %ELSIFEQ attribute.type.typeName double
-		newObject.%«attribute.name» = [attrString doubleValue];
+		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*newObject.%«attribute.name» = [attrString doubleValue];
 %ELSIFNEQ attribute.type.enumCount 0
 		newObject.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
@@ -248,18 +245,20 @@
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-				
-				
-				newObject.%«element.name» = ([elementString boolValue] ? YES : NO);
+				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*newObject.%«element.name» = ([elementString boolValue] ? YES : NO);
 
 %ELSIFEQ element.type.typeName long
-				newObject.%«element.name» = (long)[elementString longLongValue];
+				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*newObject.%«element.name» = (long)[elementString longLongValue];
 
 %ELSIFEQ element.type.typeName int
-				newObject.%«element.name» = [elementString intValue];
+				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*newObject.%«element.name» = [elementString intValue];
 
 %ELSIFEQ element.type.typeName double
-				newObject.%«element.name» = [elementString doubleValue];
+				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*newObject.%«element.name» = [elementString doubleValue];
 
 %ELSIFNEQ element.type.enumCount 0
 				

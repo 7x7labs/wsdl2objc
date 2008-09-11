@@ -54,6 +54,7 @@
 		62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */; };
 		62BFAF790E645D8500E19E18 /* USWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFAF770E645D8500E19E18 /* USWriter.m */; };
 		62BFB31E0E64D15900E19E18 /* USType.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFB31D0E64D15900E19E18 /* USType.m */; };
+		62C3E8C50E79D67F0010DAB1 /* USAssignTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 62C3E8C40E79D67F0010DAB1 /* USAssignTypes.m */; };
 		62E6332E0E676DF40072DBDD /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
 /* End PBXBuildFile section */
 
@@ -116,6 +117,8 @@
 		62BFB2240E648CE100E19E18 /* Schema_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_H.template; sourceTree = "<group>"; };
 		62BFB2250E648CE900E19E18 /* Schema_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_M.template; sourceTree = "<group>"; };
 		62BFB31D0E64D15900E19E18 /* USType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USType.m; sourceTree = "<group>"; };
+		62C3E8C30E79D67F0010DAB1 /* USAssignTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USAssignTypes.h; sourceTree = "<group>"; };
+		62C3E8C40E79D67F0010DAB1 /* USAssignTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USAssignTypes.m; sourceTree = "<group>"; };
 		62D2666E0E6371F900AD9FC9 /* LIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LIFO.h; sourceTree = "<group>"; };
 		62D2666F0E6371F900AD9FC9 /* LIFO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LIFO.m; sourceTree = "<group>"; };
 		62D266700E6371F900AD9FC9 /* README.TEMPLATE_ENGINE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.TEMPLATE_ENGINE; sourceTree = "<group>"; };
@@ -178,6 +181,8 @@
 			children = (
 				623346310E759A5A0094F6F1 /* NSString+USAdditions.h */,
 				623346320E759A5A0094F6F1 /* NSString+USAdditions.m */,
+				62C3E8C30E79D67F0010DAB1 /* USAssignTypes.h */,
+				62C3E8C40E79D67F0010DAB1 /* USAssignTypes.m */,
 				621D44F00E6E119B00CEF901 /* USObjCKeywords.h */,
 				621D44F10E6E119B00CEF901 /* USObjCKeywords.m */,
 				32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */,
@@ -464,6 +469,7 @@
 				624064900E709FAC006BEB94 /* USPort.m in Sources */,
 				624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */,
 				623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */,
+				62C3E8C50E79D67F0010DAB1 /* USAssignTypes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
