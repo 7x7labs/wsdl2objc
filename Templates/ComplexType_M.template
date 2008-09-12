@@ -57,7 +57,24 @@
 	NSMutableString *serializedForm = [NSMutableString string];
 	
 	[serializedForm appendFormat:@"<%@ xsi:type=\"%«schema.prefix»:%«typeName»\"", elName];
+	[serializedForm appendString:[self serializedAttributeString]];
+	[serializedForm appendFormat:@">"];
+	
+	[serializedForm appendString:[self serializedElementString]];
+	
+	[serializedForm appendFormat:@"\n</%@>", elName];
+	
+	return serializedForm;
+}
 
+- (NSString *)serializedAttributeString
+{
+	NSMutableString *serializedForm = [NSMutableString string];
+	
+%IFDEF superClass
+	[serializedForm appendString:[super serializedAttributeString]];
+%ENDIF
+	
 %IFDEF attributes
 %FOREACH attribute in attributes
 	if(self.%«attribute.name» != 0) {
@@ -79,7 +96,16 @@
 %ENDFOR
 %ENDIF
 	
-	[serializedForm appendFormat:@">"];
+	return serializedForm;
+}
+
+- (NSString *)serializedElementString
+{
+	NSMutableString *serializedForm = [NSMutableString string];
+	
+%IFDEF superClass
+	[serializedForm appendString:[super serializedElementString]];
+%ENDIF
 	
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
@@ -117,8 +143,6 @@
 	}
 %ENDFOR
 %ENDIF
-	
-	[serializedForm appendFormat:@"\n</%@>", elName];
 	
 	return serializedForm;
 }
