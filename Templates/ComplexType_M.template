@@ -203,6 +203,19 @@
 {
 	%«className» *newObject = [[%«className» new] autorelease];
 	
+	[newObject deserializeAttributesFromNode:cur];
+	[newObject deserializeElementsFromNode:cur];
+	
+	return newObject;
+}
+
+- (void)deserializeAttributesFromNode:(xmlNodePtr)cur
+{
+
+%IFDEF superClass
+	[super deserializeAttributesFromNode:cur];
+%ENDIF
+
 %IF hasAttributes
 	xmlChar *attrValue = NULL;
 	NSString *attrString;
@@ -212,27 +225,35 @@
 	if(attrValue != NULL) {
 		attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
 %IFEQ attribute.type.assignOrRetain retain
-		newObject.%«attribute.name» = attrString;
+		self.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName boolean
-		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*newObject.%«attribute.name» = ([attrString boolValue] ? YES : NO);
+		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*self.%«attribute.name» = ([attrString boolValue] ? YES : NO);
 %ELSIFEQ attribute.type.typeName long
-		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*newObject.%«attribute.name» = (long)[attrString longLongValue];
+		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*self.%«attribute.name» = (long)[attrString longLongValue];
 %ELSIFEQ attribute.type.typeName int
-		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*newObject.%«attribute.name» = [attrString intValue];
+		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*self.%«attribute.name» = [attrString intValue];
 %ELSIFEQ attribute.type.typeName double
-		newObject.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*newObject.%«attribute.name» = [attrString doubleValue];
+		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
+		*self.%«attribute.name» = [attrString doubleValue];
 %ELSIFNEQ attribute.type.enumCount 0
-		newObject.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
+		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
 #warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName»
 %ENDIF
 		xmlFree(attrValue);
 	}
 %ENDFOR
+%ENDIF
+}
+
+- (void)deserializeElementsFromNode:(xmlNodePtr)cur
+{
+	
+%IFDEF superClass
+	[super deserializeElementsFromNode:cur];
 %ENDIF
 	
 %IF hasSequenceElements
@@ -250,48 +271,48 @@
 %IFEQ element.type.assignOrRetain retain
 				
 				Class elementClass = nil;
-				xmlChar *type = xmlGetProp(cur, (const xmlChar *) "type");
-				if(type == NULL) {
+				xmlChar *instanceType = xmlGetProp(cur, (const xmlChar *) "type");
+				if(instanceType == NULL) {
 					elementClass = [%«element.type.classNameWithoutPtr» class];
 				} else {
-					NSString *elementTypeString = [NSString stringWithCString:(char*)type encoding:NSUTF8StringEncoding];
+					NSString *elementTypeString = [NSString stringWithCString:(char*)instanceType encoding:NSUTF8StringEncoding];
 					NSString *elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_" options:0 range:NSMakeRange(0, [elementTypeString length])];
 					elementClass = NSClassFromString(elementClassString);
-					xmlFree(type);
+					xmlFree(instanceType);
 				}
 				
 				id newChild = [elementClass deserializeNode:cur];
 				
 %IF element.useAnArray
-				if(newChild != nil) [newObject.%«element.name» addObject:newChild];
+				if(newChild != nil) [self.%«element.name» addObject:newChild];
 %ELSE
-				newObject.%«element.name» = newChild;
+				self.%«element.name» = newChild;
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*newObject.%«element.name» = ([elementString boolValue] ? YES : NO);
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = ([elementString boolValue] ? YES : NO);
 
 %ELSIFEQ element.type.typeName long
-				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*newObject.%«element.name» = (long)[elementString longLongValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = (long)[elementString longLongValue];
 
 %ELSIFEQ element.type.typeName int
-				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*newObject.%«element.name» = [elementString intValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = [elementString intValue];
 
 %ELSIFEQ element.type.typeName double
-				newObject.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*newObject.%«element.name» = [elementString doubleValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = [elementString doubleValue];
 
 %ELSIFNEQ element.type.enumCount 0
 				
 				%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(elementString);
 %IF element.useAnArray
 				NSNumber *intRepresentation = [NSNumber numberWithInt:(int)enumRepresentation];
-				[newObject.%«element.name» addObject:intRepresentation];
+				[self.%«element.name» addObject:intRepresentation];
 %ELSE
-				newObject.%«element.name» = enumRepresentation;
+				self.%«element.name» = enumRepresentation;
 %ENDIF
 
 %ELSE
@@ -303,8 +324,7 @@
 		}
 	}
 %ENDIF
-	
-	return newObject;
+
 }
 
 @end

@@ -31,7 +31,10 @@
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
 - (NSString *)serializedAttributeString;
 - (NSString *)serializedElementString;
+
 + (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur;
+- (void)deserializeAttributesFromNode:(xmlNodePtr)cur;
+- (void)deserializeElementsFromNode:(xmlNodePtr)cur;
 
 /* elements */
 %IFDEF sequenceElements
