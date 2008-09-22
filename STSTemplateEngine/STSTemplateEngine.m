@@ -274,15 +274,15 @@ BOOL classExists (NSString *className) {
 	NSMutableString *value = [NSMutableString stringWithCapacity:20];
 	NSMutableArray *_errorLog = [NSMutableArray arrayWithCapacity:5];
 	#define errorsHaveOcurred ([_errorLog count] > 0)
-	NSException* exception;
+	NSException* exception = nil;
 	NSRange tag, range;
 	TEError *error;
 
 	// check if start tag is nil or empty
 	if ((startTag == nil) || ([startTag length] == 0)) {
 		// this is a fatal error -- bail out by raising an exception
-		[NSException exceptionWithName:@"TEStartTagEmptyOrNil"
-								reason:@"startTag is empty or nil" userInfo:nil];
+		exception = [NSException exceptionWithName:@"TEStartTagEmptyOrNil"
+											reason:@"startTag is empty or nil" userInfo:nil];
 		[exception raise];
 	} // end if
 	  // check if end tag is nil or empty
@@ -646,7 +646,7 @@ BOOL classExists (NSString *className) {
 	TEError *error;
 
 	// Temporary string variables and line counter
-	NSString *line, *remainder_, *keyword, *key, *value, *operand, *varName;
+	NSString *line = nil, *remainder_ = nil, *keyword = nil, *key = nil, *value = nil, *operand = nil, *varName = nil;
 	NSMutableString *innerString = nil;
 	unsigned len, lineNumber = 0, unexpandIf = 0, unexpandFor = 0;
 	
@@ -654,12 +654,12 @@ BOOL classExists (NSString *className) {
 	//  P r e c o n d i t i o n s   c h e c k
 	// -----------------------------------------------------------------------
 
-	NSException *exception;
+	NSException *exception = nil;
 	// check if start tag is nil or empty
 	if ((startTag == nil) || ([startTag length] == 0)) {
 		// this is a fatal error -- bail out by raising an exception
-		[NSException exceptionWithName:@"TEStartTagEmptyOrNil"
-								reason:@"startTag is empty or nil" userInfo:nil];
+		exception = [NSException exceptionWithName:@"TEStartTagEmptyOrNil"
+											reason:@"startTag is empty or nil" userInfo:nil];
 		[exception raise];
 	} // end if
 	  // check if end tag is nil or empty

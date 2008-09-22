@@ -196,8 +196,8 @@ const NSRange kZeroRange = { 0, 0 };
 					break;
 				default:
 					// we should never get here -- bail out by raising an exception
-					[NSException exceptionWithName:@"UndefinedEnumValue"
-											reason:@"undefined enum value encountered" userInfo:nil];
+					exception = [NSException exceptionWithName:@"UndefinedEnumValue"
+														reason:@"undefined enum value encountered" userInfo:nil];
 					[exception raise];
 					break;
 			} // end switch
@@ -225,8 +225,8 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
-			[NSException exceptionWithName:@"UndefinedEnumValue"
-									reason:@"undefined enum value encountered" userInfo:nil];
+			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
+												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
 	} // end switch
@@ -361,7 +361,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (NSString *)stringWithToken
 {
-	NSString *tokenString;
+	NSString *tokenString = nil;
 	NSException *exception;
 			
 	// setting the token string
@@ -461,8 +461,8 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
-			[NSException exceptionWithName:@"UndefinedEnumValue"
-									reason:@"undefined enum value encountered" userInfo:nil];
+			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
+												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
 	} // end switch
@@ -480,7 +480,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (NSString *)stringWithDescription
 {
-	NSString *tokenString, *description;
+	NSString *tokenString, *description = nil;
 	NSException *exception;
 
 	// setting the description string
@@ -556,8 +556,8 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
-			[NSException exceptionWithName:@"UndefinedEnumValue"
-									reason:@"undefined enum value encountered" userInfo:nil];
+			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
+												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
 	} // end switch
@@ -575,7 +575,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (NSString *)stringWithRemedy
 {
-	NSString *tokenString, *remedy;
+	NSString *tokenString, *remedy = nil;
 	NSException *exception;
 	
 	// setting the remedy string
@@ -622,8 +622,8 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
-			[NSException exceptionWithName:@"UndefinedEnumValue"
-									reason:@"undefined enum value encountered" userInfo:nil];
+			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
+												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
 	} // end switch
@@ -646,7 +646,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (NSString *)stringWithErrorMessageForTemplate:(NSString *)nameOrPath
 {
-	NSString *prefix, *severity, *description, *remedy;
+	NSString *prefix, *severity = nil, *description, *remedy;
 	NSException *exception;
 	
 	// setting the prefix text
@@ -665,8 +665,8 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
-			[NSException exceptionWithName:@"UndefinedEnumValue"
-									reason:@"undefined enum value encountered" userInfo:nil];
+			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
+												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
 	} // end switch
