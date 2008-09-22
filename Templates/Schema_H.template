@@ -1,6 +1,8 @@
 #import <Cocoa/Cocoa.h>
 #import "USAdditions.h"
 #import <libxml/tree.h>
+#import "USGlobals.h"
+
 %FOREACH schema in imports
 %IFNOT schema.shouldNotWriteString
 #import "%«schema.prefix».h"

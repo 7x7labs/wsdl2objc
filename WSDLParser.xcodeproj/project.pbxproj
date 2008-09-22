@@ -56,6 +56,8 @@
 		62BFB31E0E64D15900E19E18 /* USType.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFB31D0E64D15900E19E18 /* USType.m */; };
 		62C3E8C50E79D67F0010DAB1 /* USAssignTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 62C3E8C40E79D67F0010DAB1 /* USAssignTypes.m */; };
 		62E6332E0E676DF40072DBDD /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
+		62FF1F670E883F1D006D6377 /* USGlobals_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62FF1EF80E883B8A006D6377 /* USGlobals_H.template */; };
+		62FF1F680E883F1D006D6377 /* USGlobals_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62FF1F010E883C22006D6377 /* USGlobals_M.template */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -135,6 +137,8 @@
 		62D266800E6371F900AD9FC9 /* Sunrise Telephone Systems.webloc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Sunrise Telephone Systems.webloc"; sourceTree = "<group>"; };
 		62E6332B0E676DF40072DBDD /* USElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USElement.h; sourceTree = "<group>"; };
 		62E6332C0E676DF40072DBDD /* USElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USElement.m; sourceTree = "<group>"; };
+		62FF1EF80E883B8A006D6377 /* USGlobals_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = USGlobals_H.template; path = ../USGlobals_H.template; sourceTree = "<group>"; };
+		62FF1F010E883C22006D6377 /* USGlobals_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = USGlobals_M.template; path = ../USGlobals_M.template; sourceTree = "<group>"; };
 		B93FECA60DF76C5A00145322 /* USAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USAttribute.h; sourceTree = "<group>"; };
 		B93FECA70DF76C5A00145322 /* USAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USAttribute.m; sourceTree = "<group>"; };
 		B97798C60DF45829000F758E /* USType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USType.h; sourceTree = "<group>"; };
@@ -276,6 +280,8 @@
 		622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */ = {
 			isa = PBXGroup;
 			children = (
+				62FF1EF80E883B8A006D6377 /* USGlobals_H.template */,
+				62FF1F010E883C22006D6377 /* USGlobals_M.template */,
 				62BF41B20E72004900FA8190 /* USAdditions_H.template */,
 				62BF41B30E72004900FA8190 /* USAdditions_M.template */,
 			);
@@ -411,6 +417,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62FF1F670E883F1D006D6377 /* USGlobals_H.template in Resources */,
+				62FF1F680E883F1D006D6377 /* USGlobals_M.template in Resources */,
 				621D44700E6E0BD200CEF901 /* Schema_H.template in Resources */,
 				621D44710E6E0BD200CEF901 /* Schema_M.template in Resources */,
 				621D446C0E6E0BD200CEF901 /* ComplexType_H.template in Resources */,

@@ -303,6 +303,10 @@
 	[self writeResourceName:@"NSCalendarDate+ISO8601Parsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Parsing.m"];
 	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_H" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.h"];
 	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.m"];
+	
+	//Copy globals
+	[self writeResourceName:@"USGlobals_H" resourceType:@"template" toFilename:@"USGlobals.h"];
+	[self writeResourceName:@"USGlobals_M" resourceType:@"template" toFilename:@"USGlobals.m"];
 }
 
 - (void)writeResourceName:(NSString *)resourceName resourceType:(NSString *)resourceType toFilename:(NSString *)fileName
