@@ -110,7 +110,7 @@
 	[responseHeaders autorelease];
 	
 	if(cookies) [cookies release];
-	cookies = [NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address];
+	cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address] retain];
 	
 	if(self.logXMLInOut) {
 		NSLog(@"ResponseHeaders:\n%@", responseHeaders);
