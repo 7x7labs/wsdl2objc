@@ -89,8 +89,8 @@
 	NSException *exception;
 	
 	if (anObject == nil) {
-		[NSException exceptionWithName:@"NSInvalidArgumentException"
-								reason:@"object must not be nil" userInfo:nil];
+		exception = [NSException exceptionWithName:@"NSInvalidArgumentException"
+											reason:@"object must not be nil" userInfo:nil];
 		[exception raise];
 	}
 	else {
