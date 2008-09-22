@@ -58,6 +58,7 @@
 		62E6332E0E676DF40072DBDD /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
 		62FF1F670E883F1D006D6377 /* USGlobals_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62FF1EF80E883B8A006D6377 /* USGlobals_H.template */; };
 		62FF1F680E883F1D006D6377 /* USGlobals_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62FF1F010E883C22006D6377 /* USGlobals_M.template */; };
+		62FF20A90E8847FD006D6377 /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = 62FF20A80E8847FD006D6377 /* CHANGELOG */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -139,6 +140,7 @@
 		62E6332C0E676DF40072DBDD /* USElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USElement.m; sourceTree = "<group>"; };
 		62FF1EF80E883B8A006D6377 /* USGlobals_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = USGlobals_H.template; path = ../USGlobals_H.template; sourceTree = "<group>"; };
 		62FF1F010E883C22006D6377 /* USGlobals_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = USGlobals_M.template; path = ../USGlobals_M.template; sourceTree = "<group>"; };
+		62FF20A80E8847FD006D6377 /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B93FECA60DF76C5A00145322 /* USAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USAttribute.h; sourceTree = "<group>"; };
 		B93FECA70DF76C5A00145322 /* USAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USAttribute.m; sourceTree = "<group>"; };
 		B97798C60DF45829000F758E /* USType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USType.h; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
 				1AB674ADFE9D54B511CA2CBB /* Products */,
 				6235ED0E0E63887A00DABBD6 /* WSDL2ObjC-Info.plist */,
+				62FF20A80E8847FD006D6377 /* CHANGELOG */,
 			);
 			name = WSDLParser;
 			sourceTree = "<group>";
@@ -436,6 +439,7 @@
 				62BF42360E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_M.template in Resources */,
 				62BF42370E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template in Resources */,
 				62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */,
+				62FF20A90E8847FD006D6377 /* CHANGELOG in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

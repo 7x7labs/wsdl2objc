@@ -1,0 +1,7 @@
+Version 0.2 (9/22/2008):
+ - Fixed a bug where extend objects weren't being properly serialized/deserialized
+ - Implemented binding operations as NSOperation subclasses so they can be run in an NSOperationQueue in the background
+ - No longer requires the web service to be consistent with namespace prefixes that were defined in the parsed WSDL
+
+Version 0.1 (9/11/2008):
+ - Initial Release
