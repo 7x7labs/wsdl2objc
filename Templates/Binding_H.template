@@ -18,6 +18,40 @@
 
 @end
 
+%FOREACH operation in operations
+@interface %«name»_%«operation.name» : NSOperation {
+	%«name» *binding;
+	%«name»Response *response;
+	
+%FOREACH part in operation.input.body.parts
+	%«part.element.type.classNameWithPtr» %«part.name»;
+%ENDFOR
+%FOREACH header in operation.input.headers
+	%«header.type.classNameWithPtr» %«header.name»;
+%ENDFOR
+}
+
+@property (retain) %«name» *binding;
+@property (readonly) %«name»Response *response;
+%FOREACH part in operation.input.body.parts
+@property (retain) %«part.element.type.classNameWithPtr» %«part.name»;
+%ENDFOR
+%FOREACH header in operation.input.headers
+@property (retain) %«header.type.classNameWithPtr» %«header.name»;
+%ENDFOR
+
+- (id)initWithBinding:(%«name» *)aBinding
+%FOREACH part in operation.input.body.parts
+	%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
+%ENDFOR
+%FOREACH header in operation.input.headers
+	%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»
+%ENDFOR
+;
+
+@end
+%ENDFOR
+
 @interface %«name»_envelope : NSObject {
 
 }

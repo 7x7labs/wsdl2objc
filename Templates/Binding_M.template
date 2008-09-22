@@ -24,92 +24,24 @@
 }
 
 %FOREACH operation in operations
-- (%«name»Response *)%«operation.invokeString» {
-	%«name»Response *response = [[%«name»Response new] autorelease];
-	
-	%«name»_envelope *envelope = [%«name»_envelope sharedInstance];
-	
-	NSMutableDictionary *headerElements = nil;
-%IFDEF operation.input.headers
-	headerElements = [NSMutableDictionary dictionary];
-%FOREACH header in operation.input.headers
-	if(a%«header.uname» != nil) [headerElements setObject:a%«header.uname» forKey:@"%«header.name»"];
-%ENDFOR
-%ENDIF
-	
-	NSMutableDictionary *bodyElements = nil;
-%IFDEF operation.input.body.parts
-	bodyElements = [NSMutableDictionary dictionary];
+- (%«name»Response *)%«operation.invokeString»
+{
+	%«name»_%«operation.name» *operation = [(%«name»_%«operation.name»*)[%«name»_%«operation.name» alloc] initWithBinding:self
 %FOREACH part in operation.input.body.parts
-	if(a%«part.uname» != nil) [bodyElements setObject:a%«part.uname» forKey:@"%«part.element.name»"];
+		%«part.name»:a%«part.uname»
 %ENDFOR
-%ENDIF
-	
-	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
-	
-	NSString *responseBody = [self sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»"];
-	
-	xmlDocPtr doc;
-	xmlNodePtr cur;
-	
-	const char *buffer = [responseBody cStringUsingEncoding:NSUTF8StringEncoding];
-	
-	doc = xmlParseMemory(buffer, [responseBody length]);
-	
-	NSAssert(doc != NULL, @"Errors while parsing returned XML");
-	
-	cur = xmlDocGetRootElement(doc);
-	cur = cur->children;
-	
-	for( ; cur != NULL ; cur = cur->next) {
-		if(cur->type == XML_ELEMENT_NODE) {
-%IF operation.output.hasHeaders
-			if(xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
-				NSMutableArray *responseHeaders = [NSMutableArray array];
-				
-				xmlNodePtr headerNode;
-				for(headerNode=cur->children ; headerNode != NULL ; headerNode = headerNode->next) {
-					if(cur->type == XML_ELEMENT_NODE) {
-%FOREACH header in operation.output.headers
-						if(xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.name»")) {
-							%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
-							NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
-							[responseHeaders addObject:headerObject];
-						}
-					}
+%FOREACH header in operation.input.headers
+		%«header.name»:a%«header.uname»
 %ENDFOR
-				}
-				
-				response.headers = responseHeaders;
-			}
-%ENDIF
-			
-			if(xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
-				NSMutableArray *responseBodyParts = [NSMutableArray array];
-				
-				xmlNodePtr bodyNode;
-				for(bodyNode=cur->children ; bodyNode != NULL ; bodyNode = bodyNode->next) {
-					if(cur->type == XML_ELEMENT_NODE) {
-%FOREACH part in operation.output.body.parts
-						if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.name»")) {
-							%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
-							NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
-							[responseBodyParts addObject:bodyObject];
-						}
-					}
-%ENDFOR
-				}
-				
-				response.bodyParts = responseBodyParts;
-			}
-		}
-	}
+	];
 	
-	xmlFreeDoc(doc);
+	NSOperationQueue *queue = [[NSOperationQueue new] autorelease];
 	
-	xmlCleanupParser();
+	[queue addOperation:operation];
 	
-	return response;
+	[queue waitUntilAllOperationsAreFinished];
+	
+	return operation.response;
 }
 %ENDFOR
 
@@ -189,6 +121,146 @@
 }
 
 @end
+
+%FOREACH operation in operations
+@implementation %«name»_%«operation.name»
+
+@synthesize binding;
+@synthesize response;
+%FOREACH part in operation.input.body.parts
+@synthesize %«part.name»;
+%ENDFOR
+%FOREACH header in operation.input.headers
+@synthesize %«header.name»;
+%ENDFOR
+
+- (id)initWithBinding:(%«name» *)aBinding
+%FOREACH part in operation.input.body.parts
+  %«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
+%ENDFOR
+%FOREACH header in operation.input.headers
+  %«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»
+%ENDFOR
+{
+	if((self = [super init])) {
+		response = nil;
+		
+		self.binding = aBinding;
+		
+%FOREACH part in operation.input.body.parts
+		self.%«part.name» = a%«part.uname»;
+%ENDFOR
+%FOREACH header in operation.input.headers
+		self.%«header.name» = a%«header.uname»;
+%ENDFOR
+	}
+	
+	return self;
+}
+
+- (void)dealloc
+{
+	if(binding != nil) [binding release];
+%FOREACH part in operation.input.body.parts
+	if(%«part.name» != nil) [%«part.name» release];
+%ENDFOR
+%FOREACH header in operation.input.headers
+	if(%«header.name» != nil) [%«header.name» release];
+%ENDFOR
+	
+	[super dealloc];
+}
+
+- (void)main
+{
+	[response autorelease];
+	response = [%«name»Response new];
+	
+	%«name»_envelope *envelope = [%«name»_envelope sharedInstance];
+	
+	NSMutableDictionary *headerElements = nil;
+%IFDEF operation.input.headers
+	headerElements = [NSMutableDictionary dictionary];
+%FOREACH header in operation.input.headers
+	if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.name»"];
+%ENDFOR
+%ENDIF
+	
+	NSMutableDictionary *bodyElements = nil;
+%IFDEF operation.input.body.parts
+	bodyElements = [NSMutableDictionary dictionary];
+%FOREACH part in operation.input.body.parts
+	if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.name»"];
+%ENDFOR
+%ENDIF
+	
+	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
+	
+	NSString *responseBody = [binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»"];
+	
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+	
+	const char *buffer = [responseBody cStringUsingEncoding:NSUTF8StringEncoding];
+	
+	doc = xmlParseMemory(buffer, [responseBody length]);
+	
+	NSAssert(doc != NULL, @"Errors while parsing returned XML");
+	
+	cur = xmlDocGetRootElement(doc);
+	cur = cur->children;
+	
+	for( ; cur != NULL ; cur = cur->next) {
+		if(cur->type == XML_ELEMENT_NODE) {
+%IF operation.output.hasHeaders
+			if(xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
+				NSMutableArray *responseHeaders = [NSMutableArray array];
+				
+				xmlNodePtr headerNode;
+				for(headerNode=cur->children ; headerNode != NULL ; headerNode = headerNode->next) {
+					if(cur->type == XML_ELEMENT_NODE) {
+%FOREACH header in operation.output.headers
+						if(xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.name»")) {
+							%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
+							NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
+							[responseHeaders addObject:headerObject];
+						}
+					}
+%ENDFOR
+				}
+				
+				response.headers = responseHeaders;
+			}
+%ENDIF
+			
+			if(xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
+				NSMutableArray *responseBodyParts = [NSMutableArray array];
+				
+				xmlNodePtr bodyNode;
+				for(bodyNode=cur->children ; bodyNode != NULL ; bodyNode = bodyNode->next) {
+					if(cur->type == XML_ELEMENT_NODE) {
+%FOREACH part in operation.output.body.parts
+						if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.name»")) {
+							%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
+							NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
+							[responseBodyParts addObject:bodyObject];
+						}
+					}
+%ENDFOR
+				}
+				
+				response.bodyParts = responseBodyParts;
+			}
+		}
+	}
+	
+	xmlFreeDoc(doc);
+	
+	xmlCleanupParser();
+}
+
+@end
+%ENDFOR
 
 static %«name»_envelope *sharedEnvelopeInstance = nil;
 @implementation %«name»_envelope
