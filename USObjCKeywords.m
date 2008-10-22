@@ -60,6 +60,7 @@ static USObjCKeywords *sharedInstance = nil;
 					@"double",
 					@"signed",
 					@"unsigned",
+					@"class",
 					nil];
 	}
 	
