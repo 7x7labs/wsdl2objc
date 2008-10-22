@@ -126,6 +126,8 @@
 	if(schema.hasBeenWritten == YES) return;
 	if([schema shouldNotWrite]) return;
 	
+	schema.hasBeenWritten = YES;
+	
 	//Write out any imports first so they can have a prefix generated for them if needed
 	for(USSchema *import in schema.imports) {
 		[self doWriteSchema:import];
@@ -181,8 +183,6 @@
 				   encoding:NSUTF8StringEncoding
 					  error:&error];
 	}
-	
-	schema.hasBeenWritten = YES;
 }
 
 - (void)appendType:(USType *)type toHString:(NSMutableString *)hString mString:(NSMutableString *)mString
