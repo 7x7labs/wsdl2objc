@@ -117,15 +117,11 @@
 
 - (void)processImportElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl
 {
-	NSURL *location = nil;
-	
 	NSString *schemaLocation = [[el attributeForName:@"schemaLocation"] stringValue];
-	if(schemaLocation == nil) {
-		NSString *namespace = [[el attributeForName:@"namespace"] stringValue];
-		location = [NSURL URLWithString:namespace relativeToURL:baseURL];
-	} else {
-		location = [NSURL URLWithString:schemaLocation relativeToURL:baseURL];
-	}
+	
+	if(schemaLocation == nil) return;
+	
+	NSURL *location = [NSURL URLWithString:schemaLocation relativeToURL:baseURL];
 	
 	NSError *error;
 	NSXMLDocument *document = [[NSXMLDocument alloc] initWithContentsOfURL:location options:NSXMLNodeOptionsNone error:&error];
