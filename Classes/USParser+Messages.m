@@ -26,6 +26,7 @@
 #import "USSchema.h"
 #import "USPart.h"
 #import "USWSDL.h"
+#import "USElement.h"
 
 
 @implementation USParser (Messages)
@@ -59,12 +60,26 @@
 {
 	NSString *name = [[el attributeForName:@"name"] stringValue];
 	USPart *part = [message partForName:name];
+	USElement *element = nil;
 	
 	NSString *elementQName = [[el attributeForName:@"element"] stringValue];
-	NSString *uri = [[el resolveNamespaceForName:elementQName] stringValue];
-	USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
-	NSString *elementLocalName = [NSXMLNode localNameForName:elementQName];
-	USElement *element = [elementSchema elementForName:elementLocalName];
+	if(elementQName != nil) {
+		NSString *uri = [[el resolveNamespaceForName:elementQName] stringValue];
+		USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
+		NSString *elementLocalName = [NSXMLNode localNameForName:elementQName];
+		element = [elementSchema elementForName:elementLocalName];
+	} else {
+		NSString *typeQName = [[el attributeForName:@"type"] stringValue];
+		if(typeQName != nil) {
+			NSString *uri = [[el resolveNamespaceForName:typeQName] stringValue];
+			USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
+			NSString *elementLocalName = [NSXMLNode localNameForName:typeQName];
+			element = [elementSchema elementForName:elementLocalName];
+			if(element.type == nil) {
+				element.type = [elementSchema typeForName:elementLocalName];
+			}
+		}
+	}
 	
 	part.element = element;
 }
