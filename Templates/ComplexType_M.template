@@ -271,7 +271,7 @@
 %IFEQ element.type.assignOrRetain retain
 				
 				Class elementClass = nil;
-				xmlChar *instanceType = xmlGetProp(cur, (const xmlChar *) "type");
+				xmlChar *instanceType = xmlGetNsProp(cur, (const xmlChar *) "type", (const xmlChar *) "http://www.w3.org/2001/XMLSchema-instance");
 				if(instanceType == NULL) {
 					elementClass = [%«element.type.classNameWithoutPtr» class];
 				} else {
