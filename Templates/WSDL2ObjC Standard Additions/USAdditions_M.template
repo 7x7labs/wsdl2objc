@@ -186,6 +186,8 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 @implementation USBoolean
 
+@synthesize boolValue=value;
+
 - (id)initWithBool:(BOOL)aValue
 {
 	self = [super init];
@@ -194,11 +196,6 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 	}
 	
 	return self;
-}
-
-- (BOOL)value
-{
-	return value;
 }
 
 - (NSString *)stringValue

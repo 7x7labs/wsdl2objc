@@ -32,8 +32,6 @@
 %FOREACH element in sequenceElements
 %IFEQ element.type.assignOrRetain retain
 	if(%«element.name» != nil) [%«element.name» release];
-%ELSE
-	if(%«element.name» != nil) free(%«element.name»);
 %ENDIF
 %ENDFOR
 %ENDIF
@@ -42,8 +40,6 @@
 %FOREACH attribute in attributes
 %IFEQ attribute.type.assignOrRetain retain
 	if(%«attribute.name» != nil) [%«attribute.name» release];
-%ELSE
-	if(%«attribute.name» != nil) free(%«attribute.name»);
 %ENDIF
 %ENDFOR
 %ENDIF
@@ -228,20 +224,17 @@
 	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.name»");
 	if(attrValue != NULL) {
 		attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
-%IFEQ attribute.type.assignOrRetain retain
-		self.%«attribute.name» = attrString;
-%ELSIFEQ attribute.type.typeName boolean
-		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*self.%«attribute.name» = ([attrString boolValue] ? YES : NO);
+
+%IFEQ attribute.type.typeName boolean
+		self.%«attribute.name» = [[[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)] autorelease];
 %ELSIFEQ attribute.type.typeName long
-		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*self.%«attribute.name» = (long)[attrString longLongValue];
+		self.%«attribute.name» = [NSNumber numberWithLong:[attrString longValue]];
 %ELSIFEQ attribute.type.typeName int
-		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*self.%«attribute.name» = [attrString intValue];
+		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName double
-		self.%«attribute.name» = malloc(sizeof(%«attribute.type.classNameWithoutPtr»));
-		*self.%«attribute.name» = [attrString doubleValue];
+		self.%«attribute.name» = [NSNumber numberWithDouble:[attrString doubleValue]];
+%ELSIFEQ attribute.type.typeName string
+		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE

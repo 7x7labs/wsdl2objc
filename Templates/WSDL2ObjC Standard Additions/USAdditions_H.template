@@ -49,8 +49,9 @@
 	BOOL value;
 }
 
+@property (assign) BOOL boolValue;
+
 - (id)initWithBool:(BOOL)aValue;
-- (BOOL)value;
 - (NSString *)stringValue;
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;

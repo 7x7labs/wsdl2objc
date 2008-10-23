@@ -57,6 +57,11 @@
 	name = [aName copy];
 }
 
+- (void)valueForUndefinedKey:(NSString *)aKey
+{
+	NSLog(@"%@", aKey);
+}
+
 - (NSString *)uname
 {
 	return [self.name stringWithCapitalizedFirstCharacter];

@@ -164,15 +164,11 @@
 %FOREACH part in operation.input.body.parts
 %IFEQ part.element.type.assignOrRetain retain
 	if(%«part.name» != nil) [%«part.name» release];
-%ELSE
-	if(%«part.name» != nil) free(%«part.name»);
 %ENDIF
 %ENDFOR
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain retain
 	if(%«header.name» != nil) [%«header.name» release];
-%ELSE
-	if(%«header.name» != nil) free(%«header.name»);
 %ENDIF
 %ENDFOR
 	
@@ -191,17 +187,17 @@
 	headerElements = [NSMutableDictionary dictionary];
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain retain
-		if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.element.name»"];
+		if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.name»"];
 %ELSIFEQ header.type.typeName boolean
-		if(%«header.name» != nil) [headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.element.name»"];
+		if(%«header.name» != nil) [headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.name»"];
 %ELSIFEQ header.type.typeName long
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.element.name»"];
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.name»"];
 %ELSIFEQ header.type.typeName int
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.element.name»"];
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.name»"];
 %ELSIFEQ header.type.typeName double
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.element.name»"];
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.name»"];
 %ELSIFNEQ header.type.enumCount 0
-		if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.element.name»"];
+		if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.name»"];
 %ENDIF
 %ENDFOR
 %ENDIF
