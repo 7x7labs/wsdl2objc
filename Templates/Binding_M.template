@@ -1,4 +1,4 @@
-@implementation %«name»
+@implementation %«className»
 
 @synthesize address;
 @synthesize logXMLInOut;
@@ -24,9 +24,9 @@
 }
 
 %FOREACH operation in operations
-- (%«name»Response *)%«operation.invokeString»
+- (%«className»Response *)%«operation.invokeString»
 {
-	%«name»_%«operation.name» *operation = [(%«name»_%«operation.name»*)[%«name»_%«operation.name» alloc] initWithBinding:self
+	%«className»_%«operation.name» *operation = [(%«className»_%«operation.name»*)[%«className»_%«operation.name» alloc] initWithBinding:self
 %FOREACH part in operation.input.body.parts
 		%«part.name»:a%«part.uname»
 %ENDFOR
@@ -123,7 +123,7 @@
 @end
 
 %FOREACH operation in operations
-@implementation %«name»_%«operation.name»
+@implementation %«className»_%«operation.name»
 
 @synthesize binding;
 @synthesize response;
@@ -134,7 +134,7 @@
 @synthesize %«header.name»;
 %ENDFOR
 
-- (id)initWithBinding:(%«name» *)aBinding
+- (id)initWithBinding:(%«className» *)aBinding
 %FOREACH part in operation.input.body.parts
   %«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
@@ -162,10 +162,18 @@
 {
 	if(binding != nil) [binding release];
 %FOREACH part in operation.input.body.parts
+%IFEQ part.element.type.assignOrRetain retain
 	if(%«part.name» != nil) [%«part.name» release];
+%ELSE
+	if(%«part.name» != nil) free(%«part.name»);
+%ENDIF
 %ENDFOR
 %FOREACH header in operation.input.headers
+%IFEQ header.type.assignOrRetain retain
 	if(%«header.name» != nil) [%«header.name» release];
+%ELSE
+	if(%«header.name» != nil) free(%«header.name»);
+%ENDIF
 %ENDFOR
 	
 	[super dealloc];
@@ -174,15 +182,27 @@
 - (void)main
 {
 	[response autorelease];
-	response = [%«name»Response new];
+	response = [%«className»Response new];
 	
-	%«name»_envelope *envelope = [%«name»_envelope sharedInstance];
+	%«className»_envelope *envelope = [%«className»_envelope sharedInstance];
 	
 	NSMutableDictionary *headerElements = nil;
 %IFDEF operation.input.headers
 	headerElements = [NSMutableDictionary dictionary];
 %FOREACH header in operation.input.headers
-	if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.name»"];
+%IFEQ header.type.assignOrRetain retain
+		if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.element.name»"];
+%ELSIFEQ header.type.typeName boolean
+		if(%«header.name» != nil) [headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.element.name»"];
+%ELSIFEQ header.type.typeName long
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.element.name»"];
+%ELSIFEQ header.type.typeName int
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.element.name»"];
+%ELSIFEQ header.type.typeName double
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.element.name»"];
+%ELSIFNEQ header.type.enumCount 0
+		if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.element.name»"];
+%ENDIF
 %ENDFOR
 %ENDIF
 	
@@ -190,7 +210,19 @@
 %IFDEF operation.input.body.parts
 	bodyElements = [NSMutableDictionary dictionary];
 %FOREACH part in operation.input.body.parts
-	if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.name»"];
+%IFEQ part.element.type.assignOrRetain retain
+		if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.name»"];
+%ELSIFEQ part.element.type.typeName boolean
+		if(%«part.name» != nil) [bodyElements setObject:[[[USBoolean alloc] initWithBool:*%«part.name»] autorelease] forKey:@"%«part.element.name»"];
+%ELSIFEQ part.element.type.typeName long
+		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithLong:*%«part.name»] forKey:@"%«part.element.name»"];
+%ELSIFEQ part.element.type.typeName int
+		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.name»"];
+%ELSIFEQ part.element.type.typeName double
+		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.name»"];
+%ELSIFNEQ part.element.type.enumCount 0
+		if(%«part.name» != nil) [bodyElements setObject:%«part.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.name»"];
+%ENDIF
 %ENDFOR
 %ENDIF
 	
@@ -225,8 +257,8 @@
 							NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
 							[responseHeaders addObject:headerObject];
 						}
-					}
 %ENDFOR
+					}
 				}
 				
 				response.headers = responseHeaders;
@@ -245,8 +277,8 @@
 							NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
 							[responseBodyParts addObject:bodyObject];
 						}
-					}
 %ENDFOR
+					}
 				}
 				
 				response.bodyParts = responseBodyParts;
@@ -262,13 +294,13 @@
 @end
 %ENDFOR
 
-static %«name»_envelope *sharedEnvelopeInstance = nil;
-@implementation %«name»_envelope
+static %«className»_envelope *sharedEnvelopeInstance = nil;
+@implementation %«className»_envelope
 
-+ (%«name»_envelope *)sharedInstance
++ (%«className»_envelope *)sharedInstance
 {
 	if(sharedEnvelopeInstance == nil) {
-		sharedEnvelopeInstance = [%«name»_envelope new];
+		sharedEnvelopeInstance = [%«className»_envelope new];
 	}
 	
 	return sharedEnvelopeInstance;
@@ -320,7 +352,7 @@ static %«name»_envelope *sharedEnvelopeInstance = nil;
 
 @end
 
-@implementation %«name»Response
+@implementation %«className»Response
 
 @synthesize headers;
 @synthesize bodyParts;

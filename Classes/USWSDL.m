@@ -92,10 +92,10 @@
 	USSchema *xsd = [self schemaForNamespace:@"http://www.w3.org/2001/XMLSchema"];
 	xsd.prefix = @"xsd";
 	
-	[xsd addSimpleClassWithName:@"boolean" representationClass:@"BOOL *"];
-	[xsd addSimpleClassWithName:@"int" representationClass:@"int *"];
-	[xsd addSimpleClassWithName:@"double" representationClass:@"double *"];
-	[xsd addSimpleClassWithName:@"long" representationClass:@"long *"];
+	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
+	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"double" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"long" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSCalendarDate *"];
 	[xsd addSimpleClassWithName:@"base64Binary" representationClass:@"NSData *"];

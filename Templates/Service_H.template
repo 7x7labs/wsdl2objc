@@ -8,15 +8,15 @@
 %ENDFOR
 
 %FOREACH port in ports
-@class %«port.binding.name»;
+@class %«port.binding.className»;
 %ENDFOR
 
-@interface %«name» : NSObject {
+@interface %«className» : NSObject {
 	
 }
 
 %FOREACH port in ports
-+ (%«port.binding.name» *)%«port.binding.name»;
++ (%«port.binding.className» *)%«port.binding.className»;
 %ENDFOR
 
 @end

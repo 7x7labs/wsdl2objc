@@ -22,6 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#define kIllegalClassCharactersString @"-"
 
 @interface USObjCKeywords : NSObject {
 	NSArray *keywords;

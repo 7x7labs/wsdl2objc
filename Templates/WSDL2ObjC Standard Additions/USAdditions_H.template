@@ -18,6 +18,13 @@
 
 @end
 
+@interface NSNumber (USAdditions)
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName;
++ (NSNumber *)deserializeNode:(xmlNodePtr)cur;
+
+@end
+
 @interface NSCalendarDate (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
@@ -36,4 +43,17 @@
 
 + (id)dataWithBase64EncodedString:(NSString *)string;     //  Padding '=' characters are optional. Whitespace is ignored.
 - (NSString *)base64Encoding;
+@end
+
+@interface USBoolean : NSObject {
+	BOOL value;
+}
+
+- (id)initWithBool:(BOOL)aValue;
+- (BOOL)value;
+- (NSString *)stringValue;
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName;
++ (USBoolean *)deserializeNode:(xmlNodePtr)cur;
+
 @end

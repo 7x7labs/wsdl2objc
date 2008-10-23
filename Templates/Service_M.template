@@ -1,4 +1,4 @@
-@implementation %«name»
+@implementation %«className»
 
 + (void)initialize
 {
@@ -8,9 +8,9 @@
 }
 
 %FOREACH port in ports
-+ (%«port.binding.name» *)%«port.binding.name»
++ (%«port.binding.className» *)%«port.binding.className»
 {
-	return [[[%«port.binding.name» alloc] initWithAddress:@"%«port.address»"] autorelease];
+	return [[[%«port.binding.className» alloc] initWithAddress:@"%«port.address»"] autorelease];
 }
 %ENDFOR
 

@@ -23,12 +23,14 @@
 #import "USService.h"
 
 #import "USPort.h"
+#import "USObjCKeywords.h"
 
 @implementation USService
 
 @synthesize name;
 @synthesize ports;
 @synthesize schema;
+@dynamic className;
 
 - (id)init
 {
@@ -57,6 +59,11 @@
 	return newPort;
 }
 
+- (NSString *)className
+{
+	return [self.name stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+}
+
 - (NSString *)templateFileHPath
 {
 	return [[NSBundle mainBundle] pathForResource:@"Service_H" ofType:@"template"];
@@ -72,6 +79,7 @@
 	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
 	
 	[returning setObject:self.name forKey:@"name"];
+	[returning setObject:self.className forKey:@"className"];
 	[returning setObject:self.ports forKey:@"ports"];
 	[returning setObject:self.schema forKey:@"schema"];
 	

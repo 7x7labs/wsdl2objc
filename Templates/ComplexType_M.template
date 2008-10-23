@@ -32,6 +32,8 @@
 %FOREACH element in sequenceElements
 %IFEQ element.type.assignOrRetain retain
 	if(%«element.name» != nil) [%«element.name» release];
+%ELSE
+	if(%«element.name» != nil) free(%«element.name»);
 %ENDIF
 %ENDFOR
 %ENDIF
@@ -40,6 +42,8 @@
 %FOREACH attribute in attributes
 %IFEQ attribute.type.assignOrRetain retain
 	if(%«attribute.name» != nil) [%«attribute.name» release];
+%ELSE
+	if(%«attribute.name» != nil) free(%«attribute.name»);
 %ENDIF
 %ENDFOR
 %ENDIF

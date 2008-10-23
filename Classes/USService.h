@@ -35,6 +35,7 @@
 @property (copy) NSString *name;
 @property (retain) NSMutableArray *ports;
 @property (retain) USSchema *schema;
+@property (readonly) NSString *className;
 
 - (USPort *)portForName:(NSString *)aName;
 

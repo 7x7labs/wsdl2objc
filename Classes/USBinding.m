@@ -23,12 +23,14 @@
 #import "USBinding.h"
 
 #import "USPortType.h"
+#import "USObjCKeywords.h"
 
 @implementation USBinding
 
 @synthesize name;
 @synthesize portType;
 @synthesize schema;
+@dynamic className;
 
 - (id)init
 {
@@ -39,6 +41,11 @@
 	}
 	
 	return self;
+}
+
+- (NSString *)className
+{
+	return [self.name stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
 }
 
 - (NSMutableArray *)operations
@@ -61,6 +68,7 @@
 	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
 	
 	[returning setObject:self.name forKey:@"name"];
+	[returning setObject:self.className forKey:@"className"];
 	[returning setObject:self.portType forKey:@"portType"];
 	[returning setObject:[self operations] forKey:@"operations"];
 	[returning setObject:self.schema forKey:@"schema"];

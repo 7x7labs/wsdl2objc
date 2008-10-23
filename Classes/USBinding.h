@@ -35,6 +35,7 @@
 @property (copy) NSString *name;
 @property (retain) USPortType *portType;
 @property (retain) USSchema *schema;
+@property (readonly) NSString *className;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;

@@ -222,6 +222,7 @@
 	[returning setObject:self.prefix forKey:@"prefix"];
 	[returning setObject:[[NSNumber numberWithUnsignedInt:[self.types count]] stringValue] forKey:@"typeCount"];
 	[returning setObject:self.imports forKey:@"imports"];
+	[returning setObject:self.types forKey:@"types"];
 	
 	return returning;
 }

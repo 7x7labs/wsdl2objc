@@ -35,6 +35,21 @@
 
 @end
 
+@implementation NSNumber (USAdditions)
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName
+{
+	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, [self stringValue], elName];
+}
+
++ (NSNumber *)deserializeNode:(xmlNodePtr)cur
+{
+	NSString *stringValue = [NSString deserializeNode:cur];
+	return [NSNumber numberWithDouble:[stringValue doubleValue]];
+}
+
+@end
+
 @implementation NSCalendarDate (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName
@@ -169,3 +184,44 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 @end
 
+@implementation USBoolean
+
+- (id)initWithBool:(BOOL)aValue
+{
+	self = [super init];
+	if(self != nil) {
+		value = aValue;
+	}
+	
+	return self;
+}
+
+- (BOOL)value
+{
+	return value;
+}
+
+- (NSString *)stringValue
+{
+	return value ? @"true" : @"false";
+}
+
+- (NSString *)serializedFormUsingElementName:(NSString *)elName
+{
+	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, [self stringValue], elName];
+}
+
++ (USBoolean *)deserializeNode:(xmlNodePtr)cur
+{
+	NSString *stringValue = [NSString deserializeNode:cur];
+	
+	if([stringValue isEqualToString:@"true"]) {
+		return [[[USBoolean alloc] initWithBool:YES] autorelease];
+	} else if([stringValue isEqualToString:@"false"]) {
+		return [[[USBoolean alloc] initWithBool:NO] autorelease];
+	}
+	
+	return nil;
+}
+
+@end

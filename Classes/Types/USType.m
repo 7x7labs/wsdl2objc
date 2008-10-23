@@ -23,7 +23,7 @@
 #import "USType.h"
 
 #import "USSequenceElement.h"
-#import "USAssignTypes.h"
+#import "USObjCKeywords.h"
 
 @implementation USType
 
@@ -76,14 +76,15 @@
 
 - (NSString *)className
 {
+	
 	if([schema prefix] != nil) {
 		if(self.behavior == TypeBehavior_simple && [self.representationClass length] > 0 && [self.enumerationValues count] == 0) {
 			return self.representationClass;
 		}
-		return [NSString stringWithFormat:@"%@_%@", [schema prefix], self.typeName];
+		return [NSString stringWithFormat:@"%@_%@", [schema prefix], [self.typeName stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""]];
 	}
 	
-	return self.typeName;
+	return [self.typeName stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
 }
 
 - (NSString *)classNameWithPtr
@@ -105,9 +106,7 @@
 - (NSString *)assignOrRetain
 {
 	if(self.behavior == TypeBehavior_simple) {
-		USAssignTypes *assignTypes = [USAssignTypes sharedInstance];
-		if([[self classNameWithPtr] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound ||
-			[assignTypes isAssignType:self.typeName]) {
+		if([[self classNameWithPtr] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound) {
 			return @"assign";
 		}
 	}

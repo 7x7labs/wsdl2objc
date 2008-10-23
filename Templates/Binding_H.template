@@ -1,6 +1,6 @@
-@class %«name»Response;
+@class %«className»Response;
 
-@interface %«name» : NSObject {
+@interface %«className» : NSObject {
 	NSURL *address;
 	NSArray *cookies;
 	BOOL logXMLInOut;
@@ -13,15 +13,15 @@
 - (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;
 
 %FOREACH operation in operations
-- (%«name»Response *)%«operation.invokeString»;
+- (%«className»Response *)%«operation.invokeString»;
 %ENDFOR
 
 @end
 
 %FOREACH operation in operations
-@interface %«name»_%«operation.name» : NSOperation {
-	%«name» *binding;
-	%«name»Response *response;
+@interface %«className»_%«operation.name» : NSOperation {
+	%«className» *binding;
+	%«className»Response *response;
 	
 %FOREACH part in operation.input.body.parts
 	%«part.element.type.classNameWithPtr» %«part.name»;
@@ -31,16 +31,16 @@
 %ENDFOR
 }
 
-@property (retain) %«name» *binding;
-@property (readonly) %«name»Response *response;
+@property (retain) %«className» *binding;
+@property (readonly) %«className»Response *response;
 %FOREACH part in operation.input.body.parts
-@property (retain) %«part.element.type.classNameWithPtr» %«part.name»;
+@property (%«part.element.type.assignOrRetain») %«part.element.type.classNameWithPtr» %«part.name»;
 %ENDFOR
 %FOREACH header in operation.input.headers
-@property (retain) %«header.type.classNameWithPtr» %«header.name»;
+@property (%«header.type.assignOrRetain») %«header.type.classNameWithPtr» %«header.name»;
 %ENDFOR
 
-- (id)initWithBinding:(%«name» *)aBinding
+- (id)initWithBinding:(%«className» *)aBinding
 %FOREACH part in operation.input.body.parts
 	%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
@@ -52,17 +52,17 @@
 @end
 %ENDFOR
 
-@interface %«name»_envelope : NSObject {
+@interface %«className»_envelope : NSObject {
 
 }
 
-+ (%«name»_envelope *)sharedInstance;
++ (%«className»_envelope *)sharedInstance;
 
 - (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements;
 
 @end
 
-@interface %«name»Response : NSObject {
+@interface %«className»Response : NSObject {
 	NSArray *headers;
 	NSArray *bodyParts;
 }

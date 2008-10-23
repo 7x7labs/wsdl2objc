@@ -3,6 +3,12 @@
 #import <libxml/tree.h>
 #import "USGlobals.h"
 
+%FOREACH type in types
+%IFEQ type.assignOrRetain retain
+@class %«type.classNameWithoutPtr»;
+%ENDIF
+%ENDFOR
+
 %FOREACH schema in imports
 %IFNOT schema.shouldNotWriteString
 #import "%«schema.prefix».h"
