@@ -1,4 +1,4 @@
-Version 0.4
+Version 0.4 (10/24/2008):
  - Improved WSDL compatibility
  - long, double, int, etc types are now processed with NSNumbers instead of needing to use malloc()/free()
 
