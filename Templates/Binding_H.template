@@ -24,10 +24,14 @@
 	%«className»Response *response;
 	
 %FOREACH part in operation.input.body.parts
+%IFDEF part.element.type.classNameWithPtr
 	%«part.element.type.classNameWithPtr» %«part.name»;
+%ENDIF
 %ENDFOR
 %FOREACH header in operation.input.headers
+%IFDEF header.type.classNameWithPtr
 	%«header.type.classNameWithPtr» %«header.name»;
+%ENDIF
 %ENDFOR
 }
 

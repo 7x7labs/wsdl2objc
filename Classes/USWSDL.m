@@ -96,6 +96,7 @@
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"double" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"long" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"short" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSCalendarDate *"];
 	[xsd addSimpleClassWithName:@"base64Binary" representationClass:@"NSData *"];

@@ -74,6 +74,8 @@
 
 - (USType *)typeForName:(NSString *)aName
 {
+	if(aName == nil) return nil;
+	
 	for(USType * type in self.types) {
 		if([type.typeName isEqualToString:aName]) {
 			return type;
@@ -91,6 +93,8 @@
 
 - (USElement *)elementForName:(NSString *)aName
 {
+	if(aName == nil) return nil;
+	
 	for(USElement * element in self.elements) {
 		if([element.name isEqual:aName]) {
 			return element;
@@ -108,6 +112,8 @@
 
 - (USMessage *)messageForName:(NSString *)aName
 {
+	if(aName == nil) return nil;
+	
 	for(USMessage *message in self.messages) {
 		if([message.name isEqualToString:aName]) {
 			return message;
@@ -124,6 +130,8 @@
 
 - (USPortType *)portTypeForName:(NSString *)aName
 {
+	if(aName == nil) return nil;
+	
 	for(USPortType *portType in self.portTypes) {
 		if([portType.name isEqualToString:aName]) {
 			return portType;
@@ -140,6 +148,8 @@
 
 - (USBinding *)bindingForName:(NSString *)aName
 {
+	if(aName == nil) return nil;
+	
 	for(USBinding *binding in self.bindings) {
 		if([binding.name isEqualToString:aName]) {
 			return binding;
@@ -156,6 +166,8 @@
 
 - (USService *)serviceForName:(NSString *)aName
 {
+	if(aName == nil) return nil;
+	
 	for(USService *service in self.services) {
 		if([service.name isEqualToString:aName]) {
 			return service;

@@ -78,8 +78,12 @@
 	NSString *localName = [el localName];
 	
 	if([localName isEqualToString:@"address"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapAddressElement:el port:port];
+		} else {
+			[port.service.ports removeObject:port];
 		}
 	}
 }

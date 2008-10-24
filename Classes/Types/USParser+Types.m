@@ -299,18 +299,48 @@
 	
 	if(!element.hasBeenParsed) {
 		NSString *prefixedType = [[el attributeForName:@"type"] stringValue];
-		NSString *uri = [[el resolveNamespaceForName:prefixedType] stringValue];
-		NSString *typeName = [NSXMLNode localNameForName:prefixedType];
-		USType *type = [schema.wsdl typeForNamespace:uri name:typeName];
-		element.type = type;
 		
-		for(USSequenceElement *seqElement in element.waitingSeqElements) {
-			seqElement.name = element.name;
-			seqElement.type = element.type;
+		if(prefixedType != nil) {
+			NSString *uri = [[el resolveNamespaceForName:prefixedType] stringValue];
+			NSString *typeName = [NSXMLNode localNameForName:prefixedType];
+			USType *type = [schema.wsdl typeForNamespace:uri name:typeName];
+			element.type = type;
+			
+			for(USSequenceElement *seqElement in element.waitingSeqElements) {
+				seqElement.name = element.name;
+				seqElement.type = element.type;
+			}
+		} else {
+			for(NSXMLNode *child in [el children]) {
+				if([child kind] == NSXMLElementKind) {
+					[self processElementElementChildElement:(NSXMLElement*)child element:element];
+				}
+			}
 		}
 		
 		element.hasBeenParsed = YES;
 	}
+}
+
+- (void)processElementElementChildElement:(NSXMLElement *)el element:(USElement *)element
+{
+	NSString *localName = [el localName];
+	
+	if([localName isEqualToString:@"complexType"]) {
+		[self processElementElementComplexTypeElement:el element:element];
+	}
+}
+
+- (void)processElementElementComplexTypeElement:(NSXMLElement *)el element:(USElement *)element
+{
+	USType *type = [element.schema typeForName:element.name];
+	
+	if(!type.hasBeenParsed) {
+		type.behavior = TypeBehavior_complex;
+		type.hasBeenParsed = YES;
+	}
+	
+	element.type = type;
 }
 
 @end

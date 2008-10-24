@@ -71,6 +71,10 @@
 
 - (NSString *)invokeString
 {
+	if(self.input.body == nil && self.input.headers == nil) {
+		return self.name;
+	}
+	
 	NSMutableString *invokeString = [NSMutableString string];
 	
 	[invokeString appendFormat:@"%@Using", self.name];

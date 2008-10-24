@@ -84,6 +84,8 @@
 		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", (*self.%«attribute.name» ? @"true" : @"false")];
 %ELSIFEQ attribute.type.typeName long
 		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
+%ELSIFEQ attribute.type.typeName short
+		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
 %ELSIFEQ attribute.type.typeName int
 		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
 %ELSIFEQ attribute.type.typeName double
@@ -123,6 +125,8 @@
 %ELSIFEQ element.type.typeName boolean
 		[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", (*self.%«element.name» ? @"true" : @"false")];
 %ELSIFEQ element.type.typeName long
+		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
+%ELSIFEQ element.type.typeName short
 		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
 %ELSIFEQ element.type.typeName int
 		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
@@ -229,6 +233,8 @@
 		self.%«attribute.name» = [[[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)] autorelease];
 %ELSIFEQ attribute.type.typeName long
 		self.%«attribute.name» = [NSNumber numberWithLong:[attrString longValue]];
+%ELSIFEQ attribute.type.typeName long
+		self.%«attribute.name» = [NSNumber numberWithShort:[attrString shortValue]];
 %ELSIFEQ attribute.type.typeName int
 		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName double
@@ -309,6 +315,10 @@
 %ELSIFEQ element.type.typeName long
 				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
 				*self.%«element.name» = (long)[elementString longLongValue];
+
+%ELSIFEQ element.type.typeName short
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = (short)[elementString longLongValue];
 
 %ELSIFEQ element.type.typeName int
 				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));

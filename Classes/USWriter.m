@@ -28,6 +28,7 @@
 #import "USAttribute.h"
 #import "USService.h"
 #import "USBinding.h"
+#import "USPort.h"
 
 @interface USWriter (PrivateMethods)
 
@@ -166,10 +167,10 @@
 	
 	for(USService *service in schema.services) {
 		[self appendService:service toHString:hString mString:mString];
-	}
-	
-	for(USBinding *binding in schema.bindings) {
-		[self appendBinding:binding toHString:hString mString:mString];
+		
+		for(USPort *port in service.ports) {
+			[self appendBinding:port.binding toHString:hString mString:mString];
+		}
 	}
 	
 	if([hString length] > 0) {
