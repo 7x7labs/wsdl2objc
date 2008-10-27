@@ -38,7 +38,8 @@ static USObjCKeywords *sharedInstance = nil;
 - (id)init
 {
 	if((self = [super init])) {
-		keywords = [NSArray arrayWithObjects:@"id",
+		keywords = [NSArray arrayWithObjects:
+					@"id",
 					@"for",
 					@"self",
 					@"super",
@@ -61,6 +62,10 @@ static USObjCKeywords *sharedInstance = nil;
 					@"signed",
 					@"unsigned",
 					@"class",
+					@"break",
+					@"switch",
+					@"default",
+					@"case",
 					nil];
 	}
 	
