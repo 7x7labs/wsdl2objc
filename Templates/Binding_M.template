@@ -23,6 +23,14 @@
 	return self;
 }
 
+- (void)addCookie:(NSHTTPCookie *)toAdd
+{
+	if(toAdd != nil) {
+		if(cookies == nil) cookies = [[NSMutableArray alloc] init];
+		[cookies addObject:toAdd];
+	}
+}
+
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»
 {
@@ -110,7 +118,7 @@
 	[responseHeaders autorelease];
 	
 	if(cookies) [cookies release];
-	cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address] retain];
+	cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address] mutableCopy];
 	
 	if(self.logXMLInOut) {
 		NSLog(@"ResponseHeaders:\n%@", responseHeaders);

@@ -2,7 +2,7 @@
 
 @interface %«className» : NSObject {
 	NSURL *address;
-	NSArray *cookies;
+	NSMutableArray *cookies;
 	BOOL logXMLInOut;
 }
 
@@ -11,6 +11,7 @@
 
 - (id)initWithAddress:(NSString *)anAddress;
 - (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;
+- (void)addCookie:(NSHTTPCookie *)toAdd;
 
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»;
