@@ -33,6 +33,11 @@
 - (void)processServiceElement:(NSXMLElement *)el schema:(USSchema *)schema
 {
 	NSString *name = [[el attributeForName:@"name"] stringValue];
+	
+	if([[[NSUserDefaults standardUserDefaults] objectForKey:@"addTagToServiceName"] boolValue]) {
+		name = [name stringByAppendingString:@"Svc"];
+	}
+	
 	USService *service = [schema serviceForName:name];
 	
 	schema.wsdl.targetNamespace.prefix = name;
