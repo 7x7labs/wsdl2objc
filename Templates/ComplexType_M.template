@@ -239,6 +239,8 @@
 		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName double
 		self.%«attribute.name» = [NSNumber numberWithDouble:[attrString doubleValue]];
+%ELSIFEQ attribute.type.typeName float
+		self.%«attribute.name» = [NSNumber numberWithFloat:[attrString doubleValue]];
 %ELSIFEQ attribute.type.typeName string
 		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0

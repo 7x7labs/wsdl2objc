@@ -206,6 +206,8 @@
 		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.name»"];
 %ELSIFEQ header.type.typeName double
 		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.name»"];
+%ELSIFEQ header.type.typeName float
+		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithFloat:*%«header.name»] forKey:@"%«header.name»"];
 %ELSIFNEQ header.type.enumCount 0
 		if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.name»"];
 %ENDIF
@@ -228,6 +230,8 @@
 		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.name»"];
 %ELSIFEQ part.element.type.typeName double
 		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.name»"];
+%ELSIFEQ part.element.type.typeName float
+		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithFloat:*%«part.name»] forKey:@"%«part.element.name»"];
 %ELSIFNEQ part.element.type.enumCount 0
 		if(%«part.name» != nil) [bodyElements setObject:%«part.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.name»"];
 %ENDIF
