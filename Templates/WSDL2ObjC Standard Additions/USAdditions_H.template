@@ -8,7 +8,7 @@
 //  NSData (MBBase64) category taken from "MiloBird" at http://www.cocoadev.com/index.pl?BaseSixtyFour
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <libxml/tree.h>
 
 @interface NSString (USAdditions)
