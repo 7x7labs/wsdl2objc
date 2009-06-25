@@ -1,7 +1,9 @@
-/*NSCalendarDate+ISO8601Unparsing.h
+/*NSDate+ISO8601Unparsing.h
  *
  *Created by Peter Hosey on 2006-05-29.
  *Copyright 2006 Peter Hosey. All rights reserved.
+ *Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+ *Modifications copyright 2009 Micropraxis Ltd.
  */
 
 #import <Foundation/Foundation.h>
@@ -12,7 +14,7 @@
 //The default separator for time values. Currently, this is ':'.
 extern unichar ISO8601UnparserDefaultTimeSeparatorCharacter;
 
-@interface NSCalendarDate(ISO8601Unparsing)
+@interface NSDate(ISO8601Unparsing)
 
 - (NSString *)ISO8601DateStringWithTime:(BOOL)includeTime timeSeparator:(unichar)timeSep;
 - (NSString *)ISO8601WeekDateStringWithTime:(BOOL)includeTime timeSeparator:(unichar)timeSep;

@@ -1,3 +1,18 @@
+Branch 0.5i (6/24/2009):
+ - Branch for iPhone.  To be merged back into the trunk once it has been verified as working with MacOS.
+ - Now produces code that compiles correctly on the iPhone.
+ - Uses NSDate rather than NSCalendarDate.
+ - Uses URLConnection to make the calls to avoid multi-threaded user code.
+ - Greater support for asynchronous operations.
+ - Added ability for end-programmer to specify call timeouts.
+ - Detects and returns internal NSErrors during the operation.
+ - Detects and decodes SOAPFault results.
+ - Small changes to generated SOAP XML to get it to be accepted by ASP.NET servers.
+ - Change handling of decimal type to work correctly on iPhone.
+ - Fixed code for handling SOAP items using Objective C reserved names and added some more possible conflict keywords.
+ - ...it has been demonstrated as working for one particular iPhone app talking to one particular ASP.NET web service.  No guarantees that this is universally correct yet!
+ - ...some patches may be untidy and/or inefficient.  The aim was to get something working with least possible time and effort.
+ 
 Version 0.5 (11/11/2008):
  - iPhone compiling added to the Usage Instructions (see http://code.google.com/p/wsdl2objc/wiki/UsageInstructions )
  - Generated code will now import Foundation instead of Cocoa

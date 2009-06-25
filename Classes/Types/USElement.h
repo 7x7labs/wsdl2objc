@@ -27,6 +27,7 @@
 
 @interface USElement : NSObject {
 	NSString *name;
+	NSString *wsdlName;
 	USType *type;
 	USSchema *schema;
 	
@@ -36,6 +37,7 @@
 }
 
 @property (copy) NSString *name;
+@property (retain) NSString *wsdlName;
 @property (retain) USType *type;
 @property (retain) USSchema *schema;
 @property (assign) BOOL hasBeenParsed;

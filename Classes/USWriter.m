@@ -1,5 +1,7 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+ Modifications copyright (c) 2009 Micropraxis Ltd.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -300,10 +302,10 @@
 	[self writeResourceName:@"USAdditions_M" resourceType:@"template" toFilename:@"USAdditions.m"];
 	
 	//Copy additions dependencies
-	[self writeResourceName:@"NSCalendarDate+ISO8601Parsing_H" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Parsing.h"];
-	[self writeResourceName:@"NSCalendarDate+ISO8601Parsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Parsing.m"];
-	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_H" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.h"];
-	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.m"];
+	[self writeResourceName:@"NSDate+ISO8601Parsing_H" resourceType:@"template" toFilename:@"NSDate+ISO8601Parsing.h"];
+	[self writeResourceName:@"NSDate+ISO8601Parsing_M" resourceType:@"template" toFilename:@"NSDate+ISO8601Parsing.m"];
+	[self writeResourceName:@"NSDate+ISO8601Unparsing_H" resourceType:@"template" toFilename:@"NSDate+ISO8601Unparsing.h"];
+	[self writeResourceName:@"NSDate+ISO8601Unparsing_M" resourceType:@"template" toFilename:@"NSDate+ISO8601Unparsing.m"];
 	
 	//Copy globals
 	[self writeResourceName:@"USGlobals_H" resourceType:@"template" toFilename:@"USGlobals.h"];

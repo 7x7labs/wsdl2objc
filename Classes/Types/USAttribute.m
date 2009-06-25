@@ -25,6 +25,7 @@
 
 @implementation USAttribute
 @synthesize name;
+@synthesize wsdlName;
 @synthesize attributeDefault;
 @synthesize type;
 
@@ -33,6 +34,7 @@
 	if((self = [super init]))
 	{
 		self.name = @"";
+		self.wsdlName = @"";
 		self.attributeDefault = @"";
 		type = nil;
 	}
@@ -42,6 +44,7 @@
 -(void)dealloc
 {
 	[name release];
+	[wsdlName release];
 	[attributeDefault release];
 	[(id)type release];
 	[super dealloc];
@@ -61,6 +64,8 @@
 - (void)setAttributeName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
+	
+	self.wsdlName = aName;
 	if([keywords isAKeyword:aName]) {
 		aName = [NSString stringWithFormat:@"%@_", aName];
 	}

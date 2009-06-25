@@ -4,14 +4,16 @@
 //
 //  Created by John Ogle on 9/5/08.
 //  Copyright 2008 LightSPEED Technologies. All rights reserved.
+//  Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+//  Modifications copyright (c) 2009 Micropraxis Ltd.
 //
 //
 //  NSData (MBBase64) category taken from "MiloBird" at http://www.cocoadev.com/index.pl?BaseSixtyFour
 //
 
 #import "USAdditions.h"
-#import "NSCalendarDate+ISO8601Parsing.h"
-#import "NSCalendarDate+ISO8601Unparsing.h"
+#import "NSDate+ISO8601Parsing.h"
+#import "NSDate+ISO8601Unparsing.h"
 
 @implementation NSString (USAdditions)
 
@@ -50,16 +52,16 @@
 
 @end
 
-@implementation NSCalendarDate (USAdditions)
+@implementation NSDate (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName
 {
 	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, [self ISO8601DateString], elName];
 }
 
-+ (NSCalendarDate *)deserializeNode:(xmlNodePtr)cur
++ (NSDate *)deserializeNode:(xmlNodePtr)cur
 {
-	return [NSCalendarDate calendarDateWithString:[NSString deserializeNode:cur]];
+	return [NSDate dateWithString:[NSString deserializeNode:cur]];
 }
 
 @end
@@ -219,6 +221,56 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 	}
 	
 	return nil;
+}
+
+@end
+
+@implementation SOAPFault
+
+@synthesize faultcode, faultstring, faultactor, detail;
+
++ (SOAPFault *)deserializeNode:(xmlNodePtr)cur
+{
+  SOAPFault *soapFault = [SOAPFault new];
+
+	for( cur = cur->children ; cur != NULL ; cur = cur->next ) {
+		if(cur->type == XML_ELEMENT_NODE) {
+			if(xmlStrEqual(cur->name, (const xmlChar *) "faultcode")) {
+				soapFault.faultcode = [NSString deserializeNode:cur];
+                        }
+			if(xmlStrEqual(cur->name, (const xmlChar *) "faultstring")) {
+				soapFault.faultstring = [NSString deserializeNode:cur];
+                        }
+			if(xmlStrEqual(cur->name, (const xmlChar *) "faultactor")) {
+				soapFault.faultactor = [NSString deserializeNode:cur];
+                        }
+			if(xmlStrEqual(cur->name, (const xmlChar *) "detail")) {
+				soapFault.detail = [NSString deserializeNode:cur];
+                        }
+                }
+        }
+  
+        return soapFault;
+}
+
+- (NSString *)simpleFaultString
+{
+        NSString *simpleString = [faultstring stringByReplacingOccurrencesOfString: @"System.Web.Services.Protocols.SoapException: " withString: @""];
+        NSRange suffixRange = [simpleString rangeOfString: @"\n   at "];
+        
+        if (suffixRange.length > 0)
+                simpleString = [simpleString substringToIndex: suffixRange.location];
+                
+        return simpleString;
+}
+
+- (void)dealloc
+{
+        [faultcode release];
+        [faultstring release];
+        [faultactor release];
+        [detail release];
+        [super dealloc];
 }
 
 @end

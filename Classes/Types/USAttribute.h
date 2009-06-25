@@ -25,11 +25,13 @@
 
 @interface USAttribute : NSObject {
 	NSString *name;
+	NSString *wsdlName;
 	NSString *attributeDefault;
 	USType * type;
 }
 
 @property (copy) NSString *name;
+@property (retain) NSString *wsdlName;
 @property (copy) NSString *attributeDefault;
 @property (retain) USType * type;
 

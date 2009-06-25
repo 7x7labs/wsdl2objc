@@ -48,10 +48,10 @@
 		62ADD39A0E6890140052979D /* USParser+Types.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ADD3980E6890140052979D /* USParser+Types.m */; };
 		62BF41B90E72009F00FA8190 /* USAdditions_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF41B20E72004900FA8190 /* USAdditions_H.template */; };
 		62BF41BA0E72009F00FA8190 /* USAdditions_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF41B30E72004900FA8190 /* USAdditions_M.template */; };
-		62BF42350E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42030E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_H.template */; };
-		62BF42360E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42040E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_M.template */; };
-		62BF42370E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42050E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template */; };
-		62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */; };
+		62BF42350E72099000FA8190 /* NSDate+ISO8601Parsing_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42030E72073F00FA8190 /* NSDate+ISO8601Parsing_H.template */; };
+		62BF42360E72099000FA8190 /* NSDate+ISO8601Parsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42040E72073F00FA8190 /* NSDate+ISO8601Parsing_M.template */; };
+		62BF42370E72099000FA8190 /* NSDate+ISO8601Unparsing_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42050E72073F00FA8190 /* NSDate+ISO8601Unparsing_H.template */; };
+		62BF42380E72099000FA8190 /* NSDate+ISO8601Unparsing_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62BF42060E72073F00FA8190 /* NSDate+ISO8601Unparsing_M.template */; };
 		62BFAF790E645D8500E19E18 /* USWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFAF770E645D8500E19E18 /* USWriter.m */; };
 		62BFB31E0E64D15900E19E18 /* USType.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFB31D0E64D15900E19E18 /* USType.m */; };
 		62E6332E0E676DF40072DBDD /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
@@ -110,10 +110,10 @@
 		62ADD8740E68C16B0052979D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		62BF41B20E72004900FA8190 /* USAdditions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAdditions_H.template; sourceTree = "<group>"; };
 		62BF41B30E72004900FA8190 /* USAdditions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAdditions_M.template; sourceTree = "<group>"; };
-		62BF42030E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Parsing_H.template"; sourceTree = "<group>"; };
-		62BF42040E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Parsing_M.template"; sourceTree = "<group>"; };
-		62BF42050E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Unparsing_H.template"; sourceTree = "<group>"; };
-		62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSCalendarDate+ISO8601Unparsing_M.template"; sourceTree = "<group>"; };
+		62BF42030E72073F00FA8190 /* NSDate+ISO8601Parsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Parsing_H.template"; sourceTree = "<group>"; };
+		62BF42040E72073F00FA8190 /* NSDate+ISO8601Parsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Parsing_M.template"; sourceTree = "<group>"; };
+		62BF42050E72073F00FA8190 /* NSDate+ISO8601Unparsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Unparsing_H.template"; sourceTree = "<group>"; };
+		62BF42060E72073F00FA8190 /* NSDate+ISO8601Unparsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Unparsing_M.template"; sourceTree = "<group>"; };
 		62BFAF760E645D8500E19E18 /* USWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USWriter.h; sourceTree = "<group>"; };
 		62BFAF770E645D8500E19E18 /* USWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USWriter.m; sourceTree = "<group>"; };
 		62BFB2240E648CE100E19E18 /* Schema_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_H.template; sourceTree = "<group>"; };
@@ -264,15 +264,15 @@
 			name = Services;
 			sourceTree = "<group>";
 		};
-		6222413F0E7722A7005D3D36 /* NSCalendarDate + ISO8601 */ = {
+		6222413F0E7722A7005D3D36 /* NSDate + ISO8601 */ = {
 			isa = PBXGroup;
 			children = (
-				62BF42030E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_H.template */,
-				62BF42040E72073F00FA8190 /* NSCalendarDate+ISO8601Parsing_M.template */,
-				62BF42050E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template */,
-				62BF42060E72073F00FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template */,
+				62BF42030E72073F00FA8190 /* NSDate+ISO8601Parsing_H.template */,
+				62BF42040E72073F00FA8190 /* NSDate+ISO8601Parsing_M.template */,
+				62BF42050E72073F00FA8190 /* NSDate+ISO8601Unparsing_H.template */,
+				62BF42060E72073F00FA8190 /* NSDate+ISO8601Unparsing_M.template */,
 			);
-			path = "NSCalendarDate + ISO8601";
+			path = "NSDate + ISO8601";
 			sourceTree = "<group>";
 		};
 		622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */ = {
@@ -290,7 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */,
-				6222413F0E7722A7005D3D36 /* NSCalendarDate + ISO8601 */,
+				6222413F0E7722A7005D3D36 /* NSDate + ISO8601 */,
 				62BFB2240E648CE100E19E18 /* Schema_H.template */,
 				62BFB2250E648CE900E19E18 /* Schema_M.template */,
 				6235F00A0E63954100DABBD6 /* ComplexType_H.template */,
@@ -430,10 +430,10 @@
 				6235EE6F0E63897300DABBD6 /* MainMenu.xib in Resources */,
 				62BF41B90E72009F00FA8190 /* USAdditions_H.template in Resources */,
 				62BF41BA0E72009F00FA8190 /* USAdditions_M.template in Resources */,
-				62BF42350E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_H.template in Resources */,
-				62BF42360E72099000FA8190 /* NSCalendarDate+ISO8601Parsing_M.template in Resources */,
-				62BF42370E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_H.template in Resources */,
-				62BF42380E72099000FA8190 /* NSCalendarDate+ISO8601Unparsing_M.template in Resources */,
+				62BF42350E72099000FA8190 /* NSDate+ISO8601Parsing_H.template in Resources */,
+				62BF42360E72099000FA8190 /* NSDate+ISO8601Parsing_M.template in Resources */,
+				62BF42370E72099000FA8190 /* NSDate+ISO8601Unparsing_H.template in Resources */,
+				62BF42380E72099000FA8190 /* NSDate+ISO8601Unparsing_M.template in Resources */,
 				62FF20A90E8847FD006D6377 /* CHANGELOG in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -1,6 +1,8 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+ Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+ Modifications copyright (c) 2009 Micropraxis Ltd.
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -99,8 +101,9 @@
 	[xsd addSimpleClassWithName:@"short" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"float" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
-	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSCalendarDate *"];
+	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSDate *"];
 	[xsd addSimpleClassWithName:@"base64Binary" representationClass:@"NSData *"];
+	[xsd addSimpleClassWithName:@"decimal" representationClass:@"NSNumber *"];
 }
 
 @end

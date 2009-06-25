@@ -337,6 +337,13 @@
 	
 	if(!type.hasBeenParsed) {
 		type.behavior = TypeBehavior_complex;
+		
+		for(NSXMLNode *child in [el children]) {
+			if([child kind] == NSXMLElementKind) {
+				[self processComplexTypeChildElement:(NSXMLElement*)child type:type];
+			}
+		}
+          
 		type.hasBeenParsed = YES;
 	}
 	
