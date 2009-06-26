@@ -3,7 +3,7 @@
  *Created by Peter Hosey on 2006-02-20.
  *Copyright 2006 Peter Hosey. All rights reserved.
  */
-
+#if !TARGET_OS_IPHONE
 #import <Foundation/Foundation.h>
 
 /*This addition parses ISO 8601 dates. A good introduction: <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>
@@ -35,3 +35,4 @@ extern unichar ISO8601ParserDefaultTimeSeparatorCharacter;
 + (NSCalendarDate *)calendarDateWithString:(NSString *)str;
 
 @end
+#endif

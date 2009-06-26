@@ -3,7 +3,7 @@
  *Created by Peter Hosey on 2006-05-29.
  *Copyright 2006 Peter Hosey. All rights reserved.
  */
-
+#if !TARGET_OS_IPHONE
 #import <Foundation/Foundation.h>
 
 /*This addition unparses dates to ISO 8601 strings. A good introduction to ISO 8601: <http://www.cl.cam.ac.uk/~mgk25/iso-time.html>
@@ -34,3 +34,4 @@ extern unichar ISO8601UnparserDefaultTimeSeparatorCharacter;
 
 @end
 
+#endif

@@ -25,6 +25,7 @@ static BOOL is_leap_year(unsigned year) {
 
 @end
 
+#if !TARGET_OS_IPHONE
 @implementation NSCalendarDate(ISO8601Unparsing)
 
 #pragma mark Public methods
@@ -152,6 +153,7 @@ static BOOL is_leap_year(unsigned year) {
 }
 
 @end
+#endif
 
 @implementation NSString(ISO8601Unparsing)
 

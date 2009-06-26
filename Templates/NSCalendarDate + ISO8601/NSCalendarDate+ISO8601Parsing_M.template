@@ -116,6 +116,7 @@ static BOOL is_leap_year(unsigned year) {
 	||  ((year % 400U) == 0U));
 }
 
+#if !TARGET_OS_IPHONE
 @implementation NSCalendarDate(ISO8601Parsing)
 
 /*Valid ISO 8601 date formats:
@@ -639,3 +640,4 @@ static BOOL is_leap_year(unsigned year) {
 }
 
 @end
+#endif

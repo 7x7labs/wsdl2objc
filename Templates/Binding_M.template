@@ -62,7 +62,8 @@
 	}
 	[HTTPHeaders setObject:@"wsdl2objc" forKey:@"UserAgent"];
 	[HTTPHeaders setObject:soapAction forKey:@"SOAPAction"];
-	
+	[HTTPHeaders setObject:@"text/xml" forKey:@"Content-type"];
+    
 	CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)@"POST", (CFURLRef)self.address, kCFHTTPVersion1_1);
 	
 	CFDataRef bodyData = (CFDataRef)[outputBody dataUsingEncoding:NSUTF8StringEncoding];
@@ -91,6 +92,7 @@
             //OSStatus macError = (OSStatus)myErr.error;
         // Check other error domains.
 		}
+        return nil;
 	}
 	
 	CFReadStreamSetProperty(readStream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue);
@@ -110,21 +112,32 @@
 		} else if( numBytesRead < 0 ) {
 			//CFStreamError error = CFReadStreamGetError(readStream);
 			//[[NSApplication sharedApplication] presentError:(NSError*)error];
+            return nil;
 		}
 	} while( numBytesRead > 0 );
 	
 	CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
-	NSDictionary *responseHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(response);
-	[responseHeaders autorelease];
 	
-	if(cookies) [cookies release];
-	cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address] mutableCopy];
+    NSDictionary *responseHeaders = nil;
+    if(cookies) [cookies release];
+	
+    if (response) {
+        responseHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(response);
+        [responseHeaders autorelease];
+        
+        cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address] mutableCopy];
+    }
 	
 	if(self.logXMLInOut) {
 		NSLog(@"ResponseHeaders:\n%@", responseHeaders);
 		NSLog(@"ResponseBody:\n%@", responseBody);
 	}
-	
+    
+    CFRelease(request);
+    [outputHeaders release];
+	CFRelease(readStream);
+    CFRelease(response);
+    
 	return responseBody;
 }
 
@@ -179,15 +192,12 @@
 	if(%«header.name» != nil) [%«header.name» release];
 %ENDIF
 %ENDFOR
-	
+	[response release], response = nil;
 	[super dealloc];
 }
 
 - (void)main
 {
-	[response autorelease];
-	response = [%«className»Response new];
-	
 	%«className»_envelope *envelope = [%«className»_envelope sharedInstance];
 	
 	NSMutableDictionary *headerElements = nil;
@@ -242,6 +252,13 @@
 	
 	NSString *responseBody = [binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»"];
 	
+    if (!responseBody) {
+        return;
+    }
+    
+    [response autorelease];
+	response = [%«className»Response new];
+    
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	
@@ -377,6 +394,12 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	}
 	
 	return self;
+}
+
+- (void)dealloc {
+    [headers release], headers = nil;
+    [bodyParts release], bodyParts = nil;
+    [super dealloc];
 }
 
 @end

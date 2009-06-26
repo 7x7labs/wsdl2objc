@@ -25,12 +25,14 @@
 
 @end
 
+#if !TARGET_OS_IPHONE
 @interface NSCalendarDate (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName;
 + (NSCalendarDate *)deserializeNode:(xmlNodePtr)cur;
 
 @end
+#endif
 
 @interface NSData (USAdditions)
 

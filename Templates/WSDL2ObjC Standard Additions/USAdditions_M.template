@@ -17,7 +17,7 @@
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName
 {
-	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, self, elName];
+	return [NSString stringWithFormat:@"<%@ xsi:type=\"xsd:string\">%@</%@>", elName, self, elName];
 }
 
 + (NSString *)deserializeNode:(xmlNodePtr)cur
@@ -50,6 +50,7 @@
 
 @end
 
+#if !TARGET_OS_IPHONE
 @implementation NSCalendarDate (USAdditions)
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName
@@ -63,6 +64,7 @@
 }
 
 @end
+#endif
 
 @implementation NSData (USAdditions)
 
@@ -205,7 +207,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 - (NSString *)serializedFormUsingElementName:(NSString *)elName
 {
-	return [NSString stringWithFormat:@"<%@>%@</%@>", elName, [self stringValue], elName];
+	return [NSString stringWithFormat:@"<%@ xsi:type=\"xsd:boolean\">%@</%@>", elName, [self stringValue], elName];
 }
 
 + (USBoolean *)deserializeNode:(xmlNodePtr)cur

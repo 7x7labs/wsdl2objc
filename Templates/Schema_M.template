@@ -1,2 +1,3 @@
 #import "%«prefix».h"
 #import <libxml/xmlstring.h>
+#import <CFNetwork/CFNetwork.h>
