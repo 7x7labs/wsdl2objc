@@ -378,6 +378,9 @@ const NSRange kZeroRange = { 0, 0 };
 		case TE_DEBUG :
 			tokenString = [NSString stringWithString:@"%DEBUG"];
 			break;
+		case TE_FOREACH :
+			tokenString = [NSString stringWithString:@"%FOREACH"];
+			break;
 		case TE_INCLUDE :
 			tokenString = [NSString stringWithString:@"%INCLUDE"];
 			break;

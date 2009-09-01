@@ -1388,7 +1388,7 @@ BOOL classExists (NSString *className) {
 							if(value == nil || ![value isKindOfClass:[NSArray class]])
 							{
 								error = [TEError error:TE_ABORTING_TEMPLATE_EXPANSION
-												inLine:lineNumber atToken:TE_DEBUG];
+												inLine:lineNumber atToken:TE_FOREACH];
 								// and add this error to the error log
 								[_errorLog addObject:error];
 								// log this error to the console

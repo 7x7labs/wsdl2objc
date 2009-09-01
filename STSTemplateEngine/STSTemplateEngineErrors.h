@@ -79,6 +79,7 @@ enum TEToken {
 	TE_LOG,			// %LOG keyword
 	TE_ECHO,		// %ECHO keyword - reserved for future use
 	TE_DEBUG,		// %DEBUG keyword - reserved for future use
+	TE_FOREACH,		// %FOREACH keyword
 	TE_INCLUDE,		// %INCLUDE keyword - reserved for future use
 	TE_IF,			// %IF keyword
 	TE_IFNOT,		// %IFNOT keyword - must be successor to %IF
