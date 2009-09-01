@@ -91,7 +91,7 @@
 	NSString *localName = [el localName];
 	
 	if([localName isEqualToString:@"operation"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+		if([[[el resolveNamespaceForName:[el name]] stringValue] hasPrefix:@"http://schemas.xmlsoap.org/wsdl/"]) {
 			[self processSoapOperationElement:el operation:operation];
 		}
 	} else if([localName isEqualToString:@"input"]) {
