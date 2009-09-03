@@ -24,7 +24,7 @@
 #import "USObjCKeywords.h"
 
 @implementation USAttribute
-@synthesize name;
+@dynamic name;
 @synthesize wsdlName;
 @synthesize attributeDefault;
 @synthesize type;
@@ -61,7 +61,12 @@
 	return returning;
 }
 
-- (void)setAttributeName:(NSString *)aName
+- (NSString *)name
+{
+	return name;
+}
+
+- (void)setName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
 	
