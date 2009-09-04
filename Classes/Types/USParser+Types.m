@@ -223,10 +223,31 @@
 		seqElement.name = name;
 		
 		NSString *prefixedType = [[el attributeForName:@"type"] stringValue];
+		if (prefixedType == nil) {
+			// The type is inline, as a subnode <complexType> or <simpleType>
+			prefixedType = [[el attributeForName:@"name"] stringValue];
+			NSUInteger childIdx = 0;
+			for(NSXMLNode *child in [el children]) {			
+				if([[child localName] hasSuffix:@"Type"]) {
+					// We found the type definition. Let's give it the element's name and send it over to the processor
+					[(NSXMLElement*)child addAttribute:[NSXMLNode attributeWithName:@"name" stringValue:prefixedType]];
+					[self processSchemaChildElement:(NSXMLElement*)child schema:type.schema];
+					// and now re-process the element itself with the correct type
+					// using the original local prefix because we're back in a local scope still
+					NSString *elType = [type.schema.localPrefix stringByAppendingFormat:@":%@", prefixedType];
+					[el addAttribute:[NSXMLNode attributeWithName:@"type" stringValue:elType]];
+					[el removeChildAtIndex:childIdx];
+					NSLog(@"*** Reprocessing a type: %@", elType);
+					NSLog(@"%@", el);
+					[self processSequenceElementElement:el type:type];
+					return;
+				}
+				childIdx++;
+			}			
+		}
 		NSString *uri = [[el resolveNamespaceForName:prefixedType] stringValue];
 		NSString *typeName = [NSXMLNode localNameForName:prefixedType];
 		seqElement.type = [type.schema.wsdl typeForNamespace:uri name:typeName];
-		
 	}
 	
 	NSXMLNode *minOccursNode = [el attributeForName:@"minOccurs"];
