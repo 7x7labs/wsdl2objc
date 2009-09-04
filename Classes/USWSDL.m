@@ -32,6 +32,7 @@
 
 @synthesize schemas;
 @synthesize targetNamespace;
+@synthesize soapVersion;
 
 -(id)init
 {
@@ -39,6 +40,7 @@
 	{
 		self.schemas = [NSMutableArray array];
 		self.targetNamespace = nil;
+		self.soapVersion = @"1.1";
 	}
 	return self;
 }
