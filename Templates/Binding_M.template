@@ -96,7 +96,11 @@
 	}
 	[request setValue:@"wsdl2objc" forHTTPHeaderField:@"User-Agent"];
 	[request setValue:soapAction forHTTPHeaderField:@"SOAPAction"];
+%IFEQ schema.wsdl.soapVersion 1.2
+	[request setValue:@"application/soap+xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+%ELSE
 	[request setValue:@"text/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+%ENDIF
 	[request setValue:[NSString stringWithFormat:@"%u", [bodyData length]] forHTTPHeaderField:@"Content-Length"];
 	[request setValue:self.address.host forHTTPHeaderField:@"Host"];
 	[request setHTTPMethod: @"POST"];
@@ -163,8 +167,12 @@
 	
 	binding.cookies = cookies;
 	[cookies release];
-	
+
+%IFEQ schema.wsdl.soapVersion 1.2	
+  if ([urlResponse.MIMEType rangeOfString:@"application/soap+xml"].length == 0) {
+%ELSE
   if ([urlResponse.MIMEType rangeOfString:@"text/xml"].length == 0) {
+%ENDIF
 		NSError *error = nil;
 
 		[connection cancel];
@@ -422,7 +430,11 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	NSMutableString *serializedForm = [NSMutableString string];
 	
 	[serializedForm appendFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"];
+%IFEQ schema.wsdl.soapVersion 1.2
+	[serializedForm appendFormat:@"<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"\n"];
+%ELSE
 	[serializedForm appendFormat:@"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"];
+%ENDIF
 	[serializedForm appendFormat:@"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xsl:version=\"1.0\"\n"];
 	[serializedForm appendFormat:@"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"];
 %FOREACH schema in schema.wsdl.schemas

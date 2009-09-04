@@ -30,9 +30,11 @@
 @class USBinding;
 @class USService;
 
+
 @interface USSchema : NSObject {
 	NSString *fullName;
 	NSString *prefix;
+	NSString *localPrefix;
 	NSMutableArray *types;
 	NSMutableArray *elements;
 	NSMutableArray *imports;
@@ -46,7 +48,8 @@
 	BOOL hasBeenWritten;
 }
 
-@property (copy) NSString *prefix;
+@property (copy) NSString *prefix;			// unique global schema prefix (after all includes)
+@property (copy) NSString *localPrefix;		// specified schema prefix within local scope
 @property (copy) NSString *fullName;
 @property (retain) NSMutableArray *types;
 @property (retain) NSMutableArray *elements;

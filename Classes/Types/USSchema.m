@@ -32,6 +32,7 @@
 
 @synthesize fullName;
 @synthesize prefix;
+@synthesize localPrefix;
 @synthesize types;
 @synthesize elements;
 @synthesize imports;
@@ -49,6 +50,7 @@
 	{
 		self.fullName = @"";
 		self.prefix = nil;
+		self.localPrefix = nil;
 		self.types = [NSMutableArray array];
 		self.elements = [NSMutableArray array];
 		self.imports = [NSMutableArray array];
@@ -235,6 +237,7 @@
 	[returning setObject:[[NSNumber numberWithUnsignedInt:[self.types count]] stringValue] forKey:@"typeCount"];
 	[returning setObject:self.imports forKey:@"imports"];
 	[returning setObject:self.types forKey:@"types"];
+	[returning setObject:self.wsdl forKey:@"wsdl"];
 	
 	return returning;
 }

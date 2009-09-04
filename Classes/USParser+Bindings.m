@@ -60,7 +60,9 @@
 	NSString *localName = [el localName];
 	
 	if([localName isEqualToString:@"binding"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapBindingElement:el binding:binding];
 		}
 	} else if([localName isEqualToString:@"operation"]) {
@@ -91,7 +93,9 @@
 	NSString *localName = [el localName];
 	
 	if([localName isEqualToString:@"operation"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] hasPrefix:@"http://schemas.xmlsoap.org/wsdl/"]) {
+		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapOperationElement:el operation:operation];
 		}
 	} else if([localName isEqualToString:@"input"]) {
@@ -133,11 +137,15 @@
 	NSString *localName = [el localName];
 	
 	if([localName isEqualToString:@"header"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapHeaderElement:el operationInterface:interface];
 		}
 	} else if([localName isEqualToString:@"body"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapBodyElement:el operationInterface:interface];
 		}
 	}
@@ -180,7 +188,9 @@
 	NSString *localName = [el localName];
 	
 	if([localName isEqualToString:@"fault"]) {
-		if([[[el resolveNamespaceForName:[el name]] stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapFaultElement:el fault:fault];
 		}
 	}
