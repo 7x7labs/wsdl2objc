@@ -56,6 +56,7 @@
 {
 	NSMutableString *serializedForm = [NSMutableString string];
 
+%IF hasSequenceElements
 	[serializedForm appendFormat:@"<%@ xmlns=\"%«schema.fullName»\"", elName];
 	[serializedForm appendString:[self serializedAttributeString]];
 	[serializedForm appendFormat:@">"];
@@ -63,6 +64,11 @@
 	[serializedForm appendString:[self serializedElementString]];
 	
 	[serializedForm appendFormat:@"\n</%@>", elName];
+%ELSE
+	[serializedForm appendFormat:@"<%@ xmlns=\"%«schema.fullName»\"", elName];
+	[serializedForm appendString:[self serializedAttributeString]];
+	[serializedForm appendFormat:@" />"];
+%ENDIF
 	
 	return serializedForm;
 }
