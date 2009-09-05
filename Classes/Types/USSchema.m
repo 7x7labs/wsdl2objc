@@ -80,6 +80,7 @@
 	
 	for(USType * type in self.types) {
 		if([type.typeName isEqualToString:aName]) {
+			// NSLog(@"Found Type: %@ (%@)", type.typeName, type);
 			return type;
 		}
 	}
@@ -90,6 +91,7 @@
 	
 	[self.types addObject:newType];
 	
+	// NSLog(@"New Type: %@ (%@)", newType.typeName, newType);
 	return newType;
 }
 
@@ -99,6 +101,7 @@
 	
 	for(USElement * element in self.elements) {
 		if([element.name isEqual:aName]) {
+			// NSLog(@"Found Element: %@ (%@), type: %@ (%@)", element.name, element, element.type.typeName, element.type);
 			return element;
 		}
 	}
@@ -109,6 +112,7 @@
 	
 	[self.elements addObject:newElement];
 	
+	// NSLog(@"New Element: %@ (%@), type: %@ (%@)", newElement.name, newElement, newElement.type.typeName, newElement.type);
 	return newElement;
 }
 
