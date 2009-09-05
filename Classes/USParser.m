@@ -29,6 +29,8 @@
 
 #import "USWSDL.h"
 #import "USSchema.h"
+#import "USType.h"
+#import "USSequenceElement.h"
 
 @implementation USParser
 -(id)initWithURL:(NSURL *)anURL
@@ -228,6 +230,13 @@
 		
 		schema.hasBeenParsed = YES;
 	}
+//	NSLog(@"Dumping schema: %@", schema.fullName);
+//	for (USType *aT in [schema types]) {
+//		NSLog(@"	+ %@ (%@, %d)", aT.typeName, aT, aT.hasBeenParsed);
+//		for (USSequenceElement *aSE in [aT sequenceElements]) {
+//			NSLog(@"		- %@ (%@)", aSE.name, aSE.type);
+//		}
+//	}	
 }
 
 - (void)processNamespace:(NSXMLNode *)ns wsdl:(USWSDL *)wsdl
