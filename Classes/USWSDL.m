@@ -98,6 +98,9 @@
 	
 	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"integer" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"positiveInteger" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"nonNegativeInteger" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"double" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"long" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"short" representationClass:@"NSNumber *"];
