@@ -107,10 +107,12 @@
 	[xsd addSimpleClassWithName:@"float" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSDate *"];
+	[xsd addSimpleClassWithName:@"date" representationClass:@"NSDate *"];
 	[xsd addSimpleClassWithName:@"base64Binary" representationClass:@"NSData *"];
 	[xsd addSimpleClassWithName:@"decimal" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"QName" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"token" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"anyType" representationClass:@"NSString *"];
 }
 
 @end
