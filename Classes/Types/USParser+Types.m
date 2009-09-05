@@ -212,15 +212,18 @@
 		if(element.hasBeenParsed) {
 			seqElement.name = element.name;
 			seqElement.type = element.type;
+			//	NSLog(@"REF PARSED SEQELEMENT NAME: %@ (%@)", element.name, [[el parent] name]);
 		} else {
+			// the sequence element name and type will be assigned after its referring element is parsed
 			[element.waitingSeqElements addObject:seqElement];
-		}
-		
+		//	NSLog(@"REF NOT PARSED SEQELEMENT NAME: %@ (%@)", element.name, [[el parent] name]);
+		}		
 		
 	} else {
 		
 		NSString *name = [[el attributeForName:@"name"] stringValue];
 		seqElement.name = name;
+		// NSLog(@"SEQELEMENT NAME: %@ (%@)", name, [[[el parent] parent] name]);
 		
 		NSString *prefixedType = [[el attributeForName:@"type"] stringValue];
 		if (prefixedType == nil) {
@@ -237,8 +240,7 @@
 					NSString *elType = [type.schema.localPrefix stringByAppendingFormat:@":%@", prefixedType];
 					[el addAttribute:[NSXMLNode attributeWithName:@"type" stringValue:elType]];
 					[el removeChildAtIndex:childIdx];
-					NSLog(@"*** Reprocessing a type: %@", elType);
-					NSLog(@"%@", el);
+					// NSLog(@"*** Reprocessing a type: %@", elType);
 					[self processSequenceElementElement:el type:type];
 					return;
 				}
@@ -327,10 +329,6 @@
 			USType *type = [schema.wsdl typeForNamespace:uri name:typeName];
 			element.type = type;
 			
-			for(USSequenceElement *seqElement in element.waitingSeqElements) {
-				seqElement.name = element.name;
-				seqElement.type = element.type;
-			}
 		} else {
 			for(NSXMLNode *child in [el children]) {
 				if([child kind] == NSXMLElementKind) {
@@ -339,6 +337,11 @@
 			}
 		}
 		
+		for(USSequenceElement *seqElement in element.waitingSeqElements) {
+			// NSLog(@"Assigning %@ for %@", element.name, seqElement);
+			seqElement.name = element.name;
+			seqElement.type = element.type;
+		}
 		element.hasBeenParsed = YES;
 	}
 }
@@ -347,9 +350,29 @@
 {
 	NSString *localName = [el localName];
 	
-	if([localName isEqualToString:@"complexType"]) {
+	if([localName isEqualToString:@"simpleType"]) {
+		[self processElementElementSimpleTypeElement:el element:element];
+	} else if([localName isEqualToString:@"complexType"]) {
 		[self processElementElementComplexTypeElement:el element:element];
 	}
+}
+
+- (void)processElementElementSimpleTypeElement:(NSXMLElement *)el element:(USElement *)element
+{
+	USType *type = [element.schema typeForName:element.name];
+	
+	if(!type.hasBeenParsed) {
+		type.behavior = TypeBehavior_simple;
+		
+		for(NSXMLNode *child in [el children]) {
+			if([child kind] == NSXMLElementKind) {
+				[self processSimpleTypeChildElement:(NSXMLElement*)child type:type];
+			}
+		}
+		type.hasBeenParsed = YES;
+	}
+	// assign the inline definition to its parent element
+	element.type = type;
 }
 
 - (void)processElementElementComplexTypeElement:(NSXMLElement *)el element:(USElement *)element
@@ -367,7 +390,7 @@
           
 		type.hasBeenParsed = YES;
 	}
-	
+	// assign the inline definition to its parent element
 	element.type = type;
 }
 
