@@ -488,4 +488,11 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	return self;
 }
 
+-(void)dealloc {
+    self.headers = nil;
+    self.bodyParts = nil;
+    self.error = nil;	
+    [super dealloc];
+}
+
 @end
