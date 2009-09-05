@@ -57,6 +57,7 @@
 #pragma mark Types:Schema:Element
 - (void)processElementElement:(NSXMLElement *)el schema:(USSchema *)schema;
 - (void)processElementElementChildElement:(NSXMLElement *)el element:(USElement *)element;
+- (void)processElementElementSimpleTypeElement:(NSXMLElement *)el element:(USElement *)element;
 - (void)processElementElementComplexTypeElement:(NSXMLElement *)el element:(USElement *)element;
 
 @end
