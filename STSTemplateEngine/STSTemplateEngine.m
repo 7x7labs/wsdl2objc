@@ -1535,7 +1535,7 @@ BOOL classExists (NSString *className) {
 		// pass the error log back to the caller
 		*errorLog = _errorLog;
 		// get rid of the following line after testing
-		NSLog(@"errors have ocurred while expanding placeholders in string using dictionary:\n%@", dictionary);
+		NSLog(@"errors have occurred while expanding placeholders in string using dictionary:\n%@", dictionary);
 		NSLog(@"using template:\n%@", template);
 	}
 	// if there were no errors ...
