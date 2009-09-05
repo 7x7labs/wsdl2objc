@@ -196,6 +196,7 @@
 	}
 	
 	if(type.hasBeenWritten) return;
+	type.hasBeenWritten = YES;
 	if(type.behavior == TypeBehavior_simple && [type.className isEqualToString:type.representationClass]) return;
 	
 	if(type.superClass != nil) [self appendType:type.superClass toHString:hString mString:mString];
@@ -232,9 +233,7 @@
 		NSLog(@"Errors encountered while generating implementation for type %@", type.typeName);
 	}
 	
-	[typeMString release];
-	
-	type.hasBeenWritten = YES;
+	[typeMString release];	
 }
 
 - (void)appendBinding:(USBinding *)binding toHString:(NSMutableString *)hString mString:(NSMutableString *)mString
