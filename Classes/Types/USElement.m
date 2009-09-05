@@ -63,7 +63,7 @@
 
 - (void)valueForUndefinedKey:(NSString *)aKey
 {
-	NSLog(@"%@", aKey);
+	// NSLog(@"%@", aKey);
 }
 
 - (NSString *)uname
