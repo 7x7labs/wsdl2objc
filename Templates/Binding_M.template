@@ -4,6 +4,8 @@
 @synthesize defaultTimeout;
 @synthesize logXMLInOut;
 @synthesize cookies;
+@synthesize authUsername;
+@synthesize authPassword;
 
 - (id)init
 {
@@ -146,6 +148,23 @@
 	}
 	
 	return self;
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+	if ([challenge previousFailureCount] == 0) {
+		NSURLCredential *newCredential;
+		newCredential=[NSURLCredential credentialWithUser:self.binding.authUsername
+												 password:self.binding.authPassword
+											  persistence:NSURLCredentialPersistenceForSession];
+		[[challenge sender] useCredential:newCredential
+			   forAuthenticationChallenge:challenge];
+	} else {
+		[[challenge sender] cancelAuthenticationChallenge:challenge];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
+		NSError *authError = [NSError errorWithDomain:@"Connection Authentication" code:0 userInfo:userInfo];
+		[self connection:connection didFailWithError:authError];
+	}
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)urlResponse

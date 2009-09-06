@@ -13,12 +13,16 @@
 	NSMutableArray *cookies;
 	BOOL logXMLInOut;
 	BOOL synchronousOperationComplete;
+	NSString *authUsername;
+	NSString *authPassword;
 }
 
 @property (copy) NSURL *address;
 @property (assign) BOOL logXMLInOut;
 @property (assign) NSTimeInterval defaultTimeout;
 @property (nonatomic, retain) NSMutableArray *cookies;
+@property (nonatomic, retain) NSString *authUsername;
+@property (nonatomic, retain) NSString *authPassword;
 
 - (id)initWithAddress:(NSString *)anAddress;
 - (void)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation;
