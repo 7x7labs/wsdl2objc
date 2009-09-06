@@ -175,8 +175,8 @@ static BOOL is_leap_year(unsigned year) {
   unsigned
   //Date
   year,
-  month_or_week,
-  day,
+  month_or_week = 1U,
+  day = 1U,
   //Time
   hour = 0U;
   NSTimeInterval
