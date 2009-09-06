@@ -146,7 +146,10 @@
 {
 	NSString *localName = [el localName];
 	
-	if([localName isEqualToString:@"sequence"]) {
+	if(([localName isEqualToString:@"sequence"]) ||
+	   ([localName isEqualToString:@"choice"]) ||
+	   ([localName isEqualToString:@"any"])){
+		// TODO: Actually support choice and any with the proper templates
 		[self processSequenceElement:el type:type];
 	} else if([localName isEqualToString:@"attribute"]) {
 		[self processAttributeElement:el type:type];
@@ -180,6 +183,13 @@
 - (void)processSequenceElement:(NSXMLElement *)el type:(USType *)type
 {
 	for(NSXMLNode *child in [el children]) {
+		NSString *localName = [child localName];
+		if (([localName isEqualToString:@"choice"]) ||
+			([localName isEqualToString:@"any"])) {
+			// don't properly handle choice and any yet, but encompass all their elements
+			// into the sequence as if it were one big sequence
+			[self processSequenceElement:(NSXMLElement*)child type:type];
+		}
 		if([child kind] == NSXMLElementKind) {
 			[self processSequenceChildElement:(NSXMLElement*)child type:type];
 		}
