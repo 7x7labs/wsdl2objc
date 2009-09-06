@@ -277,7 +277,7 @@
 			
 			if(elementText != NULL) {
 				elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
-				[elementString autorelease]; // avoid compiler warning for unused var
+				[elementString self]; // avoid compiler warning for unused var
 				xmlFree(elementText);
 			}
 %FOREACH element in sequenceElements
