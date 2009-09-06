@@ -461,7 +461,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 %ENDFOR
 	[serializedForm appendFormat:@">\n"];
 	
-	if(headerElements != nil) {
+	if((headerElements != nil) && ([headerElements count] > 0)) {
 		[serializedForm appendFormat:@"<soap:Header>\n"];
 		
 		for(NSString *key in [headerElements allKeys]) {
@@ -472,7 +472,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 		[serializedForm appendFormat:@"</soap:Header>"];
 	}
 	
-	if(bodyElements != nil) {
+	if((bodyElements != nil) && ([bodyElements count] > 0))  {
 		[serializedForm appendFormat:@"<soap:Body>\n"];
 		
 		for(NSString *key in [bodyElements allKeys]) {
