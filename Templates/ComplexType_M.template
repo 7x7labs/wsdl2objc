@@ -277,6 +277,7 @@
 			
 			if(elementText != NULL) {
 				elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
+				[elementString autorelease]; // avoid compiler warning for unused var
 				xmlFree(elementText);
 			}
 %FOREACH element in sequenceElements
@@ -299,7 +300,7 @@
 						
 						xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, (const xmlChar *)[prefix UTF8String]);
 						
-						NSString *standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char*)elementNamespace->href]];
+						NSString *standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char*)elementNamespace->href encoding:NSUTF8StringEncoding]];
 						
 						elementClassString = [NSString stringWithFormat:@"%@_%@", standardPrefix, localName];
 					} else {

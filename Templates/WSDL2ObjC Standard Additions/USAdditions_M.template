@@ -233,7 +233,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 + (SOAPFault *)deserializeNode:(xmlNodePtr)cur
 {
 	SOAPFault *soapFault = [[SOAPFault new] autorelease];
-	NSString *ns = [NSString stringWithCString:(char*)cur->ns->href];
+	NSString *ns = [NSString stringWithCString:(char*)cur->ns->href encoding:NSUTF8StringEncoding];
 	if (! ns) return soapFault;
 	if ([ns isEqualToString:@"http://schemas.xmlsoap.org/soap/envelope/"]) {
 		// soap 1.1
@@ -271,7 +271,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 				if(xmlStrEqual(cur->name, (const xmlChar *) "Reason")) {
 					xmlChar *theReason = xmlNodeGetContent(cur);
 					if (theReason != NULL) {
-						soapFault.faultstring = [NSString stringWithCString:(char*)theReason];
+						soapFault.faultstring = [NSString stringWithCString:(char*)theReason encoding:NSUTF8StringEncoding];
 						xmlFree(theReason);
 					}
 				}
