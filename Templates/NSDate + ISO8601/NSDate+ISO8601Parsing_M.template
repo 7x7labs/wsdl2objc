@@ -230,8 +230,6 @@ static BOOL is_leap_year(unsigned year) {
       month_or_week = [dateComps month];
       day = [dateComps day];
     } else {
-      segment = 0U;
-      
       while(*ch == '-') {
         ++num_leading_hyphens;
         ++ch;
@@ -446,6 +444,8 @@ static BOOL is_leap_year(unsigned year) {
                 ++ch;
                 month_or_week = read_segment_2digits(ch, &ch);
                 NSLog(@"(%@) month is %u", str, month_or_week);
+              } else {
+                month_or_week = 1U;
               }
               
               day = 1U;
@@ -457,6 +457,8 @@ static BOOL is_leap_year(unsigned year) {
               if(*ch == '-') {
                 ++ch;
                 day = read_segment_2digits(ch, &ch);
+              } else {
+                day = 1U;
               }
               break;
               
