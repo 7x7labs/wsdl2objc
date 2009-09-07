@@ -71,15 +71,14 @@
 	
 	NSString *pathString = [defaults valueForKeyPath:@"values.wsdlPath"];
 	
-	if(pathString != nil) {
-		if([pathString characterAtIndex:0] == '/') {
-			return [NSURL fileURLWithPath:pathString];
-		} else {
-			return [NSURL URLWithString:pathString];
-		}
+	if(pathString == nil) return nil;
+	if ([pathString length] == 0) return nil;
+
+	if([pathString characterAtIndex:0] == '/') {
+		return [NSURL fileURLWithPath:pathString];
 	}
 	
-	return nil;
+	return [NSURL URLWithString:pathString];
 }
 
 - (NSURL *)outURL
@@ -88,13 +87,14 @@
 	
 	NSString *pathString = [defaults valueForKeyPath:@"values.outPath"];
 	
+	if(pathString == nil) return nil;
+	if ([pathString length] == 0) return nil;
+	
 	if([pathString characterAtIndex:0] == '/') {
 		return [NSURL fileURLWithPath:pathString];
-	} else {
-		return [NSURL URLWithString:pathString];
 	}
-	
-	return nil;
+
+	return [NSURL URLWithString:pathString];
 }
 
 
