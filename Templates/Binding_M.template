@@ -360,7 +360,7 @@
 		xmlNodePtr cur;
 		
 		if (binding.logXMLInOut) {
-			NSLog(@"ResponseBody:\n%@", [NSString stringFromUTF8String:[responseData bytes]]);
+			NSLog(@"ResponseBody:\n%@", [NSString stringWithUTF8String:[responseData bytes]]);
 		}
 		
 		doc = xmlParseMemory([responseData bytes], [responseData length]);
