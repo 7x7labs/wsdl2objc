@@ -359,6 +359,10 @@
 		xmlDocPtr doc;
 		xmlNodePtr cur;
 		
+		if (binding.logXMLInOut) {
+			NSLog(@"ResponseBody:\n%@", [NSString stringFromUTF8String:[responseData bytes]]);
+		}
+		
 		doc = xmlParseMemory([responseData bytes], [responseData length]);
 		
 		if (doc == NULL) {
@@ -367,7 +371,6 @@
 			response.error = [NSError errorWithDomain:@"%«className»ResponseXML" code:1 userInfo:userInfo];
 			[delegate operation:self completedWithResponse:response];
 		} else {
-			
 			cur = xmlDocGetRootElement(doc);
 			cur = cur->children;
 			
