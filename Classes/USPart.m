@@ -48,9 +48,4 @@
 	return [self.name stringWithCapitalizedFirstCharacter];
 }
 
-- (void)valueForUndefinedKey:(NSString *)aKey
-{
-	NSLog(@"%@", aKey);
-}
-
 @end

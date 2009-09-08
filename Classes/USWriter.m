@@ -313,7 +313,7 @@
 
 - (void)writeResourceName:(NSString *)resourceName resourceType:(NSString *)resourceType toFilename:(NSString *)fileName
 {
-	NSString *resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType]];
+	NSString *resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType] usedEncoding:nil error:nil];
 	
 	[resourceContents writeToURL:[NSURL URLWithString:fileName relativeToURL:outDir]
 					  atomically:NO
