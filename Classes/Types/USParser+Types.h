@@ -51,6 +51,8 @@
 - (void)processSequenceElementElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processComplexContentElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processComplexContentChildElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processSimpleContentElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processSimpleContentChildElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processExtensionElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processExtensionChildElement:(NSXMLElement *)el type:(USType *)type;
 

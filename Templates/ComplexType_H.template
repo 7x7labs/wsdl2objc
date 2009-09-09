@@ -1,7 +1,7 @@
 %IFDEF className
 
 %IFDEF superClass
-@interface %«className» : %«superClass.className» {
+@interface %«className» : %«superClass.classNameWithoutPtr» {
 %ELSE
 @interface %«className» : NSObject {
 %ENDIF

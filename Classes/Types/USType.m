@@ -164,12 +164,15 @@
 			
 			if(representationClass != nil) [returning setObject:self.representationClass forKey:@"representationClass"];
 			[returning setObject:self.enumerationValues forKey:@"enumerationValues"];
-			[returning setObject:[self enumCount] forKey:@"enumCount"];
+			[returning setObject:[self enumCount] forKey:@"enumCount"];			
 			
 			break;
 			
 		case TypeBehavior_complex:
-			if(superClass != nil) [returning setObject:superClass forKey:@"superClass"];
+			if(superClass != nil) {
+				[returning setObject:superClass forKey:@"superClass"];
+				[returning setObject:([superClass isComplexType] ? @"true" : @"false") forKey:@"superClassIsComplex"];
+			}
 			[returning setObject:sequenceElements forKey:@"sequenceElements"];
 			[returning setObject:([sequenceElements count] > 0 ? @"true" : @"false") forKey:@"hasSequenceElements"];
 			[returning setObject:attributes forKey:@"attributes"];

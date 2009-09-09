@@ -155,6 +155,8 @@
 		[self processAttributeElement:el type:type];
 	} else if([localName isEqualToString:@"complexContent"]) {
 		[self processComplexContentElement:el type:type];
+	} else if([localName isEqualToString:@"simpleContent"]) {
+		[self processSimpleContentElement:el type:type];
 	}
 }
 
@@ -295,6 +297,24 @@
 }
 
 - (void)processComplexContentChildElement:(NSXMLElement *)el type:(USType *)type
+{
+	NSString *localName = [el localName];
+	
+	if([localName isEqualToString:@"extension"]) {
+		[self processExtensionElement:el type:type];
+	}
+}
+
+- (void)processSimpleContentElement:(NSXMLElement *)el type:(USType *)type
+{
+	for(NSXMLNode *child in [el children]) {
+		if([child kind] == NSXMLElementKind) {
+			[self processSimpleContentChildElement:(NSXMLElement*)child type:type];
+		}
+	}
+}
+
+- (void)processSimpleContentChildElement:(NSXMLElement *)el type:(USType *)type
 {
 	NSString *localName = [el localName];
 	
