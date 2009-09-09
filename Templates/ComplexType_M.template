@@ -52,113 +52,116 @@
 	return @"%«schema.prefix»";
 }
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
-	NSMutableString *serializedForm = [NSMutableString string];
-
+	xmlNodePtr root = xmlDocGetRootElement(doc);
+	
+	//xmlNsPtr ns = xmlSearchNs(doc, root, (const xmlChar*)"%«schema.prefix»");
+	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
+	
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], NULL);
+	xmlSetNsProp(node, xsi, (const xmlChar*)"type", (const xmlChar*)"%«schema.prefix»:%«typeName»");
+	
+	[self addAttributesToNode:node];
+	
 %IF hasSequenceElements
-	[serializedForm appendFormat:@"<%@ xmlns=\"%«schema.fullName»\"", elName];
-	[serializedForm appendString:[self serializedAttributeString]];
-	[serializedForm appendFormat:@">"];
-	
-	[serializedForm appendString:[self serializedElementString]];
-	
-	[serializedForm appendFormat:@"\n</%@>", elName];
-%ELSE
-	[serializedForm appendFormat:@"<%@ xmlns=\"%«schema.fullName»\"", elName];
-	[serializedForm appendString:[self serializedAttributeString]];
-	[serializedForm appendFormat:@" />"];
+	[self addElementsToNode:node];
 %ENDIF
 	
-	return serializedForm;
+	return node;
 }
 
-- (NSString *)serializedAttributeString
+- (void)addAttributesToNode:(xmlNodePtr)node
 {
-	NSMutableString *serializedForm = [NSMutableString string];
-	
 %IFDEF superClass
 %IF superClassIsComplex
-	[serializedForm appendString:[super serializedAttributeString]];
+	[super addAttributesToNode:node];
 %ENDIF
 %ENDIF
 	
 %IFDEF attributes
+	char buf[20];
 %FOREACH attribute in attributes
 	if(self.%«attribute.name» != 0) {
 %IFEQ attribute.type.assignOrRetain retain
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%@\"", self.%«attribute.name»];
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (const xmlChar*)[[self.%«attribute.name» description] UTF8String]);
 %ELSIFEQ attribute.type.typeName boolean
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%@\"", (*self.%«attribute.name» ? @"true" : @"false")];
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (*self.%«attribute.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ attribute.type.typeName long
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%d\"", *self.%«attribute.name»];
+		sprintf(buf, "%d", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName short
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%d\"", *self.%«attribute.name»];
+		sprintf(buf, "%d", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName int
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%d\"", *self.%«attribute.name»];
+		sprintf(buf, "%d", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName double
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%f\"", *self.%«attribute.name»];
+		sprintf(buf, "%f", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFNEQ attribute.type.enumCount 0
-		[serializedForm appendFormat:@" %«attribute.wsdlName»=\"%@\"", %«attribute.type.className»_stringFromEnum(self.%«attribute.name»)];
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (const xmlChar*)[%«attribute.type.className»_stringFromEnum(self.%«attribute.name») UTF8String]);
 %ENDIF
 	}
 
 %ENDFOR
 %ENDIF
-	
-	return serializedForm;
 }
 
-- (NSString *)serializedElementString
+- (void)addElementsToNode:(xmlNodePtr)node
 {
 	NSMutableString *serializedForm = [NSMutableString string];
 	
 %IFDEF superClass
 %IF superClassIsComplex
-	[serializedForm appendString:[super serializedElementString]];
+	[super addElementsToNode:node];
 %ENDIF
 %ENDIF
 	
 %IFDEF sequenceElements
+	xmlDocPtr doc = node->doc;
+	char buf[20];
 %FOREACH element in sequenceElements
 	if(self.%«element.name» != 0) {
 %IFEQ element.type.assignOrRetain retain
 
 %IF element.useAnArray
 		for(%«element.type.classNameWithPtr» child in self.%«element.name») {
-			[serializedForm appendFormat:@"\n%@", [child serializedFormUsingElementName:@"%«element.wsdlName»"]];
+			xmlAddChild(node, [child xmlNodeForDoc:doc elementName:@"%«element.wsdlName»"]);
 		}
 %ELSE
-		[serializedForm appendFormat:@"\n%@", [self.%«element.name» serializedFormUsingElementName:@"%«element.wsdlName»"]];
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:doc elementName:@"%«element.wsdlName»"]);
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-		[serializedForm appendFormat:@"\n<%«element.wsdlName»>%@</%«element.wsdlName»>", (*self.%«element.name» ? @"true" : @"false")];
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ element.type.typeName long
-		[serializedForm appendFormat:@"\n<%«element.wsdlName»>%d</%«element.wsdlName»>", *self.%«element.name»];
+		sprintf(buf, "%d", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName short
-		[serializedForm appendFormat:@"\n<%«element.wsdlName»>%d</%«element.wsdlName»>", *self.%«element.name»];
+		sprintf(buf, "%d", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName int
-		[serializedForm appendFormat:@"\n<%«element.wsdlName»>%d</%«element.wsdlName»>", *self.%«element.name»];
+		sprintf(buf, "%d", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName double
-		[serializedForm appendFormat:@"\n<%«element.wsdlName»>%f</%«element.wsdlName»>", *self.%«element.name»];
+		sprintf(buf, "%f", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
 
 %IF element.useAnArray
 		for(NSNumber *intRepresentation in self.%«element.name») {
 			%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
-			[serializedForm appendFormat:@"\n<%«element.wsdlName»>%@</%«element.wsdlName»>", %«element.type.className»_stringFromEnum(enumRepresentation)];
+			xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (const xmlChar*)[%«element.type.className»_stringFromEnum(enumRepresentation) UTF8String]);
 		}
 %ELSE
-		[serializedForm appendFormat:@"\n<%«element.wsdlName»>%@</%«element.wsdlName»>", %«element.type.className»_stringFromEnum(self.%«element.name»)];
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (const xmlChar*)[%«element.type.className»_stringFromEnum(self.%«element.name») UTF8String]);
 %ENDIF
 
 %ENDIF
 	}
 %ENDFOR
 %ENDIF
-	
-	return serializedForm;
 }
 
 /* elements */

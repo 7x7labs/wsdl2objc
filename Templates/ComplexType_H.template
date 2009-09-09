@@ -28,9 +28,9 @@
 
 - (NSString *)nsPrefix;
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
-- (NSString *)serializedAttributeString;
-- (NSString *)serializedElementString;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
+- (void)addAttributesToNode:(xmlNodePtr)node;
+- (void)addElementsToNode:(xmlNodePtr)node;
 
 + (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur;
 - (void)deserializeAttributesFromNode:(xmlNodePtr)cur;

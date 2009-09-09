@@ -78,7 +78,7 @@ static USObjCKeywords *sharedInstance = nil;
 					@"size",
 					@"bytecount",
 					@"byteoffset",
-				  @"duration",
+					@"duration",
 					@"absolutetime",
 					@"itemcount",
 					@"langcode",
@@ -88,6 +88,14 @@ static USObjCKeywords *sharedInstance = nil;
 					@"osstatus",
 					@"point",
 					@"style",
+					
+					// Variable names used during serialization
+					@"doc",
+					@"root",
+					@"ns",
+					@"xsi",
+					@"node",
+					@"buf",
 					nil];
 	}
 	

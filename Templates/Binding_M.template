@@ -449,45 +449,64 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 
 - (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements
 {
-	NSMutableString *serializedForm = [NSMutableString string];
+	int rc;
+    xmlDocPtr doc;
+    xmlChar *tmp;
 	
-	[serializedForm appendFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"];
+	doc = xmlNewDoc((const xmlChar*)XML_DEFAULT_VERSION);
+	if (doc == NULL) {
+		NSLog(@"Error creating the xml document tree");
+		return @"";
+	}
+	
+	xmlNodePtr root = xmlNewDocNode(doc, NULL, (const xmlChar*)"Envelope", NULL);
+	xmlDocSetRootElement(doc, root);
+	
 %IFEQ schema.wsdl.soapVersion 1.2
-	[serializedForm appendFormat:@"<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\"\n"];
+	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2003/05/soap-envelope/", (const xmlChar*)"soap");
 %ELSE
-	[serializedForm appendFormat:@"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"];
+	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://schemas.xmlsoap.org/soap/envelope/", (const xmlChar*)"soap");
 %ENDIF
-	[serializedForm appendFormat:@"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xsl:version=\"1.0\"\n"];
-	[serializedForm appendFormat:@"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"];
+
+	xmlSetNs(root, soapEnvelopeNs);
+	
+	xmlNsPtr xslNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/1999/XSL/Transform", (const xmlChar*)"xsl");
+	xmlNsPtr xsiNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar*)"xsi");
+	
+	xmlNewNsProp(root, xslNs, (const xmlChar*)"version", (const xmlChar*)"1.0");
+	
 %FOREACH schema in schema.wsdl.schemas
-	[serializedForm appendFormat:@"xmlns:%«schema.prefix»=\"%«schema.fullName»\"\n"];
+	xmlNewNs(root, (const xmlChar*)"%«schema.fullName»", (const xmlChar*)"%«schema.prefix»");
 %ENDFOR
-	[serializedForm appendFormat:@">\n"];
 	
 	if((headerElements != nil) && ([headerElements count] > 0)) {
-		[serializedForm appendFormat:@"<soap:Header>\n"];
+		xmlNodePtr headerNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar*)"Header", NULL);
+		xmlAddChild(root, headerNode);
 		
 		for(NSString *key in [headerElements allKeys]) {
 			id header = [headerElements objectForKey:key];
-			[serializedForm appendFormat:@"%@\n", [header serializedFormUsingElementName:key]];
+			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key]);
 		}
-		
-		[serializedForm appendFormat:@"</soap:Header>"];
 	}
 	
-	if((bodyElements != nil) && ([bodyElements count] > 0))  {
-		[serializedForm appendFormat:@"<soap:Body>\n"];
+	if((bodyElements != nil) && ([bodyElements count] > 0)) {
+		xmlNodePtr bodyNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar*)"Body", NULL);
+		xmlAddChild(root, bodyNode);
 		
 		for(NSString *key in [bodyElements allKeys]) {
 			id body = [bodyElements objectForKey:key];
-			[serializedForm appendFormat:@"%@\n", [body serializedFormUsingElementName:key]];
+			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key]);
 		}
-		
-		[serializedForm appendFormat:@"</soap:Body>\n"];
 	}
 	
-	[serializedForm appendFormat:@"</soap:Envelope>"];
+	xmlChar *buf;
+	int size;
+	xmlDocDumpFormatMemory(doc, &buf, &size, 1);
 	
+	NSString *serializedForm = [NSString stringWithCString:(const char*)buf encoding:NSUTF8StringEncoding];
+	xmlFree(buf);
+	
+	xmlFreeDoc(doc);	
 	return serializedForm;
 }
 

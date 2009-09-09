@@ -14,28 +14,28 @@
 
 @interface NSString (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSString *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
 @interface NSNumber (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSNumber *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
 @interface NSDate (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSDate *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
 @interface NSData (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSData *)deserializeNode:(xmlNodePtr)cur;
 
 @end
@@ -55,7 +55,7 @@
 - (id)initWithBool:(BOOL)aValue;
 - (NSString *)stringValue;
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (USBoolean *)deserializeNode:(xmlNodePtr)cur;
 
 @end
