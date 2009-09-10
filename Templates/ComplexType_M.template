@@ -80,7 +80,6 @@
 %ENDIF
 	
 %IFDEF attributes
-	char buf[20];
 %FOREACH attribute in attributes
 	if(self.%«attribute.name» != 0) {
 %IFEQ attribute.type.assignOrRetain retain
@@ -88,15 +87,19 @@
 %ELSIFEQ attribute.type.typeName boolean
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (*self.%«attribute.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ attribute.type.typeName long
+		char buf[20];
 		sprintf(buf, "%d", *self.%«attribute.name»);
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName short
+		char buf[20];
 		sprintf(buf, "%d", *self.%«attribute.name»);
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName int
+		char buf[20];
 		sprintf(buf, "%d", *self.%«attribute.name»);
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName double
+		char buf[20];
 		sprintf(buf, "%f", *self.%«attribute.name»);
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFNEQ attribute.type.enumCount 0
@@ -110,8 +113,6 @@
 
 - (void)addElementsToNode:(xmlNodePtr)node
 {
-	NSMutableString *serializedForm = [NSMutableString string];
-	
 %IFDEF superClass
 %IF superClassIsComplex
 	[super addElementsToNode:node];
@@ -119,32 +120,34 @@
 %ENDIF
 	
 %IFDEF sequenceElements
-	xmlDocPtr doc = node->doc;
-	char buf[20];
 %FOREACH element in sequenceElements
 	if(self.%«element.name» != 0) {
 %IFEQ element.type.assignOrRetain retain
 
 %IF element.useAnArray
 		for(%«element.type.classNameWithPtr» child in self.%«element.name») {
-			xmlAddChild(node, [child xmlNodeForDoc:doc elementName:@"%«element.wsdlName»"]);
+			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
 		}
 %ELSE
-		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:doc elementName:@"%«element.wsdlName»"]);
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
 		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ element.type.typeName long
+		char buf[20];
 		sprintf(buf, "%d", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName short
+		char buf[20];
 		sprintf(buf, "%d", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName int
+		char buf[20];
 		sprintf(buf, "%d", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName double
+		char buf[20];
 		sprintf(buf, "%f", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
