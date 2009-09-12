@@ -45,7 +45,7 @@
 
 @property (retain) %«className» *binding;
 @property (readonly) %«className»Response *response;
-@property (nonatomic, retain) id<%«className»ResponseDelegate> delegate;
+@property (nonatomic, assign) id<%«className»ResponseDelegate> delegate;
 @property (nonatomic, retain) NSMutableData *responseData;
 @property (nonatomic, retain) NSURLConnection *urlConnection;
 
