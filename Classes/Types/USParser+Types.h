@@ -45,7 +45,7 @@
 #pragma mark Types:Schema:ComplexType
 - (void)processComplexTypeElement:(NSXMLElement *)el schema:(USSchema *)schema;
 - (void)processComplexTypeChildElement:(NSXMLElement *)el type:(USType *)type;
-- (void)processAttributeElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processAttributeElement:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type;
 - (void)processSequenceElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processSequenceChildElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processSequenceElementElement:(NSXMLElement *)el type:(USType *)type;

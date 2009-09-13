@@ -22,9 +22,11 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class USObjCKeywords;
 @class USWSDL;
 @class USType;
 @class USElement;
+@class USAttribute;
 @class USMessage;
 @class USPortType;
 @class USBinding;
@@ -37,6 +39,7 @@
 	NSString *localPrefix;
 	NSMutableArray *types;
 	NSMutableArray *elements;
+	NSMutableArray *attributes;
 	NSMutableArray *imports;
 	NSMutableArray *messages;
 	NSMutableArray *portTypes;
@@ -53,6 +56,7 @@
 @property (copy) NSString *fullName;
 @property (retain) NSMutableArray *types;
 @property (retain) NSMutableArray *elements;
+@property (retain) NSMutableArray *attributes;
 @property (retain) NSMutableArray *imports;
 @property (retain) NSMutableArray *messages;
 @property (retain) NSMutableArray *portTypes;
@@ -67,6 +71,7 @@
 
 - (USType *)typeForName:(NSString *)aName;
 - (USElement *)elementForName:(NSString *)aName;
+- (USAttribute *)attributeForName:(NSString *)aName;
 - (USMessage *)messageForName:(NSString *)aName;
 - (USPortType *)portTypeForName:(NSString *)aName;
 - (USBinding *)bindingForName:(NSString *)aName;

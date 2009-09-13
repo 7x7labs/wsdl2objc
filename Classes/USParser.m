@@ -230,6 +230,8 @@
 		
 		schema.hasBeenParsed = YES;
 	}
+	
+	// Uncomment the below to verify that all types and attributes have been correctly parsed
 //	NSLog(@"Dumping schema: %@", schema.fullName);
 //	for (USType *aT in [schema types]) {
 //		NSLog(@"	+ %@ (%@, %d)", aT.typeName, aT, aT.hasBeenParsed);
@@ -237,6 +239,9 @@
 //			NSLog(@"		- %@ (%@)", aSE.name, aSE.type);
 //		}
 //	}	
+//	for (USAttribute *aA in [schema attributes]) {
+//		NSLog(@"	+ %@ (%@, %d)", [aA name], [[aA type] typeName], [[aA type] hasBeenParsed]);
+//	}
 }
 
 - (void)processNamespace:(NSXMLNode *)ns wsdl:(USWSDL *)wsdl
@@ -264,6 +269,8 @@
 		[self processComplexTypeElement:el schema:schema];
 	} else if([localName isEqualToString:@"element"]) {
 		[self processElementElement:el schema:schema];
+	} else if([localName isEqualToString:@"attribute"]) {
+		[self processAttributeElement:el schema:schema type:nil];
 	}
 }
 

@@ -27,6 +27,7 @@
 @dynamic name;
 @synthesize wsdlName;
 @synthesize attributeDefault;
+@synthesize schema;
 @synthesize type;
 
 -(id)init
@@ -35,6 +36,7 @@
 	{
 		self.name = @"";
 		self.wsdlName = @"";
+		self.schema = nil;
 		self.attributeDefault = @"";
 		type = nil;
 	}
