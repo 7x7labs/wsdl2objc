@@ -113,6 +113,8 @@
 	[xsd addSimpleClassWithName:@"QName" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"token" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"anyType" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"anyURI" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"ID" representationClass:@"NSString *"];
 }
 
 @end
