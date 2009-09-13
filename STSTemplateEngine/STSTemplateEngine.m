@@ -1387,8 +1387,9 @@ BOOL classExists (NSString *className) {
 							value = [NSString valueForDictionary:_dictionary key:key];
 							if(value == nil || ![value isKindOfClass:[NSArray class]])
 							{
-								error = [TEError error:TE_ABORTING_TEMPLATE_EXPANSION
+								error = [TEError error:TE_UNDEFINED_PLACEHOLDER_FOUND_ERROR
 												inLine:lineNumber atToken:TE_FOREACH];
+								[error setLiteral:key];
 								// and add this error to the error log
 								[_errorLog addObject:error];
 								// log this error to the console
