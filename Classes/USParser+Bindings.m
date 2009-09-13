@@ -162,7 +162,12 @@
 	NSString *partName = [[el attributeForName:@"part"] stringValue];
 	USPart *part = [message partForName:partName];
 	
-	[interface.headers addObject:part.element];
+	if (part.element) {
+		[interface.headers addObject:part.element];
+	} else {
+		NSLog(@"WARNING: No part '%@' in message '%@', referenced in element:\n%@", partName, messageQName, el);
+	}
+
 }
 
 - (void)processSoapBodyElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface
