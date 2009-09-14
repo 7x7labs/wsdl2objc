@@ -275,6 +275,10 @@
 		self.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName anyType
 		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName anyURI
+		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName ID
+		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
