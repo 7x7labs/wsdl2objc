@@ -119,6 +119,11 @@
 - (void)processEnumerationElement:(NSXMLElement *)el type:(USType *)type
 {
 	NSString *enumerationValue = [[el attributeForName:@"value"] stringValue];
+	// Get rid of the useless current local prefix if it exists
+	NSString *localPrefix = [[[type schema] localPrefix] stringByAppendingString:@":"];
+	if ([enumerationValue hasPrefix:localPrefix]) {
+		enumerationValue = [enumerationValue substringFromIndex:[localPrefix length]];
+	}
 	[type.enumerationValues addObject:enumerationValue];
 }
 
