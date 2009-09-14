@@ -21,6 +21,7 @@
  */
 
 #import "USParser+Types.h"
+#import "USObjCKeywords.h"
 
 #import "USWSDL.h"
 #import "USSchema.h"
@@ -124,7 +125,7 @@
 	if ([enumerationValue hasPrefix:localPrefix]) {
 		enumerationValue = [enumerationValue substringFromIndex:[localPrefix length]];
 	}
-	[type.enumerationValues addObject:enumerationValue];
+	[type.enumerationValues addObject:[enumerationValue stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""]];
 }
 
 #pragma mark Types:Schema:ComplexType
