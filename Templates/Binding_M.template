@@ -145,7 +145,6 @@
 		self.delegate = aDelegate;
 		self.responseData = nil;
 		self.urlConnection = nil;
-        return nil;
 	}
 	
 	return self;
@@ -285,12 +284,15 @@
 	if(%«header.name» != nil) [%«header.name» release];
 %ENDIF
 %ENDFOR
-	[response release], response = nil;
+	
 	[super dealloc];
 }
 
 - (void)main
 {
+	[response autorelease];
+	response = [%«className»Response new];
+	
 	%«className»_envelope *envelope = [%«className»_envelope sharedInstance];
 	
 	NSMutableDictionary *headerElements = nil;
