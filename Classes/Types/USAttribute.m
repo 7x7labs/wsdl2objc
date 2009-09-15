@@ -24,8 +24,10 @@
 #import "USObjCKeywords.h"
 
 @implementation USAttribute
-@synthesize name;
+@dynamic name;
+@synthesize wsdlName;
 @synthesize attributeDefault;
+@synthesize schema;
 @synthesize type;
 
 -(id)init
@@ -33,6 +35,8 @@
 	if((self = [super init]))
 	{
 		self.name = @"";
+		self.wsdlName = @"";
+		self.schema = nil;
 		self.attributeDefault = @"";
 		type = nil;
 	}
@@ -42,6 +46,7 @@
 -(void)dealloc
 {
 	[name release];
+	[wsdlName release];
 	[attributeDefault release];
 	[(id)type release];
 	[super dealloc];
@@ -58,9 +63,16 @@
 	return returning;
 }
 
-- (void)setAttributeName:(NSString *)aName
+- (NSString *)name
+{
+	return name;
+}
+
+- (void)setName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
+	
+	self.wsdlName = aName;
 	if([keywords isAKeyword:aName]) {
 		aName = [NSString stringWithFormat:@"%@_", aName];
 	}

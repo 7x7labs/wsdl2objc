@@ -52,61 +52,73 @@
 	return @"%«schema.prefix»";
 }
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
-	NSMutableString *serializedForm = [NSMutableString string];
+	xmlNodePtr root = xmlDocGetRootElement(doc);
 	
-	[serializedForm appendFormat:@"<%@ xsi:type=\"%«schema.prefix»:%«typeName»\" xmlns=\"%«schema.fullName»\"", elName];
-	[serializedForm appendString:[self serializedAttributeString]];
-	[serializedForm appendFormat:@">"];
+	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
 	
-	[serializedForm appendString:[self serializedElementString]];
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], NULL);
+	xmlSetNsProp(node, xsi, (const xmlChar*)"type", (const xmlChar*)"%«schema.prefix»:%«typeName»");
+%IFEQ isInTargetNamespace false
+	xmlSetNsProp(node, nil, (const xmlChar*)"xmlns", (const xmlChar*)"%«schema.fullName»");
+%ENDIF
 	
-	[serializedForm appendFormat:@"\n</%@>", elName];
+	[self addAttributesToNode:node];
 	
-	return serializedForm;
+%IF hasSequenceElements
+	[self addElementsToNode:node];
+%ENDIF
+	
+	return node;
 }
 
-- (NSString *)serializedAttributeString
+- (void)addAttributesToNode:(xmlNodePtr)node
 {
-	NSMutableString *serializedForm = [NSMutableString string];
-	
 %IFDEF superClass
-	[serializedForm appendString:[super serializedAttributeString]];
+%IF superClassIsComplex
+	[super addAttributesToNode:node];
+%ENDIF
 %ENDIF
 	
 %IFDEF attributes
 %FOREACH attribute in attributes
 	if(self.%«attribute.name» != 0) {
 %IFEQ attribute.type.assignOrRetain retain
-		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", self.%«attribute.name»];
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (const xmlChar*)[[self.%«attribute.name» description] UTF8String]);
 %ELSIFEQ attribute.type.typeName boolean
-		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", (*self.%«attribute.name» ? @"true" : @"false")];
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (*self.%«attribute.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ attribute.type.typeName long
-		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
+		char buf[20];
+		sprintf(buf, "%d", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName short
-		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
+		char buf[20];
+		sprintf(buf, "%d", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName int
-		[serializedForm appendFormat:@" %«attribute.name»=\"%d\"", *self.%«attribute.name»];
+		char buf[20];
+		sprintf(buf, "%d", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName double
-		[serializedForm appendFormat:@" %«attribute.name»=\"%f\"", *self.%«attribute.name»];
+		char buf[20];
+		sprintf(buf, "%f", *self.%«attribute.name»);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFNEQ attribute.type.enumCount 0
-		[serializedForm appendFormat:@" %«attribute.name»=\"%@\"", %«attribute.type.className»_stringFromEnum(self.%«attribute.name»)];
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (const xmlChar*)[%«attribute.type.className»_stringFromEnum(self.%«attribute.name») UTF8String]);
 %ENDIF
 	}
 
 %ENDFOR
 %ENDIF
-	
-	return serializedForm;
 }
 
-- (NSString *)serializedElementString
+- (void)addElementsToNode:(xmlNodePtr)node
 {
-	NSMutableString *serializedForm = [NSMutableString string];
-	
 %IFDEF superClass
-	[serializedForm appendString:[super serializedElementString]];
+%IF superClassIsComplex
+	[super addElementsToNode:node];
+%ENDIF
 %ENDIF
 	
 %IFDEF sequenceElements
@@ -116,39 +128,45 @@
 
 %IF element.useAnArray
 		for(%«element.type.classNameWithPtr» child in self.%«element.name») {
-			[serializedForm appendFormat:@"\n%@", [child serializedFormUsingElementName:@"%«element.name»"]];
+			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
 		}
 %ELSE
-		[serializedForm appendFormat:@"\n%@", [self.%«element.name» serializedFormUsingElementName:@"%«element.name»"]];
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-		[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", (*self.%«element.name» ? @"true" : @"false")];
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ element.type.typeName long
-		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
+		char buf[20];
+		sprintf(buf, "%d", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName short
-		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
+		char buf[20];
+		sprintf(buf, "%d", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName int
-		[serializedForm appendFormat:@"\n<%«element.name»>%d</%«element.name»>", *self.%«element.name»];
+		char buf[20];
+		sprintf(buf, "%d", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName double
-		[serializedForm appendFormat:@"\n<%«element.name»>%f</%«element.name»>", *self.%«element.name»];
+		char buf[20];
+		sprintf(buf, "%f", *self.%«element.name»);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
 
 %IF element.useAnArray
 		for(NSNumber *intRepresentation in self.%«element.name») {
 			%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
-			[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", %«element.type.className»_stringFromEnum(enumRepresentation)];
+			xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (const xmlChar*)[%«element.type.className»_stringFromEnum(enumRepresentation) UTF8String]);
 		}
 %ELSE
-		[serializedForm appendFormat:@"\n<%«element.name»>%@</%«element.name»>", %«element.type.className»_stringFromEnum(self.%«element.name»)];
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (const xmlChar*)[%«element.type.className»_stringFromEnum(self.%«element.name») UTF8String]);
 %ENDIF
 
 %ENDIF
 	}
 %ENDFOR
 %ENDIF
-	
-	return serializedForm;
 }
 
 /* elements */
@@ -186,9 +204,9 @@
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
 %FOREACH attribute in attributes
 %IFEQ attribute.type.assignOrRetain retain
-	[attributes setObject:self.%«attribute.name» forKey:@"%«attribute.name»"];
+	[attributes setObject:self.%«attribute.name» forKey:@"%«attribute.wsdlName»"];
 %ELSE
-	[attributes setObject:[NSNumber numberWithInt:(int)self.%«attribute.name»] forKey:@"%«attribute.name»"];
+	[attributes setObject:[NSNumber numberWithInt:(int)self.%«attribute.name»] forKey:@"%«attribute.wsdlName»"];
 %ENDIF
 %ENDFOR
 	
@@ -217,7 +235,9 @@
 {
 
 %IFDEF superClass
+%IF superClassIsComplex
 	[super deserializeAttributesFromNode:cur];
+%ENDIF
 %ENDIF
 
 %IF hasAttributes
@@ -225,7 +245,7 @@
 	NSString *attrString;
 	
 %FOREACH attribute in attributes
-	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.name»");
+	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.wsdlName»");
 	if(attrValue != NULL) {
 		attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
 
@@ -243,6 +263,24 @@
 		self.%«attribute.name» = [NSNumber numberWithFloat:[attrString doubleValue]];
 %ELSIFEQ attribute.type.typeName string
 		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName dateTime
+		self.%«attribute.name» = [NSDate dateWithString:attrString];
+%ELSIFEQ attribute.type.typeName date
+		self.%«attribute.name» = [NSDate dateWithString:attrString];
+%ELSIFEQ attribute.type.typeName base64Binary
+		self.%«attribute.name» = [NSData dataWithBase64EncodedString:base64Binary];
+%ELSIFEQ attribute.type.typeName decimal
+		self.%«attribute.name» = [NSNumber numberWithDouble:[attrString doubleValue]];
+%ELSIFEQ attribute.type.typeName QName
+		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName token
+		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName anyType
+		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName anyURI
+		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName ID
+		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
@@ -258,7 +296,9 @@
 {
 	
 %IFDEF superClass
+%IF superClassIsComplex
 	[super deserializeElementsFromNode:cur];
+%ENDIF
 %ENDIF
 	
 %IF hasSequenceElements
@@ -269,10 +309,11 @@
 			
 			if(elementText != NULL) {
 				elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
+				[elementString self]; // avoid compiler warning for unused var
 				xmlFree(elementText);
 			}
 %FOREACH element in sequenceElements
-			if(xmlStrEqual(cur->name, (const xmlChar *) "%«element.name»")) {
+			if(xmlStrEqual(cur->name, (const xmlChar *) "%«element.wsdlName»")) {
 %IFEQ element.type.assignOrRetain retain
 				
 				Class elementClass = nil;
@@ -291,7 +332,7 @@
 						
 						xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, (const xmlChar *)[prefix UTF8String]);
 						
-						NSString *standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char*)elementNamespace->href]];
+						NSString *standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char*)elementNamespace->href encoding:NSUTF8StringEncoding]];
 						
 						elementClassString = [NSString stringWithFormat:@"%@_%@", standardPrefix, localName];
 					} else {

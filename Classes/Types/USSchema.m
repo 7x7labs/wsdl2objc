@@ -20,9 +20,11 @@
  THE SOFTWARE.
  */
 
+#import "USObjCKeywords.h"
 #import "USSchema.h"
 #import "USType.h"
 #import "USElement.h"
+#import "USAttribute.h"
 #import "USMessage.h"
 #import "USPortType.h"
 #import "USBinding.h"
@@ -32,8 +34,10 @@
 
 @synthesize fullName;
 @synthesize prefix;
+@synthesize localPrefix;
 @synthesize types;
 @synthesize elements;
+@synthesize attributes;
 @synthesize imports;
 @synthesize messages;
 @synthesize portTypes;
@@ -49,8 +53,10 @@
 	{
 		self.fullName = @"";
 		self.prefix = nil;
+		self.localPrefix = nil;
 		self.types = [NSMutableArray array];
 		self.elements = [NSMutableArray array];
+		self.attributes = [NSMutableArray array];
 		self.imports = [NSMutableArray array];
 		self.messages = [NSMutableArray array];
 		self.portTypes = [NSMutableArray array];
@@ -78,6 +84,7 @@
 	
 	for(USType * type in self.types) {
 		if([type.typeName isEqualToString:aName]) {
+			// NSLog(@"Found Type: %@ (%@)", type.typeName, type);
 			return type;
 		}
 	}
@@ -88,6 +95,7 @@
 	
 	[self.types addObject:newType];
 	
+	// NSLog(@"New Type: %@ (%@)", newType.typeName, newType);
 	return newType;
 }
 
@@ -95,8 +103,14 @@
 {
 	if(aName == nil) return nil;
 	
+	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
+	if([keywords isAKeyword:aName]) {
+		aName = [NSString stringWithFormat:@"%@_", aName];
+	}
+	
 	for(USElement * element in self.elements) {
 		if([element.name isEqual:aName]) {
+			// NSLog(@"Found Element: %@ (%@), type: %@ (%@)", element.name, element, element.type.typeName, element.type);
 			return element;
 		}
 	}
@@ -107,7 +121,34 @@
 	
 	[self.elements addObject:newElement];
 	
+	// NSLog(@"New Element: %@ (%@), type: %@ (%@)", newElement.name, newElement, newElement.type.typeName, newElement.type);
 	return newElement;
+}
+
+- (USAttribute *)attributeForName:(NSString *)aName
+{
+	if(aName == nil) return nil;
+
+	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
+	if([keywords isAKeyword:aName]) {
+		aName = [NSString stringWithFormat:@"%@_", aName];
+	}
+		
+	for(USAttribute * attribute in self.attributes) {
+		if([attribute.name isEqual:aName]) {
+			// NSLog(@"Found attribute: %@ (%@), type: %@ (%@)", attribute.name, attribute, attribute.type.typeName, attribute.type);
+			return attribute;
+		}
+	}
+	
+	USAttribute *newattribute = [[USAttribute new] autorelease];
+	newattribute.name = aName;
+	newattribute.schema = self;
+	
+	[self.attributes addObject:newattribute];
+	
+	// NSLog(@"New attribute: %@ (%@), type: %@ (%@)", newattribute.name, newattribute, newattribute.type.typeName, newattribute.type);
+	return newattribute;
 }
 
 - (USMessage *)messageForName:(NSString *)aName
@@ -235,6 +276,7 @@
 	[returning setObject:[[NSNumber numberWithUnsignedInt:[self.types count]] stringValue] forKey:@"typeCount"];
 	[returning setObject:self.imports forKey:@"imports"];
 	[returning setObject:self.types forKey:@"types"];
+	[returning setObject:self.wsdl forKey:@"wsdl"];
 	
 	return returning;
 }

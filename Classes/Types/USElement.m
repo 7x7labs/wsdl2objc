@@ -28,6 +28,7 @@
 @implementation USElement
 
 @synthesize name;
+@synthesize wsdlName;
 @synthesize type;
 @synthesize schema;
 @synthesize hasBeenParsed;
@@ -37,6 +38,7 @@
 {
 	if((self = [super init])) {
 		self.name = nil;
+		self.wsdlName = nil;
 		self.type = nil;
 		self.schema = nil;
 		self.hasBeenParsed = NO;
@@ -49,17 +51,14 @@
 - (void)setName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
+
+	self.wsdlName = aName;
 	if([keywords isAKeyword:aName]) {
 		aName = [NSString stringWithFormat:@"%@_", aName];
 	}
 	
 	if(name != nil) [name autorelease];
 	name = [aName copy];
-}
-
-- (void)valueForUndefinedKey:(NSString *)aKey
-{
-	NSLog(@"%@", aKey);
 }
 
 - (NSString *)uname

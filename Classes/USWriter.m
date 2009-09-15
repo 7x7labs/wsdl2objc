@@ -1,5 +1,7 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+ Modifications copyright (c) 2009 Micropraxis Ltd.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -194,6 +196,7 @@
 	}
 	
 	if(type.hasBeenWritten) return;
+	type.hasBeenWritten = YES;
 	if(type.behavior == TypeBehavior_simple && [type.className isEqualToString:type.representationClass]) return;
 	
 	if(type.superClass != nil) [self appendType:type.superClass toHString:hString mString:mString];
@@ -230,9 +233,7 @@
 		NSLog(@"Errors encountered while generating implementation for type %@", type.typeName);
 	}
 	
-	[typeMString release];
-	
-	type.hasBeenWritten = YES;
+	[typeMString release];	
 }
 
 - (void)appendBinding:(USBinding *)binding toHString:(NSMutableString *)hString mString:(NSMutableString *)mString
@@ -300,10 +301,10 @@
 	[self writeResourceName:@"USAdditions_M" resourceType:@"template" toFilename:@"USAdditions.m"];
 	
 	//Copy additions dependencies
-	[self writeResourceName:@"NSCalendarDate+ISO8601Parsing_H" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Parsing.h"];
-	[self writeResourceName:@"NSCalendarDate+ISO8601Parsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Parsing.m"];
-	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_H" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.h"];
-	[self writeResourceName:@"NSCalendarDate+ISO8601Unparsing_M" resourceType:@"template" toFilename:@"NSCalendarDate+ISO8601Unparsing.m"];
+	[self writeResourceName:@"NSDate+ISO8601Parsing_H" resourceType:@"template" toFilename:@"NSDate+ISO8601Parsing.h"];
+	[self writeResourceName:@"NSDate+ISO8601Parsing_M" resourceType:@"template" toFilename:@"NSDate+ISO8601Parsing.m"];
+	[self writeResourceName:@"NSDate+ISO8601Unparsing_H" resourceType:@"template" toFilename:@"NSDate+ISO8601Unparsing.h"];
+	[self writeResourceName:@"NSDate+ISO8601Unparsing_M" resourceType:@"template" toFilename:@"NSDate+ISO8601Unparsing.m"];
 	
 	//Copy globals
 	[self writeResourceName:@"USGlobals_H" resourceType:@"template" toFilename:@"USGlobals.h"];
@@ -312,7 +313,7 @@
 
 - (void)writeResourceName:(NSString *)resourceName resourceType:(NSString *)resourceType toFilename:(NSString *)fileName
 {
-	NSString *resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType]];
+	NSString *resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType] usedEncoding:nil error:nil];
 	
 	[resourceContents writeToURL:[NSURL URLWithString:fileName relativeToURL:outDir]
 					  atomically:NO

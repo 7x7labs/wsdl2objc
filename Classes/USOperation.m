@@ -69,15 +69,15 @@
 	return newFault;
 }
 
-- (NSString *)invokeString
+- (NSString *)invokeStringWithAsync:(BOOL)async
 {
-	if(self.input.body == nil && self.input.headers == nil) {
+	if(self.input.body == nil && self.input.headers == nil && !async) {
 		return self.name;
 	}
 	
 	NSMutableString *invokeString = [NSMutableString string];
 	
-	[invokeString appendFormat:@"%@Using", self.name];
+	[invokeString appendFormat:@"%@%@Using", self.name, ((async)?@"Async":@"")];
 	
 	BOOL firstArgument = YES;
 	for(USPart *part in self.input.body.parts) {
@@ -91,6 +91,16 @@
 	}
 	
 	return invokeString;
+}
+
+- (NSString *)invokeString
+{
+	return [self invokeStringWithAsync:NO];
+}
+
+- (NSString *)asyncInvokeString
+{
+	return [self invokeStringWithAsync:YES];
 }
 
 @end

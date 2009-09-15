@@ -21,6 +21,7 @@
  */
 
 #import "USParser+Types.h"
+#import "USObjCKeywords.h"
 
 #import "USWSDL.h"
 #import "USSchema.h"
@@ -119,7 +120,12 @@
 - (void)processEnumerationElement:(NSXMLElement *)el type:(USType *)type
 {
 	NSString *enumerationValue = [[el attributeForName:@"value"] stringValue];
-	[type.enumerationValues addObject:enumerationValue];
+	// Get rid of the useless current local prefix if it exists
+	NSString *localPrefix = [[[type schema] localPrefix] stringByAppendingString:@":"];
+	if ([enumerationValue hasPrefix:localPrefix]) {
+		enumerationValue = [enumerationValue substringFromIndex:[localPrefix length]];
+	}
+	[type.enumerationValues addObject:[enumerationValue stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""]];
 }
 
 #pragma mark Types:Schema:ComplexType
@@ -146,40 +152,88 @@
 {
 	NSString *localName = [el localName];
 	
-	if([localName isEqualToString:@"sequence"]) {
+	if(([localName isEqualToString:@"sequence"]) ||
+	   ([localName isEqualToString:@"choice"]) ||
+	   ([localName isEqualToString:@"any"])){
+		// TODO: Actually support choice and any with the proper templates
 		[self processSequenceElement:el type:type];
 	} else if([localName isEqualToString:@"attribute"]) {
-		[self processAttributeElement:el type:type];
+		[self processAttributeElement:el schema:nil type:type];
 	} else if([localName isEqualToString:@"complexContent"]) {
 		[self processComplexContentElement:el type:type];
+	} else if([localName isEqualToString:@"simpleContent"]) {
+		[self processSimpleContentElement:el type:type];
 	}
 }
 
-- (void)processAttributeElement:(NSXMLElement *)el type:(USType *)type
+- (void)processAttributeElement:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type
 {
+	// If the schema is not nil, we assign the attribute to the schema
+	// Otherwise we assume the type is not nil and we assign the attribute to the type
+	
 	USAttribute *attribute = [[USAttribute new] autorelease];
 	
-	NSString *name = [[el attributeForName:@"name"] stringValue];
-	attribute.name = name;
+	// Check if it's a referred attribute
+	NSXMLNode *refNode = [el attributeForName:@"ref"];
+	if(refNode != nil) {
+		
+		NSString *attributeQName = [refNode stringValue];
+		NSString *attributeURI = [[el resolveNamespaceForName:attributeQName] stringValue];
+		NSString *attributeLocalName = [NSXMLNode localNameForName:attributeQName];
+		
+		USAttribute *refAttribute;
+		if (schema != nil) {
+			refAttribute = [schema attributeForName:attributeLocalName];
+		} else {
+			USSchema *theSchema = [type.schema.wsdl schemaForNamespace:attributeURI];
+			refAttribute = [theSchema attributeForName:attributeLocalName];
+		}
+
+		attribute.name = refAttribute.name;
+		attribute.type = refAttribute.type;
+		
+	} else {
 	
-	NSString *prefixedType = [[el attributeForName:@"type"] stringValue];
-	NSString *uri = [[el resolveNamespaceForName:prefixedType] stringValue];
-	NSString *typeName = [NSXMLNode localNameForName:prefixedType];
-	USType *attributeType = [type.schema.wsdl typeForNamespace:uri name:typeName];
-	attribute.type = attributeType;
-	
-	NSXMLNode *defaultNode = [el attributeForName:@"default"];
-	if(defaultNode != nil) {
-		NSString *defaultValue = [defaultNode stringValue];
-		attribute.attributeDefault = defaultValue;
+		NSString *name = [[el attributeForName:@"name"] stringValue];
+		attribute.name = name;
+		if (name == nil) {
+			NSLog(@"\n-----\nATT NAME IS NIL: %@\n-----", el);
+		}
+		
+		NSString *prefixedType = [[el attributeForName:@"type"] stringValue];
+		NSString *uri = [[el resolveNamespaceForName:prefixedType] stringValue];
+		NSString *typeName = [NSXMLNode localNameForName:prefixedType];
+		USType *attributeType;
+		if (schema != nil) {
+			attributeType = [schema.wsdl typeForNamespace:uri name:typeName];
+		} else {
+			attributeType = [type.schema.wsdl typeForNamespace:uri name:typeName];
+		}
+		attribute.type = attributeType;
+		
+		NSXMLNode *defaultNode = [el attributeForName:@"default"];
+		if(defaultNode != nil) {
+			NSString *defaultValue = [defaultNode stringValue];
+			attribute.attributeDefault = defaultValue;
+		}
 	}
-	
-	[type.attributes addObject:attribute];
+	if (schema != nil) {
+		[schema.attributes addObject:attribute];
+	} else {
+		[type.attributes addObject:attribute];
+	}
 }
 
 - (void)processSequenceElement:(NSXMLElement *)el type:(USType *)type
 {
 	for(NSXMLNode *child in [el children]) {
+		NSString *localName = [child localName];
+		if (([localName isEqualToString:@"choice"]) ||
+			([localName isEqualToString:@"any"])) {
+			// don't properly handle choice and any yet, but encompass all their elements
+			// into the sequence as if it were one big sequence
+			[self processSequenceElement:(NSXMLElement*)child type:type];
+		}
 		if([child kind] == NSXMLElementKind) {
 			[self processSequenceChildElement:(NSXMLElement*)child type:type];
 		}
@@ -212,21 +266,44 @@
 		if(element.hasBeenParsed) {
 			seqElement.name = element.name;
 			seqElement.type = element.type;
+			//	NSLog(@"REF PARSED SEQELEMENT NAME: %@ (%@)", element.name, [[el parent] name]);
 		} else {
+			// the sequence element name and type will be assigned after its referring element is parsed
 			[element.waitingSeqElements addObject:seqElement];
-		}
-		
+		//	NSLog(@"REF NOT PARSED SEQELEMENT NAME: %@ (%@)", element.name, [[el parent] name]);
+		}		
 		
 	} else {
 		
 		NSString *name = [[el attributeForName:@"name"] stringValue];
 		seqElement.name = name;
+		// NSLog(@"SEQELEMENT NAME: %@ (%@)", name, [[[el parent] parent] name]);
 		
 		NSString *prefixedType = [[el attributeForName:@"type"] stringValue];
+		if (prefixedType == nil) {
+			// The type is inline, as a subnode <complexType> or <simpleType>
+			prefixedType = [[el attributeForName:@"name"] stringValue];
+			NSUInteger childIdx = 0;
+			for(NSXMLNode *child in [el children]) {			
+				if([[child localName] hasSuffix:@"Type"]) {
+					// We found the type definition. Let's give it the element's name and send it over to the processor
+					[(NSXMLElement*)child addAttribute:[NSXMLNode attributeWithName:@"name" stringValue:prefixedType]];
+					[self processSchemaChildElement:(NSXMLElement*)child schema:type.schema];
+					// and now re-process the element itself with the correct type
+					// using the original local prefix because we're back in a local scope still
+					NSString *elType = [type.schema.localPrefix stringByAppendingFormat:@":%@", prefixedType];
+					[el addAttribute:[NSXMLNode attributeWithName:@"type" stringValue:elType]];
+					[el removeChildAtIndex:childIdx];
+					// NSLog(@"*** Reprocessing a type: %@", elType);
+					[self processSequenceElementElement:el type:type];
+					return;
+				}
+				childIdx++;
+			}			
+		}
 		NSString *uri = [[el resolveNamespaceForName:prefixedType] stringValue];
 		NSString *typeName = [NSXMLNode localNameForName:prefixedType];
 		seqElement.type = [type.schema.wsdl typeForNamespace:uri name:typeName];
-		
 	}
 	
 	NSXMLNode *minOccursNode = [el attributeForName:@"minOccurs"];
@@ -270,6 +347,24 @@
 	}
 }
 
+- (void)processSimpleContentElement:(NSXMLElement *)el type:(USType *)type
+{
+	for(NSXMLNode *child in [el children]) {
+		if([child kind] == NSXMLElementKind) {
+			[self processSimpleContentChildElement:(NSXMLElement*)child type:type];
+		}
+	}
+}
+
+- (void)processSimpleContentChildElement:(NSXMLElement *)el type:(USType *)type
+{
+	NSString *localName = [el localName];
+	
+	if([localName isEqualToString:@"extension"]) {
+		[self processExtensionElement:el type:type];
+	}
+}
+
 - (void)processExtensionElement:(NSXMLElement *)el type:(USType *)type
 {
 	NSString *prefixedType = [[el attributeForName:@"base"] stringValue];
@@ -288,6 +383,7 @@
 
 - (void)processExtensionChildElement:(NSXMLElement *)el type:(USType *)type
 {
+//	NSLog(@"Processing extension: %@", [el description]);
 	[self processComplexTypeChildElement:el type:type];
 }
 
@@ -306,10 +402,6 @@
 			USType *type = [schema.wsdl typeForNamespace:uri name:typeName];
 			element.type = type;
 			
-			for(USSequenceElement *seqElement in element.waitingSeqElements) {
-				seqElement.name = element.name;
-				seqElement.type = element.type;
-			}
 		} else {
 			for(NSXMLNode *child in [el children]) {
 				if([child kind] == NSXMLElementKind) {
@@ -318,6 +410,11 @@
 			}
 		}
 		
+		for(USSequenceElement *seqElement in element.waitingSeqElements) {
+			// NSLog(@"Assigning %@ for %@", element.name, seqElement);
+			seqElement.name = element.name;
+			seqElement.type = element.type;
+		}
 		element.hasBeenParsed = YES;
 	}
 }
@@ -326,9 +423,29 @@
 {
 	NSString *localName = [el localName];
 	
-	if([localName isEqualToString:@"complexType"]) {
+	if([localName isEqualToString:@"simpleType"]) {
+		[self processElementElementSimpleTypeElement:el element:element];
+	} else if([localName isEqualToString:@"complexType"]) {
 		[self processElementElementComplexTypeElement:el element:element];
 	}
+}
+
+- (void)processElementElementSimpleTypeElement:(NSXMLElement *)el element:(USElement *)element
+{
+	USType *type = [element.schema typeForName:element.name];
+	
+	if(!type.hasBeenParsed) {
+		type.behavior = TypeBehavior_simple;
+		
+		for(NSXMLNode *child in [el children]) {
+			if([child kind] == NSXMLElementKind) {
+				[self processSimpleTypeChildElement:(NSXMLElement*)child type:type];
+			}
+		}
+		type.hasBeenParsed = YES;
+	}
+	// assign the inline definition to its parent element
+	element.type = type;
 }
 
 - (void)processElementElementComplexTypeElement:(NSXMLElement *)el element:(USElement *)element
@@ -337,16 +454,16 @@
 	
 	if(!type.hasBeenParsed) {
 		type.behavior = TypeBehavior_complex;
-        
-        for(NSXMLNode *child in [el children]) {
+		
+		for(NSXMLNode *child in [el children]) {
 			if([child kind] == NSXMLElementKind) {
 				[self processComplexTypeChildElement:(NSXMLElement*)child type:type];
 			}
 		}
-
+          
 		type.hasBeenParsed = YES;
 	}
-	
+	// assign the inline definition to its parent element
 	element.type = type;
 }
 

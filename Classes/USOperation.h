@@ -46,5 +46,5 @@
 - (USOperationFault *)faultForName:(NSString *)aName;
 
 - (NSString *)invokeString;
-
+- (NSString *)asyncInvokeString;
 @end

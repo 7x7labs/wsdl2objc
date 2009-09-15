@@ -74,10 +74,16 @@
 			NSString *uri = [[el resolveNamespaceForName:typeQName] stringValue];
 			USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
 			NSString *elementLocalName = [NSXMLNode localNameForName:typeQName];
-			element = [elementSchema elementForName:elementLocalName];
-			if(element.type == nil) {
-				element.type = [elementSchema typeForName:elementLocalName];
-			}
+			element = [USElement new];
+			element.name = name;
+			element.schema = elementSchema;
+			element.type = [elementSchema typeForName:elementLocalName];
+			element.hasBeenParsed = YES;
+//			
+//			element = [elementSchema elementForName:elementLocalName];
+//			if(element.type == nil) {
+//				element.type = [elementSchema typeForName:elementLocalName];
+//			}
 		}
 	}
 	

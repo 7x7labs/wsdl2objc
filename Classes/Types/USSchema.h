@@ -22,19 +22,24 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class USObjCKeywords;
 @class USWSDL;
 @class USType;
 @class USElement;
+@class USAttribute;
 @class USMessage;
 @class USPortType;
 @class USBinding;
 @class USService;
 
+
 @interface USSchema : NSObject {
 	NSString *fullName;
 	NSString *prefix;
+	NSString *localPrefix;
 	NSMutableArray *types;
 	NSMutableArray *elements;
+	NSMutableArray *attributes;
 	NSMutableArray *imports;
 	NSMutableArray *messages;
 	NSMutableArray *portTypes;
@@ -46,10 +51,12 @@
 	BOOL hasBeenWritten;
 }
 
-@property (copy) NSString *prefix;
+@property (copy) NSString *prefix;			// unique global schema prefix (after all includes)
+@property (copy) NSString *localPrefix;		// specified schema prefix within local scope
 @property (copy) NSString *fullName;
 @property (retain) NSMutableArray *types;
 @property (retain) NSMutableArray *elements;
+@property (retain) NSMutableArray *attributes;
 @property (retain) NSMutableArray *imports;
 @property (retain) NSMutableArray *messages;
 @property (retain) NSMutableArray *portTypes;
@@ -64,6 +71,7 @@
 
 - (USType *)typeForName:(NSString *)aName;
 - (USElement *)elementForName:(NSString *)aName;
+- (USAttribute *)attributeForName:(NSString *)aName;
 - (USMessage *)messageForName:(NSString *)aName;
 - (USPortType *)portTypeForName:(NSString *)aName;
 - (USBinding *)bindingForName:(NSString *)aName;

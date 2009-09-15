@@ -37,6 +37,10 @@ static USObjCKeywords *sharedInstance = nil;
 
 - (id)init
 {
+	// Also included here are standard Mac/iPhone typedefs that might
+	// be likely names of attributes as these cause the compiler to
+	// complain as well.
+
 	if((self = [super init])) {
 		keywords = [NSArray arrayWithObjects:
 					@"id",
@@ -66,6 +70,32 @@ static USObjCKeywords *sharedInstance = nil;
 					@"switch",
 					@"default",
 					@"case",
+								
+					// Standard Mac/iPhone types that might be chosen as attribute names
+					@"fixed",
+					@"ptr",
+					@"handle",
+					@"size",
+					@"bytecount",
+					@"byteoffset",
+					@"duration",
+					@"absolutetime",
+					@"itemcount",
+					@"langcode",
+					@"regioncode",
+					@"oserr",
+					@"ostype",
+					@"osstatus",
+					@"point",
+					@"style",
+					
+					// Variable names used during serialization
+					@"doc",
+					@"root",
+					@"ns",
+					@"xsi",
+					@"node",
+					@"buf",
 					nil];
 	}
 	
@@ -74,7 +104,10 @@ static USObjCKeywords *sharedInstance = nil;
 
 - (BOOL)isAKeyword:(NSString *)testString
 {
-	if([keywords containsObject:testString]) {
+  // Compiler objects to things with the same name as keywords even if the
+  // case differs, so convert to lower case for the test.
+  
+	if([keywords containsObject:[testString lowercaseString]]) {
 		return YES;
 	}
 	

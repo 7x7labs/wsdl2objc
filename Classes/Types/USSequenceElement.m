@@ -28,6 +28,7 @@
 @synthesize minOccurs;
 @synthesize maxOccurs;
 @synthesize name;
+@synthesize wsdlName;
 @synthesize type;
 
 - (id)copyWithZone:(NSZone *)zone
@@ -37,6 +38,7 @@
 	newSeqElement.minOccurs = self.minOccurs;
 	newSeqElement.maxOccurs = self.maxOccurs;
 	newSeqElement.name = self.name;
+	newSeqElement.wsdlName = self.wsdlName;
 	newSeqElement.type = self.type;
 	
 	return newSeqElement;
@@ -45,6 +47,8 @@
 - (void)setName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
+	
+	self.wsdlName = aName;
 	if([keywords isAKeyword:aName]) {
 		aName = [NSString stringWithFormat:@"%@_", aName];
 	}

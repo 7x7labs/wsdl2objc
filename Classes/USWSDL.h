@@ -28,10 +28,12 @@
 @interface USWSDL : NSObject {
 	NSMutableArray *schemas;	
 	USSchema *targetNamespace;
+	NSString *soapVersion;
 }
 
 @property (retain) NSMutableArray *schemas;
 @property (retain) USSchema *targetNamespace;
+@property (nonatomic, retain) NSString *soapVersion;
 
 -(id)init;
 -(void)dealloc;

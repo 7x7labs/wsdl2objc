@@ -1,6 +1,8 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+ Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+ Modifications copyright (c) 2009 Micropraxis Ltd.
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -30,6 +32,7 @@
 
 @synthesize schemas;
 @synthesize targetNamespace;
+@synthesize soapVersion;
 
 -(id)init
 {
@@ -37,6 +40,7 @@
 	{
 		self.schemas = [NSMutableArray array];
 		self.targetNamespace = nil;
+		self.soapVersion = @"1.1";
 	}
 	return self;
 }
@@ -94,13 +98,23 @@
 	
 	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"integer" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"positiveInteger" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"nonNegativeInteger" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"double" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"long" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"short" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"float" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
-	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSCalendarDate *"];
+	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSDate *"];
+	[xsd addSimpleClassWithName:@"date" representationClass:@"NSDate *"];
 	[xsd addSimpleClassWithName:@"base64Binary" representationClass:@"NSData *"];
+	[xsd addSimpleClassWithName:@"decimal" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"QName" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"token" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"anyType" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"anyURI" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"ID" representationClass:@"NSString *"];
 }
 
 @end

@@ -45,18 +45,21 @@
 #pragma mark Types:Schema:ComplexType
 - (void)processComplexTypeElement:(NSXMLElement *)el schema:(USSchema *)schema;
 - (void)processComplexTypeChildElement:(NSXMLElement *)el type:(USType *)type;
-- (void)processAttributeElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processAttributeElement:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type;
 - (void)processSequenceElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processSequenceChildElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processSequenceElementElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processComplexContentElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processComplexContentChildElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processSimpleContentElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processSimpleContentChildElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processExtensionElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processExtensionChildElement:(NSXMLElement *)el type:(USType *)type;
 
 #pragma mark Types:Schema:Element
 - (void)processElementElement:(NSXMLElement *)el schema:(USSchema *)schema;
 - (void)processElementElementChildElement:(NSXMLElement *)el element:(USElement *)element;
+- (void)processElementElementSimpleTypeElement:(NSXMLElement *)el element:(USElement *)element;
 - (void)processElementElementComplexTypeElement:(NSXMLElement *)el element:(USElement *)element;
 
 @end

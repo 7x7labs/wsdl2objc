@@ -25,12 +25,16 @@
 
 @interface USAttribute : NSObject {
 	NSString *name;
+	NSString *wsdlName;
 	NSString *attributeDefault;
+	USSchema *schema;
 	USType * type;
 }
 
 @property (copy) NSString *name;
+@property (retain) NSString *wsdlName;
 @property (copy) NSString *attributeDefault;
+@property (retain) USSchema * schema;
 @property (retain) USType * type;
 
 -(id)init;

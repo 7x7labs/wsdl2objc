@@ -4,7 +4,8 @@
 //
 //  Created by John Ogle on 9/5/08.
 //  Copyright 2008 LightSPEED Technologies. All rights reserved.
-//
+//  Modified by Matthew Faupel on 2009-05-06 to use NSDate instead of NSCalendarDate (for iPhone compatibility).
+//  Modifications copyright (c) 2009 Micropraxis Ltd.
 //  NSData (MBBase64) category taken from "MiloBird" at http://www.cocoadev.com/index.pl?BaseSixtyFour
 //
 
@@ -13,30 +14,29 @@
 
 @interface NSString (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSString *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
 @interface NSNumber (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSNumber *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 
-#if !TARGET_OS_IPHONE
-@interface NSCalendarDate (USAdditions)
+@interface NSDate (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
-+ (NSCalendarDate *)deserializeNode:(xmlNodePtr)cur;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
++ (NSDate *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 #endif
 
 @interface NSData (USAdditions)
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSData *)deserializeNode:(xmlNodePtr)cur;
 
 @end
@@ -56,7 +56,25 @@
 - (id)initWithBool:(BOOL)aValue;
 - (NSString *)stringValue;
 
-- (NSString *)serializedFormUsingElementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (USBoolean *)deserializeNode:(xmlNodePtr)cur;
 
 @end
+
+@interface SOAPFault : NSObject {
+  NSString *faultcode;
+  NSString *faultstring;
+  NSString *faultactor;
+  NSString *detail;
+}
+
+@property (nonatomic, retain) NSString *faultcode;
+@property (nonatomic, retain) NSString *faultstring;
+@property (nonatomic, retain) NSString *faultactor;
+@property (nonatomic, retain) NSString *detail;
+@property (readonly) NSString *simpleFaultString;
+
++ (SOAPFault *)deserializeNode:(xmlNodePtr)cur;
+
+@end
+

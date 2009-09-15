@@ -27,12 +27,14 @@
 	NSInteger minOccurs;
 	NSInteger maxOccurs;
 	NSString *name;
+	NSString *wsdlName;
 	USType * type;
 }
 
 @property (assign) NSInteger minOccurs; /* -1 represents 'unbounded' */
 @property (assign) NSInteger maxOccurs; /* -1 represents 'unbounded' */
 @property (copy) NSString *name;
+@property (retain) NSString *wsdlName;
 @property (retain) USType * type;
 
 - (NSString *)uname;

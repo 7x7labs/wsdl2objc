@@ -1,14 +1,20 @@
 @implementation %«className»
 
 @synthesize address;
+@synthesize defaultTimeout;
 @synthesize logXMLInOut;
+@synthesize cookies;
+@synthesize authUsername;
+@synthesize authPassword;
 
 - (id)init
 {
 	if((self = [super init])) {
 		address = nil;
 		cookies = nil;
+		defaultTimeout = 10;//seconds
 		logXMLInOut = NO;
+		synchronousOperationComplete = NO;
 	}
 	
 	return self;
@@ -31,114 +37,209 @@
 	}
 }
 
+- (%«className»Response *)performSynchronousOperation:(%«className»Operation *)operation
+{
+	synchronousOperationComplete = NO;
+	[operation start];
+	
+	// Now wait for response
+	NSRunLoop *theRL = [NSRunLoop currentRunLoop];
+	
+	while (!synchronousOperationComplete && [theRL runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]);
+
+	return operation.response;
+}
+
+- (void)performAsynchronousOperation:(%«className»Operation *)operation
+{
+	[operation start];
+}
+
+- (void) operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response
+{
+	synchronousOperationComplete = YES;
+}
+
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»
 {
-	%«className»_%«operation.name» *operation = [(%«className»_%«operation.name»*)[%«className»_%«operation.name» alloc] initWithBinding:self
+	return [self performSynchronousOperation:[[(%«className»_%«operation.name»*)[%«className»_%«operation.name» alloc] initWithBinding:self delegate:self
 %FOREACH part in operation.input.body.parts
-		%«part.name»:a%«part.uname»
+																							%«part.name»:a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
-		%«header.name»:a%«header.uname»
+																							%«header.name»:a%«header.uname»
 %ENDFOR
-	];
-	
-	NSOperationQueue *queue = [[NSOperationQueue new] autorelease];
-	
-	[queue addOperation:operation];
-	
-	[queue waitUntilAllOperationsAreFinished];
-	
-	return operation.response;
+																							] autorelease]];
+}
+
+- (void)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate
+{
+	[self performAsynchronousOperation: [[(%«className»_%«operation.name»*)[%«className»_%«operation.name» alloc] initWithBinding:self delegate:responseDelegate
+%FOREACH part in operation.input.body.parts
+																							 %«part.name»:a%«part.uname»
+%ENDFOR
+%FOREACH header in operation.input.headers
+																							 %«header.name»:a%«header.uname»
+%ENDFOR
+																							 ] autorelease]];
 }
 %ENDFOR
 
-- (NSString *)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction
+- (void)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation
 {
-	NSMutableDictionary *HTTPHeaders = [NSMutableDictionary dictionary];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.address 
+																												 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+																										 timeoutInterval:self.defaultTimeout];
+	NSData *bodyData = [outputBody dataUsingEncoding:NSUTF8StringEncoding];
+	
 	if(cookies != nil) {
-		NSDictionary *fCookies = [NSHTTPCookie requestHeaderFieldsWithCookies:cookies];
-		[HTTPHeaders addEntriesFromDictionary:fCookies];
+		[request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
 	}
-	[HTTPHeaders setObject:@"wsdl2objc" forKey:@"UserAgent"];
-	[HTTPHeaders setObject:soapAction forKey:@"SOAPAction"];
-	[HTTPHeaders setObject:@"text/xml" forKey:@"Content-type"];
-    
-	CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault, (CFStringRef)@"POST", (CFURLRef)self.address, kCFHTTPVersion1_1);
-	
-	CFDataRef bodyData = (CFDataRef)[outputBody dataUsingEncoding:NSUTF8StringEncoding];
-	CFHTTPMessageSetBody(request, bodyData);
-	
-	for(NSString *key in [HTTPHeaders allKeys]) {
-		CFHTTPMessageSetHeaderFieldValue(request, (CFStringRef)key, (CFStringRef)[HTTPHeaders objectForKey:key]);
-	}
-	
-	NSDictionary *outputHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(request);
-	
+	[request setValue:@"wsdl2objc" forHTTPHeaderField:@"User-Agent"];
+	[request setValue:soapAction forHTTPHeaderField:@"SOAPAction"];
+%IFEQ schema.wsdl.soapVersion 1.2
+	[request setValue:@"application/soap+xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+%ELSE
+	[request setValue:@"text/xml; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+%ENDIF
+	[request setValue:[NSString stringWithFormat:@"%u", [bodyData length]] forHTTPHeaderField:@"Content-Length"];
+	[request setValue:self.address.host forHTTPHeaderField:@"Host"];
+	[request setHTTPMethod: @"POST"];
+	// set version 1.1 - how?
+	[request setHTTPBody: bodyData];
+		
 	if(self.logXMLInOut) {
-		NSLog(@"OutputHeaders:\n%@", outputHeaders);
+		NSLog(@"OutputHeaders:\n%@", [request allHTTPHeaderFields]);
 		NSLog(@"OutputBody:\n%@", outputBody);
 	}
 	
-	CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
+	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:operation];
 	
-	if(!CFReadStreamOpen(readStream)) {
-		CFStreamError myErr = CFReadStreamGetError(readStream);
-		// An error has occurred.
-        if (myErr.domain == kCFStreamErrorDomainPOSIX) {
-        // Interpret myErr.error as a UNIX errno.
-        } else if (myErr.domain == kCFStreamErrorDomainMacOSStatus) {
-        // Interpret myErr.error as a MacOS error code.
-            //OSStatus macError = (OSStatus)myErr.error;
-        // Check other error domains.
-		}
+	operation.urlConnection = connection;
+	[connection release];
+}
+
+- (void) dealloc
+{
+	[address release];
+	[cookies release];
+	[super dealloc];
+}
+
+@end
+
+@implementation %«className»Operation
+
+@synthesize binding;
+@synthesize response;
+@synthesize delegate;
+@synthesize responseData;
+@synthesize urlConnection;
+
+- (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate
+{
+	if (self = [super init]) {
+		self.binding = aBinding;
+		response = nil;
+		self.delegate = aDelegate;
+		self.responseData = nil;
+		self.urlConnection = nil;
         return nil;
 	}
 	
-	CFReadStreamSetProperty(readStream, kCFStreamPropertyHTTPShouldAutoredirect, kCFBooleanTrue);
+	return self;
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+	if ([challenge previousFailureCount] == 0) {
+		NSURLCredential *newCredential;
+		newCredential=[NSURLCredential credentialWithUser:self.binding.authUsername
+												 password:self.binding.authPassword
+											  persistence:NSURLCredentialPersistenceForSession];
+		[[challenge sender] useCredential:newCredential
+			   forAuthenticationChallenge:challenge];
+	} else {
+		[[challenge sender] cancelAuthenticationChallenge:challenge];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
+		NSError *authError = [NSError errorWithDomain:@"Connection Authentication" code:0 userInfo:userInfo];
+		[self connection:connection didFailWithError:authError];
+	}
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)urlResponse
+{
+	NSHTTPURLResponse *httpResponse;
+
+	if ([urlResponse isKindOfClass:[NSHTTPURLResponse class]]) {
+		httpResponse = (NSHTTPURLResponse *) urlResponse;
+	} else {
+		httpResponse = nil;
+	}
 	
-	//CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
-	//NSString *statusLine = (NSString*)CFHTTPMessageCopyResponseStatusLine(response);
+	if(binding.logXMLInOut) {
+		NSLog(@"ResponseStatus: %u\n", [httpResponse statusCode]);
+		NSLog(@"ResponseHeaders:\n%@", [httpResponse allHeaderFields]);
+	}
 	
-	NSMutableString *responseBody = [NSMutableString string];
+	NSMutableArray *cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:[httpResponse allHeaderFields] forURL:binding.address] mutableCopy];
 	
-	static unsigned int kReadBufSize = 1024;
-	CFIndex numBytesRead;
-	do {
-		UInt8 buf[kReadBufSize];
-		numBytesRead = CFReadStreamRead(readStream, buf, sizeof(buf));
-		if( numBytesRead > 0 ) {
-			[responseBody appendString:[[[NSString alloc] initWithBytes:buf length:numBytesRead encoding:NSUTF8StringEncoding] autorelease]];
-		} else if( numBytesRead < 0 ) {
-			//CFStreamError error = CFReadStreamGetError(readStream);
-			//[[NSApplication sharedApplication] presentError:(NSError*)error];
+	binding.cookies = cookies;
+	[cookies release];
+
+%IFEQ schema.wsdl.soapVersion 1.2	
+  if ([urlResponse.MIMEType rangeOfString:@"application/soap+xml"].length == 0) {
+%ELSE
+  if ([urlResponse.MIMEType rangeOfString:@"text/xml"].length == 0) {
+%ENDIF
+		NSError *error = nil;
+
+		[connection cancel];
+		if ([httpResponse statusCode] >= 400) {
+			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]] forKey:NSLocalizedDescriptionKey];
+				
+			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
+		} else {
+			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:
+																[NSString stringWithFormat: @"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType]
+																													 forKey:NSLocalizedDescriptionKey];
+
+			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
             return nil;
 		}
-	} while( numBytesRead > 0 );
-	
-	CFHTTPMessageRef response = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
-	
-    NSDictionary *responseHeaders = nil;
-    if(cookies) [cookies release];
-	
-    if (response) {
-        responseHeaders = (NSDictionary*)CFHTTPMessageCopyAllHeaderFields(response);
-        [responseHeaders autorelease];
-        
-        cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:responseHeaders forURL:self.address] mutableCopy];
-    }
-	
-	if(self.logXMLInOut) {
-		NSLog(@"ResponseHeaders:\n%@", responseHeaders);
-		NSLog(@"ResponseBody:\n%@", responseBody);
+				
+		[self connection:connection didFailWithError:error];
+  }
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
+{
+  if (responseData == nil) {
+		responseData = [data mutableCopy];
+	} else {
+		[responseData appendData:data];
 	}
-    
-    CFRelease(request);
-    [outputHeaders release];
-	CFRelease(readStream);
-    CFRelease(response);
-    
-	return responseBody;
+}
+
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+	if (binding.logXMLInOut) {
+		NSLog(@"ResponseError:\n%@", error);
+	}
+	response.error = error;
+	[delegate operation:self completedWithResponse:response];
+}
+
+- (void)dealloc
+{
+	[binding release];
+	[response release];
+	delegate = nil;
+	[responseData release];
+	[urlConnection release];
+	
+	[super dealloc];
 }
 
 @end
@@ -146,8 +247,6 @@
 %FOREACH operation in operations
 @implementation %«className»_%«operation.name»
 
-@synthesize binding;
-@synthesize response;
 %FOREACH part in operation.input.body.parts
 @synthesize %«part.name»;
 %ENDFOR
@@ -155,19 +254,15 @@
 @synthesize %«header.name»;
 %ENDFOR
 
-- (id)initWithBinding:(%«className» *)aBinding
+- (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)responseDelegate
 %FOREACH part in operation.input.body.parts
-  %«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
+%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
-  %«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»
+%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»
 %ENDFOR
 {
-	if((self = [super init])) {
-		response = nil;
-		
-		self.binding = aBinding;
-		
+	if((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
 %FOREACH part in operation.input.body.parts
 		self.%«part.name» = a%«part.uname»;
 %ENDFOR
@@ -181,7 +276,6 @@
 
 - (void)dealloc
 {
-	if(binding != nil) [binding release];
 %FOREACH part in operation.input.body.parts
 %IFEQ part.element.type.assignOrRetain retain
 	if(%«part.name» != nil) [%«part.name» release];
@@ -205,21 +299,23 @@
 	headerElements = [NSMutableDictionary dictionary];
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain retain
-		if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName boolean
-		if(%«header.name» != nil) [headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName long
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName short
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithShort:*%«header.name»] forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithShort:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName int
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName double
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName float
-		if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithFloat:*%«header.name»] forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithFloat:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName decimal
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFNEQ header.type.enumCount 0
-		if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.name»"];
+	if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.wsdlName»"];
 %ENDIF
 %ENDFOR
 %ENDIF
@@ -229,95 +325,110 @@
 	bodyElements = [NSMutableDictionary dictionary];
 %FOREACH part in operation.input.body.parts
 %IFEQ part.element.type.assignOrRetain retain
-		if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName boolean
-		if(%«part.name» != nil) [bodyElements setObject:[[[USBoolean alloc] initWithBool:*%«part.name»] autorelease] forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:[[[USBoolean alloc] initWithBool:*%«part.name»] autorelease] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName long
-		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithLong:*%«part.name»] forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithLong:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName short
-		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithShort:*%«part.name»] forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithShort:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName int
-		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName double
-		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName float
-		if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithFloat:*%«part.name»] forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithFloat:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName decimal
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFNEQ part.element.type.enumCount 0
-		if(%«part.name» != nil) [bodyElements setObject:%«part.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.name»"];
+	if(%«part.name» != nil) [bodyElements setObject:%«part.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.wsdlName»"];
 %ENDIF
 %ENDFOR
 %ENDIF
 	
 	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
 	
-	NSString *responseBody = [binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»"];
-	
-    if (!responseBody) {
-        return;
-    }
-    
-    [response autorelease];
-	response = [%«className»Response new];
-    
-	xmlDocPtr doc;
-	xmlNodePtr cur;
-	
-	const char *buffer = [responseBody cStringUsingEncoding:NSUTF8StringEncoding];
-	
-	doc = xmlParseMemory(buffer, [responseBody length]);
-	
-	NSAssert(doc != NULL, @"Errors while parsing returned XML");
-	
-	cur = xmlDocGetRootElement(doc);
-	cur = cur->children;
-	
-	for( ; cur != NULL ; cur = cur->next) {
-		if(cur->type == XML_ELEMENT_NODE) {
-%IF operation.output.hasHeaders
-			if(xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
-				NSMutableArray *responseHeaders = [NSMutableArray array];
-				
-				xmlNodePtr headerNode;
-				for(headerNode=cur->children ; headerNode != NULL ; headerNode = headerNode->next) {
-					if(cur->type == XML_ELEMENT_NODE) {
-%FOREACH header in operation.output.headers
-						if(xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.name»")) {
-							%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
-							NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
-							[responseHeaders addObject:headerObject];
-						}
-%ENDFOR
-					}
-				}
-				
-				response.headers = responseHeaders;
-			}
-%ENDIF
-			
-			if(xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
-				NSMutableArray *responseBodyParts = [NSMutableArray array];
-				
-				xmlNodePtr bodyNode;
-				for(bodyNode=cur->children ; bodyNode != NULL ; bodyNode = bodyNode->next) {
-					if(cur->type == XML_ELEMENT_NODE) {
-%FOREACH part in operation.output.body.parts
-						if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.name»")) {
-							%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
-							NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
-							[responseBodyParts addObject:bodyObject];
-						}
-%ENDFOR
-					}
-				}
-				
-				response.bodyParts = responseBodyParts;
-			}
+	[binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
+	if (responseData != nil && delegate != nil)
+	{
+		xmlDocPtr doc;
+		xmlNodePtr cur;
+		
+		if (binding.logXMLInOut) {
+			NSLog(@"ResponseBody:\n%@", [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease]);
 		}
+		
+		doc = xmlParseMemory([responseData bytes], [responseData length]);
+		
+		if (doc == NULL) {
+			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Errors while parsing returned XML" forKey:NSLocalizedDescriptionKey];
+			
+			response.error = [NSError errorWithDomain:@"%«className»ResponseXML" code:1 userInfo:userInfo];
+			[delegate operation:self completedWithResponse:response];
+		} else {
+			cur = xmlDocGetRootElement(doc);
+			cur = cur->children;
+			
+			for( ; cur != NULL ; cur = cur->next) {
+				if(cur->type == XML_ELEMENT_NODE) {
+%IF operation.output.hasHeaders
+					if(xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
+						NSMutableArray *responseHeaders = [NSMutableArray array];
+						
+						xmlNodePtr headerNode;
+						for(headerNode=cur->children ; headerNode != NULL ; headerNode = headerNode->next) {
+							if(cur->type == XML_ELEMENT_NODE) {
+%FOREACH header in operation.output.headers
+								if(xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.wsdlName»")) {
+									%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
+									//NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
+									if (headerObject != nil) [responseHeaders addObject:headerObject];
+								}
+%ENDFOR
+							}
+						}
+						
+						response.headers = responseHeaders;
+					}
+%ENDIF
+					
+					if(xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
+						NSMutableArray *responseBodyParts = [NSMutableArray array];
+						
+						xmlNodePtr bodyNode;
+						for(bodyNode=cur->children ; bodyNode != NULL ; bodyNode = bodyNode->next) {
+							if(cur->type == XML_ELEMENT_NODE) {
+%FOREACH part in operation.output.body.parts
+								if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.wsdlName»")) {
+									%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
+									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
+									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
+								}
+                                                                else if (xmlStrEqual(bodyNode->ns->prefix, (const xmlChar *) "soap") && 
+                                                                         xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
+									SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode];
+									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
+									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
+                                                                }
+%ENDFOR
+							}
+						}
+						
+						response.bodyParts = responseBodyParts;
+					}
+				}
+			}
+			
+			xmlFreeDoc(doc);
+		}
+		
+		xmlCleanupParser();
+		[delegate operation:self completedWithResponse:response];
 	}
-	
-	xmlFreeDoc(doc);
-	
-	xmlCleanupParser();
 }
 
 @end
@@ -337,45 +448,62 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 
 - (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements
 {
-	NSMutableString *serializedForm = [NSMutableString string];
+    xmlDocPtr doc;
 	
-	[serializedForm appendFormat:@"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"];
-	[serializedForm appendFormat:@"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"\n"];
-	[serializedForm appendFormat:@"xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" xsl:version=\"1.0\"\n"];
-	[serializedForm appendFormat:@"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"];
+	doc = xmlNewDoc((const xmlChar*)XML_DEFAULT_VERSION);
+	if (doc == NULL) {
+		NSLog(@"Error creating the xml document tree");
+		return @"";
+	}
+	
+	xmlNodePtr root = xmlNewDocNode(doc, NULL, (const xmlChar*)"Envelope", NULL);
+	xmlDocSetRootElement(doc, root);
+	
+%IFEQ schema.wsdl.soapVersion 1.2
+	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2003/05/soap-envelope", (const xmlChar*)"soap");
+%ELSE
+	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://schemas.xmlsoap.org/soap/envelope/", (const xmlChar*)"soap");
+%ENDIF
+
+	xmlSetNs(root, soapEnvelopeNs);
+	
+	xmlNsPtr xslNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/1999/XSL/Transform", (const xmlChar*)"xsl");
+	xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar*)"xsi");
+	
+	xmlNewNsProp(root, xslNs, (const xmlChar*)"version", (const xmlChar*)"1.0");
+	
 %FOREACH schema in schema.wsdl.schemas
-	[serializedForm appendFormat:@"xmlns:%«schema.prefix»=\"%«schema.fullName»\"\n"];
+	xmlNewNs(root, (const xmlChar*)"%«schema.fullName»", (const xmlChar*)"%«schema.prefix»");
 %ENDFOR
-	[serializedForm appendFormat:@">\n"];
 	
-	if(headerElements != nil) {
-		[serializedForm appendFormat:@"<soap:Header>\n"];
+	if((headerElements != nil) && ([headerElements count] > 0)) {
+		xmlNodePtr headerNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar*)"Header", NULL);
+		xmlAddChild(root, headerNode);
 		
 		for(NSString *key in [headerElements allKeys]) {
 			id header = [headerElements objectForKey:key];
-			NSString *elementName = [NSString stringWithFormat:@"%@:%@", [header nsPrefix], key];
-			
-			[serializedForm appendFormat:@"%@\n", [header serializedFormUsingElementName:elementName]];
+			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key]);
 		}
-		
-		[serializedForm appendFormat:@"</soap:Header>"];
 	}
 	
-	if(bodyElements != nil) {
-		[serializedForm appendFormat:@"<soap:Body>\n"];
+	if((bodyElements != nil) && ([bodyElements count] > 0)) {
+		xmlNodePtr bodyNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar*)"Body", NULL);
+		xmlAddChild(root, bodyNode);
 		
 		for(NSString *key in [bodyElements allKeys]) {
 			id body = [bodyElements objectForKey:key];
-			NSString *elementName = [NSString stringWithFormat:@"%@:%@", [body nsPrefix], key];
-			
-			[serializedForm appendFormat:@"%@\n", [body serializedFormUsingElementName:elementName]];
+			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key]);
 		}
-		
-		[serializedForm appendFormat:@"</soap:Body>\n"];
 	}
 	
-	[serializedForm appendFormat:@"</soap:Envelope>"];
+	xmlChar *buf;
+	int size;
+	xmlDocDumpFormatMemory(doc, &buf, &size, 1);
 	
+	NSString *serializedForm = [NSString stringWithCString:(const char*)buf encoding:NSUTF8StringEncoding];
+	xmlFree(buf);
+	
+	xmlFreeDoc(doc);	
 	return serializedForm;
 }
 
@@ -385,20 +513,23 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 
 @synthesize headers;
 @synthesize bodyParts;
+@synthesize error;
 
 - (id)init
 {
 	if((self = [super init])) {
 		headers = nil;
 		bodyParts = nil;
+		error = nil;
 	}
 	
 	return self;
 }
 
-- (void)dealloc {
-    [headers release], headers = nil;
-    [bodyParts release], bodyParts = nil;
+-(void)dealloc {
+    self.headers = nil;
+    self.bodyParts = nil;
+    self.error = nil;	
     [super dealloc];
 }
 

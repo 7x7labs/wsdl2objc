@@ -1,29 +1,60 @@
-@class %«className»Response;
 
-@interface %«className» : NSObject {
+@class %«className»Response;
+@class %«className»Operation;
+
+@protocol %«className»ResponseDelegate <NSObject>
+- (void) operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response;
+
+@end
+
+@interface %«className» : NSObject <%«className»ResponseDelegate> {
 	NSURL *address;
+	NSTimeInterval defaultTimeout;
 	NSMutableArray *cookies;
 	BOOL logXMLInOut;
+	BOOL synchronousOperationComplete;
+	NSString *authUsername;
+	NSString *authPassword;
 }
 
 @property (copy) NSURL *address;
 @property (assign) BOOL logXMLInOut;
+@property (assign) NSTimeInterval defaultTimeout;
+@property (nonatomic, retain) NSMutableArray *cookies;
+@property (nonatomic, retain) NSString *authUsername;
+@property (nonatomic, retain) NSString *authPassword;
 
 - (id)initWithAddress:(NSString *)anAddress;
-- (NSString *)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction;
+- (void)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation;
 - (void)addCookie:(NSHTTPCookie *)toAdd;
 
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»;
+- (void)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate;
 %ENDFOR
 
 @end
 
-%FOREACH operation in operations
-@interface %«className»_%«operation.name» : NSOperation {
+@interface %«className»Operation : NSOperation {
 	%«className» *binding;
 	%«className»Response *response;
-	
+	id<%«className»ResponseDelegate> delegate;
+	NSMutableData *responseData;
+	NSURLConnection *urlConnection;
+}
+
+@property (retain) %«className» *binding;
+@property (readonly) %«className»Response *response;
+@property (nonatomic, assign) id<%«className»ResponseDelegate> delegate;
+@property (nonatomic, retain) NSMutableData *responseData;
+@property (nonatomic, retain) NSURLConnection *urlConnection;
+
+- (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate;
+
+@end
+
+%FOREACH operation in operations
+@interface %«className»_%«operation.name» : %«className»Operation {
 %FOREACH part in operation.input.body.parts
 %IFDEF part.element.type.classNameWithPtr
 	%«part.element.type.classNameWithPtr» %«part.name»;
@@ -36,8 +67,6 @@
 %ENDFOR
 }
 
-@property (retain) %«className» *binding;
-@property (readonly) %«className»Response *response;
 %FOREACH part in operation.input.body.parts
 @property (%«part.element.type.assignOrRetain») %«part.element.type.classNameWithPtr» %«part.name»;
 %ENDFOR
@@ -45,7 +74,7 @@
 @property (%«header.type.assignOrRetain») %«header.type.classNameWithPtr» %«header.name»;
 %ENDFOR
 
-- (id)initWithBinding:(%«className» *)aBinding
+- (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate
 %FOREACH part in operation.input.body.parts
 	%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
@@ -70,9 +99,11 @@
 @interface %«className»Response : NSObject {
 	NSArray *headers;
 	NSArray *bodyParts;
+	NSError *error;
 }
 
 @property (retain) NSArray *headers;
 @property (retain) NSArray *bodyParts;
+@property (retain) NSError *error;
 
 @end
