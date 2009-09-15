@@ -449,9 +449,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 
 - (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements
 {
-	int rc;
     xmlDocPtr doc;
-    xmlChar *tmp;
 	
 	doc = xmlNewDoc((const xmlChar*)XML_DEFAULT_VERSION);
 	if (doc == NULL) {
@@ -463,7 +461,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	xmlDocSetRootElement(doc, root);
 	
 %IFEQ schema.wsdl.soapVersion 1.2
-	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2003/05/soap-envelope/", (const xmlChar*)"soap");
+	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2003/05/soap-envelope", (const xmlChar*)"soap");
 %ELSE
 	xmlNsPtr soapEnvelopeNs = xmlNewNs(root, (const xmlChar*)"http://schemas.xmlsoap.org/soap/envelope/", (const xmlChar*)"soap");
 %ENDIF
@@ -471,7 +469,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	xmlSetNs(root, soapEnvelopeNs);
 	
 	xmlNsPtr xslNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/1999/XSL/Transform", (const xmlChar*)"xsl");
-	xmlNsPtr xsiNs = xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar*)"xsi");
+	xmlNewNs(root, (const xmlChar*)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar*)"xsi");
 	
 	xmlNewNsProp(root, xslNs, (const xmlChar*)"version", (const xmlChar*)"1.0");
 	

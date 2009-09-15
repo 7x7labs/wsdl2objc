@@ -56,11 +56,13 @@
 {
 	xmlNodePtr root = xmlDocGetRootElement(doc);
 	
-	//xmlNsPtr ns = xmlSearchNs(doc, root, (const xmlChar*)"%«schema.prefix»");
 	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
 	
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], NULL);
 	xmlSetNsProp(node, xsi, (const xmlChar*)"type", (const xmlChar*)"%«schema.prefix»:%«typeName»");
+%IFEQ isInTargetNamespace false
+	xmlSetNsProp(node, nil, (const xmlChar*)"xmlns", (const xmlChar*)"%«schema.fullName»");
+%ENDIF
 	
 	[self addAttributesToNode:node];
 	

@@ -22,6 +22,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class USWSDL;
 @class USSchema;
 
 typedef enum {
