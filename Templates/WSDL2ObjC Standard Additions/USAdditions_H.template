@@ -32,7 +32,6 @@
 + (NSDate *)deserializeNode:(xmlNodePtr)cur;
 
 @end
-#endif
 
 @interface NSData (USAdditions)
 

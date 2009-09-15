@@ -206,7 +206,6 @@
 																													 forKey:NSLocalizedDescriptionKey];
 
 			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
-            return nil;
 		}
 				
 		[self connection:connection didFailWithError:error];
