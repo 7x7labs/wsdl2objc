@@ -303,12 +303,24 @@
 	if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName boolean
 	if(%«header.name» != nil) [headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.wsdlName»"];
-%ELSIFEQ header.type.typeName long
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.wsdlName»"];
-%ELSIFEQ header.type.typeName short
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithShort:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName int
 	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName integer
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName nonNegativeInteger
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName positiveInteger
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName unsignedInt
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName long
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName unsignedLong
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedLong:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName short
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithShort:*%«header.name»] forKey:@"%«header.wsdlName»"];
+%ELSIFEQ header.type.typeName unsignedShort
+	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedShort:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName double
 	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFEQ header.type.typeName float
@@ -329,12 +341,24 @@
 	if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName boolean
 	if(%«part.name» != nil) [bodyElements setObject:[[[USBoolean alloc] initWithBool:*%«part.name»] autorelease] forKey:@"%«part.element.wsdlName»"];
-%ELSIFEQ part.element.type.typeName long
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithLong:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
-%ELSIFEQ part.element.type.typeName short
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithShort:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName int
 	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName integer
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName nonNegativeInteger
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName positiveInteger
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName unsignedInt
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithUnsignedInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName long
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithLong:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName unsignedLong
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithUnsignedLong:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName short
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithShort:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+%ELSIFEQ part.element.type.typeName unsignedShort
+	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithUnsignedShort:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName double
 	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFEQ part.element.type.typeName float
@@ -342,7 +366,7 @@
 %ELSIFEQ part.element.type.typeName decimal
 	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFNEQ part.element.type.enumCount 0
-	if(%«part.name» != nil) [bodyElements setObject:%«part.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) [bodyElements setObject:%«part.element.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.wsdlName»"];
 %ENDIF
 %ENDFOR
 %ENDIF
