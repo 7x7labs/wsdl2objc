@@ -99,22 +99,32 @@
 	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"integer" representationClass:@"NSNumber *"];
-	[xsd addSimpleClassWithName:@"positiveInteger" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"nonNegativeInteger" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"positiveInteger" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"unsignedInt" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"unsignedLong" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"unsignedShort" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"double" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"long" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"short" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"float" representationClass:@"NSNumber *"];
-	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"dateTime" representationClass:@"NSDate *"];
 	[xsd addSimpleClassWithName:@"date" representationClass:@"NSDate *"];
+	[xsd addSimpleClassWithName:@"time" representationClass:@"NSDate *"];
+	[xsd addSimpleClassWithName:@"duration" representationClass:@"NSDate *"];
 	[xsd addSimpleClassWithName:@"base64Binary" representationClass:@"NSData *"];
 	[xsd addSimpleClassWithName:@"decimal" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"QName" representationClass:@"NSString *"];
-	[xsd addSimpleClassWithName:@"token" representationClass:@"NSString *"];
-	[xsd addSimpleClassWithName:@"anyType" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"anyURI" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"string" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"normalizedString" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"token" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"language" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"Name" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"NCName" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"anyType" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"ID" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"ENTITY" representationClass:@"NSString *"];
 }
 
 @end
