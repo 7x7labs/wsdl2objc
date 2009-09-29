@@ -232,28 +232,28 @@
 	}
 	
 	// Uncomment the below to verify that all types and attributes have been correctly parsed
-//	NSLog(@"Dumping schema: %@", schema.fullName);
-//	NSLog(@"TYPES:");
-//	for (USType *aT in [schema types]) {
-//		NSLog(@"	+ %@ (%@, %d)", aT.typeName, aT, aT.hasBeenParsed);
-//		NSLog(@"		Attributes:");
-//		for (USAttribute *aTA in [aT attributes]) {
-//			NSLog(@"		- %@ (%@)", [aTA name], [[aTA type] typeName]);
-//		}
-//		NSLog(@"		Sequence Elements:");
-//		for (USSequenceElement *aSE in [aT sequenceElements]) {
-//			NSLog(@"		- %@ (%@)", aSE.name, [[aSE type] typeName]);
-//		}
-//	}	
-//	NSLog(@"ELEMENTS:");
-//	for (USElement *aE in [schema elements]) {
-//		NSLog(@"	+ %@ (%@, %d)", [aE name], [[aE type] typeName], [[aE type] hasBeenParsed]);
-//	}
-//	NSLog(@"ATTRIBUTES:");
-//	for (USAttribute *aA in [schema attributes]) {
-//		NSLog(@"	+ %@ (%@, %d)", [aA name], [[aA type] typeName], [[aA type] hasBeenParsed]);
-//	}
-//	NSLog(@"Finished Dumping schema: %@", schema.fullName);
+	NSLog(@"Dumping schema: %@", schema.fullName);
+	NSLog(@"TYPES:");
+	for (USType *aT in [schema types]) {
+		NSLog(@"	+ %@ (%@, %d, %d, %@", aT.typeName, aT, aT.hasBeenParsed, [aT.enumerationValues count], [aT assignOrRetain]);
+		NSLog(@"		Attributes:");
+		for (USAttribute *aTA in [aT attributes]) {
+			NSLog(@"		- %@ (%@)", [aTA name], [[aTA type] typeName]);
+		}
+		NSLog(@"		Sequence Elements:");
+		for (USSequenceElement *aSE in [aT sequenceElements]) {
+			NSLog(@"		- %@ (%@)", aSE.name, [[aSE type] typeName]);
+		}
+	}	
+	NSLog(@"ELEMENTS:");
+	for (USElement *aE in [schema elements]) {
+		NSLog(@"	+ %@ (%@, %d)", [aE name], [[aE type] typeName], [[aE type] hasBeenParsed]);
+	}
+	NSLog(@"ATTRIBUTES:");
+	for (USAttribute *aA in [schema attributes]) {
+		NSLog(@"	+ %@ (%@, %d)", [aA name], [[aA type] typeName], [[aA type] hasBeenParsed]);
+	}
+	NSLog(@"Finished Dumping schema: %@", schema.fullName);
 }
 
 - (void)processNamespace:(NSXMLNode *)ns wsdl:(USWSDL *)wsdl

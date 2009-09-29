@@ -125,6 +125,7 @@
 	[xsd addSimpleClassWithName:@"anyType" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"ID" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"ENTITY" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"IDREF" representationClass:@"NSString *"];
 }
 
 @end

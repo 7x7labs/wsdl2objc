@@ -307,6 +307,8 @@
 		self.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName ENTITY
 		self.%«attribute.name» = attrString;
+%ELSIFEQ attribute.type.typeName IDREF
+		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSE
