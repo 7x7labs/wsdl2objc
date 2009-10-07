@@ -58,7 +58,7 @@
 	
 	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
 	
-	xmlNodePtr node = xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], NULL);
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [elName xmlString], NULL);
 	xmlSetNsProp(node, xsi, (const xmlChar*)"type", (const xmlChar*)"%«schema.prefix»:%«typeName»");
 %IFEQ isInTargetNamespace false
 	xmlSetNsProp(node, nil, (const xmlChar*)"xmlns", (const xmlChar*)"%«schema.fullName»");
@@ -85,7 +85,7 @@
 %FOREACH attribute in attributes
 	if(self.%«attribute.name» != 0) {
 %IFEQ attribute.type.assignOrRetain retain
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (const xmlChar*)[[self.%«attribute.name» description] UTF8String]);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", [[self.%«attribute.name» description] xmlString]);
 %ELSIFEQ attribute.type.typeName boolean
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (*self.%«attribute.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
 %ELSIFEQ attribute.type.typeName long
@@ -105,7 +105,7 @@
 		sprintf(buf, "%f", *self.%«attribute.name»);
 		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
 %ELSIFNEQ attribute.type.enumCount 0
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (const xmlChar*)[%«attribute.type.className»_stringFromEnum(self.%«attribute.name») UTF8String]);
+		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", [%«attribute.type.className»_stringFromEnum(self.%«attribute.name») xmlString]);
 %ENDIF
 	}
 
@@ -157,10 +157,10 @@
 %IF element.useAnArray
 		for(NSNumber *intRepresentation in self.%«element.name») {
 			%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
-			xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (const xmlChar*)[%«element.type.className»_stringFromEnum(enumRepresentation) UTF8String]);
+			xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);
 		}
 %ELSE
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (const xmlChar*)[%«element.type.className»_stringFromEnum(self.%«element.name») UTF8String]);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
 %ENDIF
 
 %ENDIF
@@ -358,7 +358,7 @@
 						NSString *prefix = [elementTypeArray objectAtIndex:0];
 						NSString *localName = [elementTypeArray objectAtIndex:1];
 						
-						xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, (const xmlChar *)[prefix UTF8String]);
+						xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
 						
 						NSString *standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char*)elementNamespace->href encoding:NSUTF8StringEncoding]];
 						

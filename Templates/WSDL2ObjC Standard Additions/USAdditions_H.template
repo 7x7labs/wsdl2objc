@@ -14,6 +14,9 @@
 
 @interface NSString (USAdditions)
 
+- (NSString *)stringByEscapingXML;
+- (NSString *)stringByUnescapingXML;
+- (const xmlChar *)xmlString;
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 + (NSString *)deserializeNode:(xmlNodePtr)cur;
 

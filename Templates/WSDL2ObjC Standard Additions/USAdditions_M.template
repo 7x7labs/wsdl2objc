@@ -18,9 +18,36 @@
 
 @implementation NSString (USAdditions)
 
+- (NSString *)stringByEscapingXML
+{
+	NSMutableString *escapedString = [self mutableCopy];
+	[escapedString replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@"'" withString:@"&apos;" options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@">" withString:@"&gt;" options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@"&" withString:@"&amp;" options:0 range:NSMakeRange(0, [escapedString length])];
+	return escapedString;
+}
+
+- (NSString *)stringByUnescapingXML
+{
+	NSMutableString *unescapedString = [self mutableCopy];
+	[unescapedString replaceOccurrencesOfString:@"&amp;" withString:@"&" options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&quot;" withString:@"\"" options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&apos;" withString:@"'" options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&lt;" withString:@"<" options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&gt;" withString:@">" options:0 range:NSMakeRange(0, [unescapedString length])];
+	return unescapedString;
+}
+
+- (const xmlChar *)xmlString
+{
+	return (xmlChar *)[[self stringByEscapingXML] UTF8String];
+}
+
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
-	return xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], (const xmlChar*)[self UTF8String]);
+	return xmlNewDocNode(doc, NULL, [elName xmlString], [self xmlString]);
 }
 
 + (NSString *)deserializeNode:(xmlNodePtr)cur
@@ -33,7 +60,7 @@
 		xmlFree(elementText);
 	}
 	
-	return elementString;
+	return [elementString stringByUnescapingXML];
 }
 
 @end
@@ -42,7 +69,7 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
-	return xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], (const xmlChar*)[[self stringValue] UTF8String]);
+	return xmlNewDocNode(doc, NULL, [elName xmlString], [[self stringValue] xmlString]);
 }
 
 + (NSNumber *)deserializeNode:(xmlNodePtr)cur
@@ -57,7 +84,7 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
-	return xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], (const xmlChar*)[[self ISO8601DateString] UTF8String]);
+	return xmlNewDocNode(doc, NULL, [elName xmlString], [[self ISO8601DateString] xmlString]);
 }
 
 + (NSDate *)deserializeNode:(xmlNodePtr)cur
@@ -71,7 +98,7 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
-	return xmlNewDocNode(doc, NULL, (const xmlChar*)[elName UTF8String], (const xmlChar*)[[self base64Encoding] UTF8String]);
+	return xmlNewDocNode(doc, NULL, [elName xmlString], [[self base64Encoding] xmlString]);
 }
 
 + (NSData *)deserializeNode:(xmlNodePtr)cur
