@@ -20,7 +20,7 @@
 
 - (NSString *)stringByEscapingXML
 {
-	NSMutableString *escapedString = [self mutableCopy];
+	NSMutableString *escapedString = [[self mutableCopy] autorelease];
 	[escapedString replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:0 range:NSMakeRange(0, [escapedString length])];
 	[escapedString replaceOccurrencesOfString:@"'" withString:@"&apos;" options:0 range:NSMakeRange(0, [escapedString length])];
 	[escapedString replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [escapedString length])];
@@ -31,7 +31,7 @@
 
 - (NSString *)stringByUnescapingXML
 {
-	NSMutableString *unescapedString = [self mutableCopy];
+	NSMutableString *unescapedString = [[self mutableCopy] autorelease];
 	[unescapedString replaceOccurrencesOfString:@"&amp;" withString:@"&" options:0 range:NSMakeRange(0, [unescapedString length])];
 	[unescapedString replaceOccurrencesOfString:@"&quot;" withString:@"\"" options:0 range:NSMakeRange(0, [unescapedString length])];
 	[unescapedString replaceOccurrencesOfString:@"&apos;" withString:@"'" options:0 range:NSMakeRange(0, [unescapedString length])];
