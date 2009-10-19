@@ -139,7 +139,7 @@
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate
 {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		self.binding = aBinding;
 		response = nil;
 		self.delegate = aDelegate;
