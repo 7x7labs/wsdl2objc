@@ -52,16 +52,24 @@
 	return @"%«schema.prefix»";
 }
 
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
+	NSString *nodeName = nil;
+	if(elNSPrefix != nil && [elNSPrefix length] > 0)
+	{
+		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
+	}
+	else
+	{
+		nodeName = [NSString stringWithFormat:@"%@:%@", @"%«schema.prefix»", elName];
+	}
+	
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], NULL);
+	
+%IFDEF superClass
 	xmlNodePtr root = xmlDocGetRootElement(doc);
-	
 	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
-	
-	xmlNodePtr node = xmlNewDocNode(doc, NULL, [elName xmlString], NULL);
 	xmlSetNsProp(node, xsi, (const xmlChar*)"type", (const xmlChar*)"%«schema.prefix»:%«typeName»");
-%IFEQ isInTargetNamespace false
-	xmlSetNsProp(node, nil, (const xmlChar*)"xmlns", (const xmlChar*)"%«schema.fullName»");
 %ENDIF
 	
 	[self addAttributesToNode:node];
@@ -128,10 +136,10 @@
 
 %IF element.useAnArray
 		for(%«element.type.classNameWithPtr» child in self.%«element.name») {
-			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
+			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"]);
 		}
 %ELSE
-		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"]);
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean

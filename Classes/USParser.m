@@ -232,6 +232,8 @@
 	}
 	
 	// Uncomment the below to verify that all types and attributes have been correctly parsed
+	/*
+#warning Debug output on
 	NSLog(@"Dumping schema: %@", schema.fullName);
 	NSLog(@"TYPES:");
 	for (USType *aT in [schema types]) {
@@ -253,7 +255,7 @@
 	for (USAttribute *aA in [schema attributes]) {
 		NSLog(@"	+ %@ (%@, %d)", [aA name], [[aA type] typeName], [[aA type] hasBeenParsed]);
 	}
-	NSLog(@"Finished Dumping schema: %@", schema.fullName);
+	NSLog(@"Finished Dumping schema: %@", schema.fullName);*/
 }
 
 - (void)processNamespace:(NSXMLNode *)ns wsdl:(USWSDL *)wsdl

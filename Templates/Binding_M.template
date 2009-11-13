@@ -507,7 +507,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 		
 		for(NSString *key in [headerElements allKeys]) {
 			id header = [headerElements objectForKey:key];
-			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key]);
+			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
 	}
 	
@@ -517,7 +517,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 		
 		for(NSString *key in [bodyElements allKeys]) {
 			id body = [bodyElements objectForKey:key];
-			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key]);
+			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
 	}
 	
