@@ -151,9 +151,13 @@
 
 + (NSData *)deserializeNode:(xmlNodePtr)cur
 {
-	if(cur != NULL && [NSString deserializeNode:cur] != nil)
+	if(cur != NULL)
 	{
-		return [NSData dataWithBase64EncodedString:[NSString deserializeNode:cur]];
+		NSString *deserializedStringResult = [NSString deserializeNode:cur];
+		if(deserializedStringResult != nil)
+		{
+			return [NSData dataWithBase64EncodedString:deserializedStringResult];
+		}
 	}
 	
 	return nil;
