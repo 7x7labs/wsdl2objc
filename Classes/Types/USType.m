@@ -160,6 +160,7 @@
 	[returning setObject:typeName forKey:@"typeName"];
 	[returning setObject:[self classNameWithPtr] forKey:@"classNameWithPtr"];
 	[returning setObject:[self classNameWithoutPtr] forKey:@"classNameWithoutPtr"];
+	BOOL needsSuperElements = NO;
 	
 	switch (self.behavior) {
 		case TypeBehavior_simple:
@@ -174,9 +175,16 @@
 			if(superClass != nil) {
 				[returning setObject:superClass forKey:@"superClass"];
 				[returning setObject:([superClass isComplexType] ? @"true" : @"false") forKey:@"superClassIsComplex"];
+				USType *tempParent = superClass;
+				while (tempParent != nil) {
+					if ([tempParent.sequenceElements count] > 0) {
+						needsSuperElements = YES;
+					}
+					tempParent = tempParent.superClass;
+				}
 			}
 			[returning setObject:sequenceElements forKey:@"sequenceElements"];
-			[returning setObject:([sequenceElements count] > 0 ? @"true" : @"false") forKey:@"hasSequenceElements"];
+			[returning setObject:(([sequenceElements count] > 0 || needsSuperElements) ? @"true" : @"false") forKey:@"hasSequenceElements"];
 			[returning setObject:attributes forKey:@"attributes"];
 			[returning setObject:([attributes count] > 0 ? @"true" : @"false") forKey:@"hasAttributes"];
 			[returning setObject:([schema.fullName isEqualToString:schema.wsdl.targetNamespace.fullName] ? @"true" : @"false")
