@@ -433,13 +433,13 @@
 									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
 									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
 								}
-                                                                else if (xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix) && 
-                                                                         xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
+%ENDFOR
+								if (xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix) && 
+									xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
 									SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode];
 									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
 									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
-                                                                }
-%ENDFOR
+								}
 							}
 						}
 						
