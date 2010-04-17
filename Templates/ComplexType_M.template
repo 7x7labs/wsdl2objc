@@ -168,7 +168,7 @@
 			xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);
 		}
 %ELSE
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
+		xmlNewChild(node, NULL, (const xmlChar*)"%«schema.prefix»:%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
 %ENDIF
 
 %ENDIF
