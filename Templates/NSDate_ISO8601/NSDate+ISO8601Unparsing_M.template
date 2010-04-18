@@ -35,6 +35,7 @@ static BOOL is_leap_year(unsigned year) {
   NSString *dateFormat = [(includeTime ? @"yyyy-MM-dd'T'HH:mm:ss" : @"yyyy-MM-dd") prepareDateFormatWithTimeSeparator:timeSep];
   NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
   [formatter setDateFormat: dateFormat];
+  [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
   
   NSString *str = [formatter stringForObjectValue:self];
   [formatter release];
