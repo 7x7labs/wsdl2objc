@@ -40,6 +40,7 @@
 - (void)processSimpleTypeElement:(NSXMLElement *)el schema:(USSchema *)schema;
 - (void)processSimpleTypeChildElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processUnionElement:(NSXMLElement *)el type:(USType *)type;
+- (void)processListElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processRestrictionElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processRestrictionChildElement:(NSXMLElement *)el type:(USType *)type;
 - (void)processEnumerationElement:(NSXMLElement *)el type:(USType *)type;

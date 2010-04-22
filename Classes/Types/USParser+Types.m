@@ -82,13 +82,20 @@
 		[self processRestrictionElement:el type:type];
 	} else if([localName isEqualToString:@"union"]) {
 		[self processUnionElement:el type:type];
+	} else if([localName isEqualToString:@"list"]) {
+		[self processListElement:el type:type];
 	}
 }
 
 - (void)processUnionElement:(NSXMLElement *)el type:(USType *)type {
 	// TODO:	properly support union.
 	type.representationClass = @"NSString *";
-	NSLog(@"TYPE IS: %@, %@", type.typeName, type.representationClass);
+//	NSLog(@"TYPE IS: %@, %@", type.typeName, type.representationClass);
+}
+
+- (void)processListElement:(NSXMLElement *)el type:(USType *)type {
+	type.representationClass = @"NSString *";
+//	NSLog(@"TYPE IS: %@, %@", type.typeName, type.representationClass);
 }
 
 - (void)processRestrictionElement:(NSXMLElement *)el type:(USType *)type
