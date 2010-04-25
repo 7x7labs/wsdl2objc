@@ -45,7 +45,10 @@
 
 - (NSString *)className
 {
-	return [self.name stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+	NSString *result = [self.name stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+	if(![result.lowercaseString hasSuffix:@"binding"])
+		result = [result stringByAppendingString:@"Binding"];
+	return result;
 }
 
 - (NSMutableArray *)operations
