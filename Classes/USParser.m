@@ -266,7 +266,7 @@
 	if(prefix != nil && [prefix isNotEqualTo:@"xmlns"]) {
 		if([wsdl existingSchemaForPrefix:prefix] == nil) {
 			USSchema *schema = [wsdl schemaForNamespace:uri];
-			schema.prefix = prefix;
+			schema.prefix = [[prefix stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] length] == 0 ? nil : prefix;
 		}
 	}
 }
