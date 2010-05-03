@@ -141,6 +141,7 @@
 	if (localPrefix && [enumerationValue hasPrefix:localPrefix]) {
 		enumerationValue = [enumerationValue substringFromIndex:[localPrefix length]];
 	}
+	enumerationValue = [enumerationValue stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 	enumerationValue = [enumerationValue stringByReplacingOccurrencesOfString:@":" withString:@"_"];
 	[type.enumerationValues addObject:[enumerationValue stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""]];
 }
