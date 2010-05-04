@@ -328,7 +328,7 @@
 %ELSIFEQ header.type.typeName decimal
 	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.wsdlName»"];
 %ELSIFNEQ header.type.enumCount 0
-	if(%«header.name» != nil) [headerElements setObject:%«header.type.className»StringFromEnum(%«header.name») forKey:@"%«header.wsdlName»"];
+	if(%«header.name» != nil) [headerElements setObject:%«header.type.className»_stringFromEnum(%«header.name») forKey:@"%«header.wsdlName»"];
 %ENDIF
 %ENDFOR
 %ENDIF
@@ -366,7 +366,7 @@
 %ELSIFEQ part.element.type.typeName decimal
 	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
 %ELSIFNEQ part.element.type.enumCount 0
-	if(%«part.name» != nil) [bodyElements setObject:%«part.element.type.className»StringFromEnum(%«part.name») forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) [bodyElements setObject:%«part.element.type.className»_stringFromEnum(%«part.name») forKey:@"%«part.element.wsdlName»"];
 %ENDIF
 %ENDFOR
 %ENDIF
