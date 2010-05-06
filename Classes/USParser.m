@@ -71,11 +71,13 @@
 	[wsdl addXSDSchema];
 	
 	// Find out if the wsdl is using SOAP 1.1 or SOAP 1.2
+	// Always prefer 1.2 to 1.1
 	for (NSXMLNode *aNS in [definitions namespaces]) {
 		if ([[aNS stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
 			wsdl.soapVersion = @"1.1";
 		} else if ([[aNS stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			wsdl.soapVersion = @"1.2";
+			break;
 		}
 	}
 	
