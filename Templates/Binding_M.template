@@ -196,14 +196,14 @@
 
 		[connection cancel];
 		if ([httpResponse statusCode] >= 400) {
-			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]] forKey:NSLocalizedDescriptionKey];
+                        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]],NSLocalizedDescriptionKey,
+                                                                          httpResponse.URL.absoluteString, @"URL",nil];
 				
 			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
 		} else {
-			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:
-																[NSString stringWithFormat: @"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType]
-																													 forKey:NSLocalizedDescriptionKey];
-
+                        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+	 												[NSString stringWithFormat: @"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType],NSLocalizedDescriptionKey,
+                                                                          httpResponse.URL.absoluteString, @"URL",nil];
 			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
 		}
 				
