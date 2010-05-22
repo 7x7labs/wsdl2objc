@@ -182,11 +182,6 @@
 		NSLog(@"ResponseHeaders:\n%@", [httpResponse allHeaderFields]);
 	}
 	
-	NSMutableArray *cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:[httpResponse allHeaderFields] forURL:binding.address] mutableCopy];
-	
-	binding.cookies = cookies;
-	[cookies release];
-
 %IFEQ schema.wsdl.soapVersion 1.2	
   if ([urlResponse.MIMEType rangeOfString:@"application/soap+xml"].length == 0) {
 %ELSE
