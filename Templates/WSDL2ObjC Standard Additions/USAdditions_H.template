@@ -49,7 +49,7 @@
 - (NSString *)base64Encoding;
 @end
 
-@interface USBoolean : NSObject {
+@interface USBoolean : NSObject <NSCoding> {
 	BOOL value;
 }
 

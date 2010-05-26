@@ -2,6 +2,7 @@
 #import "USAdditions.h"
 #import <libxml/tree.h>
 #import "USGlobals.h"
+#import <objc/runtime.h>
 
 %FOREACH type in types
 %IFEQ type.assignOrRetain retain

@@ -320,6 +320,19 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 	return nil;
 }
 
+-(void)encodeWithCoder:(NSCoder*)coder
+{
+    [coder encodeValueOfObjCType:@encode(BOOL) at:&value];
+}
+
+-(id)initWithCoder:(NSCoder*)coder
+{
+	if (self=[super init]) {
+		[coder decodeValueOfObjCType:@encode(BOOL) at:&value];
+    }
+    return self;
+}
+
 @end
 
 @implementation SOAPFault

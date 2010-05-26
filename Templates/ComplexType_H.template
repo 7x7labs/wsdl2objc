@@ -3,7 +3,7 @@
 %IFDEF superClass
 @interface %«className» : %«superClass.classNameWithoutPtr» {
 %ELSE
-@interface %«className» : NSObject {
+@interface %«className» : NSObject <NSCoding> {
 %ENDIF
 	
 /* elements */
