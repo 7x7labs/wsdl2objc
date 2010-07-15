@@ -329,44 +329,52 @@
 %ENDIF
 	
 	NSMutableDictionary *bodyElements = nil;
+	NSMutableArray *bodyKeys = nil;
 %IFDEF operation.input.body.parts
 	bodyElements = [NSMutableDictionary dictionary];
+	bodyKeys = [NSMutableArray array];
+	id obj = nil;
 %FOREACH part in operation.input.body.parts
 %IFEQ part.element.type.assignOrRetain retain
-	if(%«part.name» != nil) [bodyElements setObject:%«part.name» forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = %«part.name»;
 %ELSIFEQ part.element.type.typeName boolean
-	if(%«part.name» != nil) [bodyElements setObject:[[[USBoolean alloc] initWithBool:*%«part.name»] autorelease] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [[[USBoolean alloc] initWithBool:*%«part.name»] autorelease];
 %ELSIFEQ part.element.type.typeName int
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
 %ELSIFEQ part.element.type.typeName integer
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
 %ELSIFEQ part.element.type.typeName nonNegativeInteger
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
 %ELSIFEQ part.element.type.typeName positiveInteger
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
 %ELSIFEQ part.element.type.typeName unsignedInt
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithUnsignedInt:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedInt:*%«part.name»];
 %ELSIFEQ part.element.type.typeName long
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithLong:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithLong:*%«part.name»];
 %ELSIFEQ part.element.type.typeName unsignedLong
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithUnsignedLong:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedLong:*%«part.name»];
 %ELSIFEQ part.element.type.typeName short
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithShort:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithShort:*%«part.name»];
 %ELSIFEQ part.element.type.typeName unsignedShort
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithUnsignedShort:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedShort:*%«part.name»];
 %ELSIFEQ part.element.type.typeName double
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithDouble:*%«part.name»];
 %ELSIFEQ part.element.type.typeName float
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithFloat:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithFloat:*%«part.name»];
 %ELSIFEQ part.element.type.typeName decimal
-	if(%«part.name» != nil) [bodyElements setObject:[NSNumber numberWithDouble:*%«part.name»] forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = [NSNumber numberWithDouble:*%«part.name»];
 %ELSIFNEQ part.element.type.enumCount 0
-	if(%«part.name» != nil) [bodyElements setObject:%«part.element.type.className»_stringFromEnum(%«part.name») forKey:@"%«part.element.wsdlName»"];
+	if(%«part.name» != nil) obj = %«part.element.type.className»_stringFromEnum(%«part.name»);
 %ENDIF
+
+	if(obj != nil) {
+		[bodyElements setObject:obj forKey:@"%«part.element.wsdlName»"];
+		[bodyKeys addObject:@"%«part.element.wsdlName»"];
+	}
 %ENDFOR
 %ENDIF
 	
-	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
+	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:bodyKeys];
 	
 	[binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
 }
@@ -382,7 +390,7 @@
 			NSLog(@"ResponseBody:\n%@", [[[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding] autorelease]);
 		}
 		
-		doc = xmlParseMemory([responseData bytes], [responseData length]);
+    doc = xmlReadMemory([responseData bytes], [responseData length], NULL, NULL, XML_PARSE_COMPACT | XML_PARSE_NOBLANKS);
 		
 		if (doc == NULL) {
 			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Errors while parsing returned XML" forKey:NSLocalizedDescriptionKey];
@@ -429,7 +437,7 @@
 									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
 								}
 %ENDFOR
-								if (xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix) && 
+								if ((bodyNode->ns != nil && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) && 
 									xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
 									SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode];
 									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
@@ -466,7 +474,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	return %«className»SharedEnvelopeInstance;
 }
 
-- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements
+- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements bodyKeys:(NSArray *)bodyKeys
 {
     xmlDocPtr doc;
 	
@@ -510,7 +518,7 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 		xmlNodePtr bodyNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar*)"Body", NULL);
 		xmlAddChild(root, bodyNode);
 		
-		for(NSString *key in [bodyElements allKeys]) {
+		for(NSString *key in bodyKeys) {
 			id body = [bodyElements objectForKey:key];
 			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
