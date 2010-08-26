@@ -434,7 +434,7 @@
  */
 - (id) initWithCoder:(NSCoder *)decoder {
   if ([super respondsToSelector:@selector(initWithCoder:)] && ![self isKindOfClass:[super class]]) {
-    self = [(id)super initWithCoder:decoder];
+    self = [super performSelector:@selector(initWithCoder:) withObject:decoder];
   } else {
     self = [super init];
   }
@@ -457,7 +457,7 @@
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
   if ([super respondsToSelector:@selector(encodeWithCoder:)] && ![self isKindOfClass:[super class]]) {
-    [(id)super encodeWithCoder:encoder];
+    [super performSelector:@selector(encodeWithCoder:) withObject:encoder];
   }
   NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
   unsigned int numIvars = 0;
