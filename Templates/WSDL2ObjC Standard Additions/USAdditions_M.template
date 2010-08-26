@@ -65,7 +65,7 @@
 + (NSString *)deserializeNode:(xmlNodePtr)cur
 {
 	xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
-	NSString *elementString = nil;
+	NSString *elementString = @"";
 	
 	if(elementText != NULL) {
 		elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
