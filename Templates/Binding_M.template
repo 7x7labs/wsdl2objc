@@ -178,7 +178,7 @@
 	}
 	
 	if(binding.logXMLInOut) {
-		NSLog(@"ResponseStatus: %u\n", [httpResponse statusCode]);
+		NSLog(@"ResponseStatus: %ld\n", [httpResponse statusCode]);
 		NSLog(@"ResponseHeaders:\n%@", [httpResponse allHeaderFields]);
 	}
 	
