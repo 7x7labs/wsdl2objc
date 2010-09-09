@@ -21,6 +21,13 @@
  */
 
 #import <Cocoa/Cocoa.h>
+	//#define DEBUG
+#ifdef DEBUG
+#define NVLOG(__NSSTRING, ...) \
+NSLog(@"%s[%d] >> " __NSSTRING, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__ )
+#else
+#define NVLOG(__NSSTRING, ...) 
+#endif
 
 @class USWSDL;
 @class USSchema;
