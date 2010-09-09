@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USObjCKeywords;
 @class USWSDL;
@@ -51,23 +51,23 @@
 	BOOL hasBeenWritten;
 }
 
-@property (copy) NSString *prefix;			// unique global schema prefix (after all includes)
-@property (copy) NSString *localPrefix;		// specified schema prefix within local scope
-@property (copy) NSString *fullName;
-@property (retain) NSMutableArray *types;
-@property (retain) NSMutableArray *elements;
-@property (retain) NSMutableArray *attributes;
-@property (retain) NSMutableArray *imports;
-@property (retain) NSMutableArray *messages;
-@property (retain) NSMutableArray *portTypes;
-@property (retain) NSMutableArray *bindings;
-@property (retain) NSMutableArray *services;
-@property (retain) USWSDL *wsdl;
-@property (assign) BOOL hasBeenParsed;
-@property (assign) BOOL hasBeenWritten;
+@property (nonatomic, copy) NSString *prefix;			// unique global schema prefix (after all includes)
+@property (nonatomic, copy) NSString *localPrefix;		// specified schema prefix within local scope
+@property (nonatomic, copy) NSString *fullName;
+@property (nonatomic, retain) NSMutableArray *types;
+@property (nonatomic, retain) NSMutableArray *elements;
+@property (nonatomic, retain) NSMutableArray *attributes;
+@property (nonatomic, retain) NSMutableArray *imports;
+@property (nonatomic, retain) NSMutableArray *messages;
+@property (nonatomic, retain) NSMutableArray *portTypes;
+@property (nonatomic, retain) NSMutableArray *bindings;
+@property (nonatomic, retain) NSMutableArray *services;
+@property (nonatomic, assign) USWSDL *wsdl;
+@property (nonatomic) BOOL hasBeenParsed;
+@property (nonatomic) BOOL hasBeenWritten;
 
--(id)initWithWSDL:(USWSDL *)aWsdl;
--(void)dealloc;
+- (id)initWithWSDL:(USWSDL *)aWsdl;
+- (void)dealloc;
 
 - (USType *)typeForName:(NSString *)aName;
 - (USElement *)elementForName:(NSString *)aName;

@@ -33,7 +33,7 @@
 		
 		NSString *remainder = [self substringFromIndex:1];
 		
-		return [NSString stringWithFormat:@"%@%@", firstChar, remainder];
+		return [firstChar stringByAppendingString:remainder];
 	}
 	
 	return self;

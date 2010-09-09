@@ -53,6 +53,16 @@
 	return self;
 }
 
+- (void) dealloc
+{
+    [name release];
+    [soapAction release];
+    [input release];
+    [output release];
+    [faults release];
+    [super dealloc];
+}
+
 - (USOperationFault *)faultForName:(NSString *)aName
 {
 	for(USOperationFault *fault in self.faults) {
@@ -61,10 +71,11 @@
 		}
 	}
 	
-	USOperationFault *newFault = [[USOperationFault new] autorelease];
+	USOperationFault *newFault = [USOperationFault new];
 	newFault.operation = self;
 	newFault.name = aName;
 	[self.faults addObject:newFault];
+    [newFault release];
 	
 	return newFault;
 }

@@ -22,10 +22,10 @@
 
 #import "USType.h"
 
-#import "USSequenceElement.h"
 #import "USObjCKeywords.h"
 #import "USSchema.h"
 #import "USWSDL.h"
+#import "NSBundle+USAdditions.h"
 
 @implementation USType
 
@@ -36,7 +36,7 @@
 @synthesize hasBeenParsed;
 @synthesize hasBeenWritten;
 
--(id)init
+- (id)init
 {
 	if((self = [super init]))
 	{
@@ -47,31 +47,42 @@
 		self.hasBeenWritten = NO;
 		
 		self.representationClass = @"";
-		self.enumerationValues = [[NSMutableArray alloc] init];
+		self.enumerationValues = [NSMutableArray array];
 		
 		self.superClass = nil;
-		self.sequenceElements = [[NSMutableArray alloc] init];
-		self.attributes = [[NSMutableArray alloc] init];
+		self.sequenceElements = [NSMutableArray array];
+		self.attributes = [NSMutableArray array];
 	}
 	return self;
 }
 
--(BOOL)isSimpleType
+- (void) dealloc
+{
+    [typeName release];
+    [representationClass release];
+    [enumerationValues release];
+    [superClass release];
+    [sequenceElements release];
+    [attributes release];
+    [super dealloc];
+}
+
+- (BOOL)isSimpleType
 {
 	return (self.behavior == TypeBehavior_simple);
 }
 
--(BOOL)isComplexType
+- (BOOL)isComplexType
 {
 	return (self.behavior == TypeBehavior_complex);
 }
 
--(NSString *)isSimpleTypeString
+- (NSString *)isSimpleTypeString
 {
 	return [self isSimpleType] ? @"true" : @"false";
 }
 
--(NSString *)isComplexTypeString
+- (NSString *)isComplexTypeString
 {
 	return [self isComplexType] ? @"true" : @"false";
 }
@@ -102,7 +113,7 @@
 
 - (NSString *)classNameWithoutPtr
 {
-	return [[self className] stringByReplacingOccurrencesOfString:@"*" withString:@""];
+	return [[self className] stringByReplacingOccurrencesOfString:@" *" withString:@""];
 }
 
 - (NSString *)assignOrRetain
@@ -125,10 +136,10 @@
 {
 	switch (self.behavior) {
 		case TypeBehavior_simple:
-			return [[NSBundle mainBundle] pathForResource:@"SimpleType_H" ofType:@"template"];
+			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_H"];
 			break;
 		case TypeBehavior_complex:
-			return [[NSBundle mainBundle] pathForResource:@"ComplexType_H" ofType:@"template"];
+			return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_H"];
 			break;
 			
 		default:
@@ -140,11 +151,11 @@
 {
 	switch (self.behavior) {
 		case TypeBehavior_simple:
-			return [[NSBundle mainBundle] pathForResource:@"SimpleType_M" ofType:@"template"];
+			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_M"];
 			break;
 			
 		case TypeBehavior_complex:
-			return [[NSBundle mainBundle] pathForResource:@"ComplexType_M" ofType:@"template"];
+			return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_M"];
 			break;
 			
 		default:

@@ -24,6 +24,7 @@
 
 #import "USPort.h"
 #import "USObjCKeywords.h"
+#import "NSBundle+USAdditions.h"
 
 @implementation USService
 
@@ -43,6 +44,13 @@
 	return self;
 }
 
+- (void) dealloc
+{
+    [name release];
+    [ports release];
+    [super dealloc];
+}
+
 - (USPort *)portForName:(NSString *)aName
 {
 	for(USPort *port in self.ports) {
@@ -51,10 +59,11 @@
 		}
 	}
 	
-	USPort *newPort = [[USPort new] autorelease];
+	USPort *newPort = [USPort new];
 	newPort.service = self;
 	newPort.name = aName;
 	[self.ports addObject:newPort];
+    [newPort release];
 	
 	return newPort;
 }
@@ -66,12 +75,12 @@
 
 - (NSString *)templateFileHPath
 {
-	return [[NSBundle mainBundle] pathForResource:@"Service_H" ofType:@"template"];
+	return [[NSBundle mainBundle] pathForTemplateNamed:@"Service_H"];
 }
 
 - (NSString *)templateFileMPath
 {
-	return [[NSBundle mainBundle] pathForResource:@"Service_M" ofType:@"template"];
+	return [[NSBundle mainBundle] pathForTemplateNamed:@"Service_M"];
 }
 
 - (NSDictionary *)templateKeyDictionary

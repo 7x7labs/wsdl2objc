@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USBinding;
 @class USService;
@@ -33,9 +33,9 @@
 	USService *service;
 }
 
-@property (copy) NSString *name;
-@property (retain) USBinding *binding;
-@property (copy) NSString *address;
-@property (retain) USService *service;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) USBinding *binding;
+@property (nonatomic, copy) NSString *address;
+@property (nonatomic, assign) USService *service;
 
 @end

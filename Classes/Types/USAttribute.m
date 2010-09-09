@@ -30,7 +30,7 @@
 @synthesize schema;
 @synthesize type;
 
--(id)init
+- (id)init
 {
 	if((self = [super init]))
 	{
@@ -43,12 +43,11 @@
 	return self;
 }
 
--(void)dealloc
+- (void)dealloc
 {
 	[name release];
 	[wsdlName release];
 	[attributeDefault release];
-	[(id)type release];
 	[super dealloc];
 }
 

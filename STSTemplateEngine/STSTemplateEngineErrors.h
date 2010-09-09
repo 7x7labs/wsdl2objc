@@ -29,7 +29,7 @@
 //	Sunrise Telephone Systems Ltd. at http://www.sunrise-tel.com
 //
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 // ---------------------------------------------------------------------------
 // Enum typedef:  TEErrorCode

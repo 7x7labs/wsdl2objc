@@ -1,8 +1,17 @@
 @implementation %«className»
 
+%IFEQ superClass.className "NSString *"
+%IFDEF attributes
+%DEFINE IsAttributedString 1
+%ENDIF
+%ENDIF
+
 - (id)init
 {
 	if((self = [super init])) {
+%IFDEF IsAttributedString
+_content = nil;
+%ENDIF
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
 
@@ -63,9 +72,13 @@
 	{
 		nodeName = [NSString stringWithFormat:@"%@:%@", @"%«schema.prefix»", elName];
 	}
-	
+
+%IFDEF IsAttributedString	
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [_content xmlString]);
+%ELSE
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], NULL);
-	
+%ENDIF
+
 %IFDEF superClass
 	xmlNodePtr root = xmlDocGetRootElement(doc);
 	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
@@ -177,6 +190,11 @@
 %ENDIF
 }
 
+%IFDEF IsAttributedString
+/* content */
+@synthesize _content;
+%ENDIF
+
 /* elements */
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
@@ -259,6 +277,8 @@
 
 %IFEQ attribute.type.typeName boolean
 		self.%«attribute.name» = [[[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)] autorelease];
+%ELSIFEQ attribute.type.typeName byte
+		self.%«attribute.name» = [NSNumber numberWithChar:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName int
 		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName integer
@@ -267,6 +287,8 @@
 		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName positiveInteger
 		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
+%ELSIFEQ attribute.type.typeName unsignedByte
+		self.%«attribute.name» = [NSNumber numberWithUnsignedChar:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName unsignedInt
 		self.%«attribute.name» = [NSNumber numberWithUnsignedInt:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName double
@@ -433,43 +455,43 @@
  * http://davedelong.com/blog/2009/04/13/aspect-oriented-programming-objective-c
  */
 - (id) initWithCoder:(NSCoder *)decoder {
-  if ([super respondsToSelector:@selector(initWithCoder:)] && ![self isKindOfClass:[super class]]) {
-    self = [super performSelector:@selector(initWithCoder:) withObject:decoder];
-  } else {
-    self = [super init];
-  }
-  if (self == nil) { return nil; }
+	if ([super respondsToSelector:@selector(initWithCoder:)] && ![self isKindOfClass:[super class]]) {
+		self = [super performSelector:@selector(initWithCoder:) withObject:decoder];
+	} else {
+		self = [super init];
+	}
+	if (self == nil) { return nil; }
  
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-  unsigned int numIvars = 0;
-  Ivar * ivars = class_copyIvarList([self class], &numIvars);
-  for(int i = 0; i < numIvars; i++) {
-    Ivar thisIvar = ivars[i];
-    NSString * key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
-    id value = [decoder decodeObjectForKey:key];
-    if (value == nil) { value = [NSNumber numberWithFloat:0.0]; }
-    [self setValue:value forKey:key];
-  }
-  if (numIvars > 0) { free(ivars); }
-  [pool drain];
-  return self;
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	unsigned int numIvars = 0;
+	Ivar * ivars = class_copyIvarList([self class], &numIvars);
+	for(int i = 0; i < numIvars; i++) {
+		Ivar thisIvar = ivars[i];
+		NSString * key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
+		id value = [decoder decodeObjectForKey:key];
+		if (value == nil) { value = [NSNumber numberWithFloat:0.0]; }
+		[self setValue:value forKey:key];
+	}
+	if (numIvars > 0) { free(ivars); }
+	[pool drain];
+	return self;
 }
 
 - (void) encodeWithCoder:(NSCoder *)encoder {
-  if ([super respondsToSelector:@selector(encodeWithCoder:)] && ![self isKindOfClass:[super class]]) {
-    [super performSelector:@selector(encodeWithCoder:) withObject:encoder];
-  }
-  NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-  unsigned int numIvars = 0;
-  Ivar * ivars = class_copyIvarList([self class], &numIvars);
-  for (int i = 0; i < numIvars; i++) {
-    Ivar thisIvar = ivars[i];
-    NSString * key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
-    id value = [self valueForKey:key];
-    [encoder encodeObject:value forKey:key];
-  }
-  if (numIvars > 0) { free(ivars); }
-  [pool drain];
+	if ([super respondsToSelector:@selector(encodeWithCoder:)] && ![self isKindOfClass:[super class]]) {
+		[super performSelector:@selector(encodeWithCoder:) withObject:encoder];
+	}
+	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	unsigned int numIvars = 0;
+	Ivar * ivars = class_copyIvarList([self class], &numIvars);
+	for (int i = 0; i < numIvars; i++) {
+		Ivar thisIvar = ivars[i];
+		NSString * key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
+		id value = [self valueForKey:key];
+		[encoder encodeObject:value forKey:key];
+	}
+	if (numIvars > 0) { free(ivars); }
+	[pool drain];
 }
 
 @end

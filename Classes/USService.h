@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USPort;
 @class USSchema;
@@ -32,10 +32,10 @@
 	USSchema *schema;
 }
 
-@property (copy) NSString *name;
-@property (retain) NSMutableArray *ports;
-@property (retain) USSchema *schema;
-@property (readonly) NSString *className;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) NSMutableArray *ports;
+@property (nonatomic, assign) USSchema *schema;
+@property (nonatomic, readonly) NSString *className;
 
 - (USPort *)portForName:(NSString *)aName;
 

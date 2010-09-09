@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USWSDL;
 @class USSchema;
@@ -56,21 +56,21 @@ typedef enum {
 }
 
 #pragma mark Global type methods
--(BOOL)isSimpleType;
--(BOOL)isComplexType;
--(NSString *)isSimpleTypeString;
--(NSString *)isComplexTypeString;
+- (BOOL)isSimpleType;
+- (BOOL)isComplexType;
+- (NSString *)isSimpleTypeString;
+- (NSString *)isComplexTypeString;
 
 - (NSString *)className;
 - (NSString *)classNameWithPtr;
 - (NSString *)classNameWithoutPtr;
 - (NSString *)assignOrRetain;
 
-@property (copy) NSString *typeName;
-@property (retain) USSchema *schema;
-@property (assign) TypeBehavior behavior;
-@property (assign) BOOL hasBeenParsed;
-@property (assign) BOOL hasBeenWritten;
+@property (nonatomic, copy) NSString *typeName;
+@property (nonatomic, assign) USSchema *schema;
+@property (nonatomic) TypeBehavior behavior;
+@property (nonatomic) BOOL hasBeenParsed;
+@property (nonatomic) BOOL hasBeenWritten;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;
@@ -79,17 +79,17 @@ typedef enum {
 
 
 #pragma mark Simple type methods
-@property (copy) NSString *representationClass;
-@property (retain) NSMutableArray *enumerationValues;
+@property (nonatomic, copy) NSString *representationClass;
+@property (nonatomic, retain) NSMutableArray *enumerationValues;
 
 - (NSString *)enumCount;
 
 
 
 #pragma mark Complex type methods
-@property (retain) USType *superClass;
-@property (retain) NSMutableArray *sequenceElements;
-@property (retain) NSMutableArray *attributes;
+@property (nonatomic, retain) USType *superClass;
+@property (nonatomic, retain) NSMutableArray *sequenceElements;
+@property (nonatomic, retain) NSMutableArray *attributes;
 
 @end
 

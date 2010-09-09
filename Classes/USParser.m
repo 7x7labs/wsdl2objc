@@ -33,7 +33,7 @@
 #import "USSequenceElement.h"
 
 @implementation USParser
--(id)initWithURL:(NSURL *)anURL
+- (id)initWithURL:(NSURL *)anURL
 {
 	if((self = [super init]))
 	{
@@ -43,20 +43,21 @@
 	return self;
 }
 
--(void)dealloc
+- (void)dealloc
 {
 	if(baseURL != nil) [baseURL release];
 	[super dealloc];
 }
 
--(USWSDL*)parse
+- (USWSDL*)parse
 {
-	NSError *error;
+	NSError *error = nil;
 	
 	NSXMLDocument *document = [[NSXMLDocument alloc] initWithContentsOfURL:baseURL options:NSXMLNodeOptionsNone error:&error];
 	
 	if(error) {
-		NSLog(@"%@", error);
+		NSLog(@"Unable to parse XML document from %@: %@", baseURL, error);
+        [document release];
 		return nil;
 	}
 	
@@ -64,24 +65,15 @@
 	
 	if([[definitions localName] isNotEqualTo:@"definitions"]) {
 		NSLog(@"Expected element named definitions, found %@", [definitions name]);
+        [document release];
 		return nil;
 	}
 	
 	USWSDL *wsdl = [[USWSDL new] autorelease];
 	[wsdl addXSDSchema];
 	
-	// Find out if the wsdl is using SOAP 1.1 or SOAP 1.2
-	// Always prefer 1.2 to 1.1
-	for (NSXMLNode *aNS in [definitions namespaces]) {
-		if ([[aNS stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
-			wsdl.soapVersion = @"1.1";
-		} else if ([[aNS stringValue] isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
-			wsdl.soapVersion = @"1.2";
-			break;
-		}
-	}
-	
 	[self processDefinitionsElement:definitions wsdl:wsdl];
+    [document release];
 	
 	return wsdl;
 }
@@ -138,11 +130,12 @@
 		
 		NSLog(@"Processing schema import at location: %@", location);
 		
-		NSError *error;
+		NSError *error = nil;
 		NSXMLDocument *document = [[NSXMLDocument alloc] initWithContentsOfURL:location options:NSXMLNodeOptionsNone error:&error];
 		
 		if(error) {
-			NSLog(@"%@", error);
+            NSLog(@"Unable to parse XML document from %@ (ignored): %@", location, error);
+            [document release];
 			return;
 		}
 		
@@ -150,10 +143,12 @@
 		
 		if([[schemaElement localName] isNotEqualTo:@"schema"]) {
 			NSLog(@"During schema import, expected element named schema, found %@", [schemaElement name]);
+            [document release];
 			return;
 		}
 		
 		[self processSchemaElement:schemaElement wsdl:wsdl];
+        [document release];
 
 	} else {
 		// not a schema import, let's see if it's a definitions import
@@ -164,11 +159,12 @@
 		
 		NSLog(@"Processing definitions import at location: %@", location);
 		
-		NSError *error;
+		NSError *error = nil;
 		NSXMLDocument *document = [[NSXMLDocument alloc] initWithContentsOfURL:location options:NSXMLNodeOptionsNone error:&error];
 		
 		if(error) {
-			NSLog(@"%@", error);
+            NSLog(@"Unable to parse XML document from %@ (ignored): %@", location, error);
+            [document release];
 			return;
 		}
 		
@@ -176,6 +172,7 @@
 		
 		if([[definitionsElement localName] isNotEqualTo:@"definitions"]) {
 			NSLog(@"During definitions import, expected element named definitions, found %@", [definitionsElement name]);
+            [document release];
 			return;
 		}
 		
@@ -191,6 +188,7 @@
 		
 		[self processDefinitionsElement:definitionsElement wsdl:wsdl];
 		wsdl.targetNamespace = oldTargetNamespace;
+        [document release];
 	}
 }
 

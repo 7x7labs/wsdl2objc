@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USOperationInterface;
 @class USPortType;
@@ -36,12 +36,12 @@
 	USPortType *portType;
 }
 
-@property (copy) NSString *name;
-@property (copy) NSString *soapAction;
-@property (retain) USOperationInterface *input;
-@property (retain) USOperationInterface *output;
-@property (retain) NSMutableArray *faults;
-@property (retain) USPortType *portType;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, copy) NSString *soapAction;
+@property (nonatomic, retain) USOperationInterface *input;
+@property (nonatomic, retain) USOperationInterface *output;
+@property (nonatomic, retain) NSMutableArray *faults;
+@property (nonatomic, assign) USPortType *portType;
 
 - (USOperationFault *)faultForName:(NSString *)aName;
 

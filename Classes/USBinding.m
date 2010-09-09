@@ -24,11 +24,13 @@
 
 #import "USPortType.h"
 #import "USObjCKeywords.h"
+#import "NSBundle+USAdditions.h"
 
 @implementation USBinding
 
 @synthesize name;
 @synthesize portType;
+@synthesize soapVersion;
 @synthesize schema;
 @dynamic className;
 
@@ -36,11 +38,20 @@
 {
 	if((self = [super init])) {
 		self.name = nil;
-		self.portType = [[USPortType alloc] init];
+		self.portType = [[USPortType new] autorelease];
+        self.soapVersion = @"1.1";
 		self.schema = nil;
 	}
 	
 	return self;
+}
+
+- (void) dealloc
+{
+    [name release];
+    [portType release];
+    [soapVersion release];
+    [super dealloc];
 }
 
 - (NSString *)className
@@ -58,12 +69,12 @@
 
 - (NSString *)templateFileHPath
 {
-	return [[NSBundle mainBundle] pathForResource:@"Binding_H" ofType:@"template"];
+	return [[NSBundle mainBundle] pathForTemplateNamed:@"Binding_H"];
 }
 
 - (NSString *)templateFileMPath
 {
-	return [[NSBundle mainBundle] pathForResource:@"Binding_M" ofType:@"template"];
+	return [[NSBundle mainBundle] pathForTemplateNamed:@"Binding_M"];
 }
 
 - (NSDictionary *)templateKeyDictionary
@@ -73,6 +84,7 @@
 	[returning setObject:self.name forKey:@"name"];
 	[returning setObject:self.className forKey:@"className"];
 	[returning setObject:self.portType forKey:@"portType"];
+	[returning setObject:self.soapVersion forKey:@"soapVersion"];
 	[returning setObject:[self operations] forKey:@"operations"];
 	[returning setObject:self.schema forKey:@"schema"];
 	

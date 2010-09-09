@@ -51,6 +51,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 // private method: deallocate instance
 - (void)dealloc {
+    [self->literal release];
 	[super dealloc];
 } // end method
 
@@ -260,8 +261,9 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (void)setLiteral:(NSString *)literalString
 {
+    literalString = [literalString copy];
+    [self->literal release];
 	self->literal = literalString;
-	return;
 } // end method
 
 
@@ -709,7 +711,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (void)logErrorMessageForTemplate:(NSString *)nameOrPath
 {
-	NSLog(@"%@", [self stringWithErrorMessageForTemplate:nameOrPath]);
+    NSLog(@"Unable to parse template document %@: %@", nameOrPath, [self stringWithErrorMessageForTemplate:nameOrPath]);
 } // end method
 
 @end // STSTemplateEngineErrors

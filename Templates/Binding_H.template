@@ -9,24 +9,29 @@
 
 @interface %«className» : NSObject <%«className»ResponseDelegate> {
 	NSURL *address;
-	NSTimeInterval defaultTimeout;
+	NSTimeInterval timeout;
 	NSMutableArray *cookies;
+	NSMutableDictionary *customHeaders;
 	BOOL logXMLInOut;
 	BOOL synchronousOperationComplete;
 	NSString *authUsername;
 	NSString *authPassword;
 }
 
-@property (copy) NSURL *address;
-@property (assign) BOOL logXMLInOut;
-@property (assign) NSTimeInterval defaultTimeout;
+@property (nonatomic, copy) NSURL *address;
+@property (nonatomic) BOOL logXMLInOut;
+@property (nonatomic) NSTimeInterval timeout;
 @property (nonatomic, retain) NSMutableArray *cookies;
+@property (nonatomic, retain) NSMutableDictionary *customHeaders;
 @property (nonatomic, retain) NSString *authUsername;
 @property (nonatomic, retain) NSString *authPassword;
+
++ (NSTimeInterval) defaultTimeout;
 
 - (id)initWithAddress:(NSString *)anAddress;
 - (void)sendHTTPCallUsingBody:(NSString *)body soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation;
 - (void)addCookie:(NSHTTPCookie *)toAdd;
+- (NSString *)MIMEType;
 
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»;
@@ -43,8 +48,8 @@
 	NSURLConnection *urlConnection;
 }
 
-@property (retain) %«className» *binding;
-@property (readonly) %«className»Response *response;
+@property (nonatomic, retain) %«className» *binding;
+@property (nonatomic, readonly) %«className»Response *response;
 @property (nonatomic, assign) id<%«className»ResponseDelegate> delegate;
 @property (nonatomic, retain) NSMutableData *responseData;
 @property (nonatomic, retain) NSURLConnection *urlConnection;
@@ -68,10 +73,10 @@
 }
 
 %FOREACH part in operation.input.body.parts
-@property (%«part.element.type.assignOrRetain») %«part.element.type.classNameWithPtr» %«part.name»;
+@property (nonatomic, %«part.element.type.assignOrRetain») %«part.element.type.classNameWithPtr» %«part.name»;
 %ENDFOR
 %FOREACH header in operation.input.headers
-@property (%«header.type.assignOrRetain») %«header.type.classNameWithPtr» %«header.name»;
+@property (nonatomic, %«header.type.assignOrRetain») %«header.type.classNameWithPtr» %«header.name»;
 %ENDFOR
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate
@@ -102,8 +107,8 @@
 	NSError *error;
 }
 
-@property (retain) NSArray *headers;
-@property (retain) NSArray *bodyParts;
-@property (retain) NSError *error;
+@property (nonatomic, retain) NSArray *headers;
+@property (nonatomic, retain) NSArray *bodyParts;
+@property (nonatomic, retain) NSError *error;
 
 @end

@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USSchema;
 @class USPart;
@@ -33,10 +33,10 @@
 	USSchema *schema;
 }
 
-@property (copy) NSString *name;
-@property (retain) NSMutableArray *parts;
-@property (assign) BOOL hasBeenParsed;
-@property (retain) USSchema *schema;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) NSMutableArray *parts;
+@property (nonatomic) BOOL hasBeenParsed;
+@property (nonatomic, assign) USSchema *schema;
 
 - (USPart *)partForName:(NSString *)aName;
 

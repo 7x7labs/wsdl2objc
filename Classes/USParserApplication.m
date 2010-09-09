@@ -29,9 +29,12 @@
 
 @dynamic wsdlURL;
 @dynamic outURL;
+#ifdef APPKIT_EXTERN
 @dynamic statusString;
 @dynamic parsing;
+#endif
 
+#ifdef APPKIT_EXTERN
 - (id)init
 {
 	if((self = [super init])) {
@@ -64,12 +67,17 @@
 	
 	return (self.wsdlURL != nil && self.outURL != nil);
 }
+#endif
 
 - (NSURL *)wsdlURL
 {
+#ifdef APPKIT_EXTERN
 	NSUserDefaultsController *defaults = [NSUserDefaultsController sharedUserDefaultsController];
 	
 	NSString *pathString = [defaults valueForKeyPath:@"values.wsdlPath"];
+#else
+	NSString *pathString = [[NSUserDefaults standardUserDefaults] stringForKey:@"wsdlPath"];
+#endif
 	
 	if(pathString == nil) return nil;
 	if ([pathString length] == 0) return nil;
@@ -83,9 +91,13 @@
 
 - (NSURL *)outURL
 {
+#ifdef APPKIT_EXTERN
 	NSUserDefaultsController *defaults = [NSUserDefaultsController sharedUserDefaultsController];
 	
 	NSString *pathString = [defaults valueForKeyPath:@"values.outPath"];
+#else
+	NSString *pathString = [[NSUserDefaults standardUserDefaults] stringForKey:@"outPath"];
+#endif
 	
 	if(pathString == nil) return nil;
 	if ([pathString length] == 0) return nil;
@@ -98,12 +110,13 @@
 }
 
 
+#ifdef APPKIT_EXTERN
 - (IBAction)browseWSDL:(id)sender
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	[panel setCanChooseFiles:YES];
 	[panel setCanChooseDirectories:NO];
-	[panel setResolvesAliases:YES];
+	[panel setResolvesAliases:NO]; // When set to YES, refuses to select .wsdl symlink pointing to .xml file
 	[panel setAllowsMultipleSelection:NO];
 	
 	if([panel runModalForTypes:[NSArray arrayWithObject:@"wsdl"]] == NSOKButton) {
@@ -170,8 +183,6 @@
 	USParser *parser = [[USParser alloc] initWithURL:self.wsdlURL];
 	USWSDL *wsdl = [parser parse];
 	
-	self.statusString = @"Writing debug info to console...";
-	
 	[self writeDebugInfoForWSDL:wsdl];
 	
 	[parser release];
@@ -180,15 +191,17 @@
 	
 	USWriter *writer = [[USWriter alloc] initWithWSDL:wsdl outputDirectory:self.outURL];
 	[writer write];
+	[writer release];
 	
 	self.statusString = @"Finished!";
 	
 	self.parsing = NO;
 	
-	[pool release];
+	[pool drain];
 }
+#endif
 
--(void)writeDebugInfoForWSDL: (USWSDL*)wsdl
+- (void)writeDebugInfoForWSDL:(USWSDL*)wsdl
 {
 	if(!wsdl)
 	{
@@ -196,13 +209,19 @@
 		return;
 	}
 	
-	if(NO) //write out schemas
+	if([[NSUserDefaults standardUserDefaults] boolForKey:@"writeDebug"]) //write out schemas
 	{
+#ifdef APPKIT_EXTERN
+        self.statusString = @"Writing debug info to console...";
+#else
+        NSLog(@"Writing debug info to console...");
+#endif
+        
 		for(USSchema *schema in wsdl.schemas)
 		{
 			NSLog(@"Schema: %@", [schema fullName]);
 			
-			if(NO) //write out types
+			if(YES) //write out types
 			{
 				for(USType * t in [schema types])
 				{

@@ -57,7 +57,39 @@
 		62E6332E0E676DF40072DBDD /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
 		62FF1F670E883F1D006D6377 /* USGlobals_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 62FF1EF80E883B8A006D6377 /* USGlobals_H.template */; };
 		62FF1F680E883F1D006D6377 /* USGlobals_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 62FF1F010E883C22006D6377 /* USGlobals_M.template */; };
-		62FF20A90E8847FD006D6377 /* CHANGELOG in Resources */ = {isa = PBXBuildFile; fileRef = 62FF20A80E8847FD006D6377 /* CHANGELOG */; };
+		F4FAC29B1227E4BE006B61BC /* NSString+USAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 623346320E759A5A0094F6F1 /* NSString+USAdditions.m */; };
+		F4FAC29C1227E4BF006B61BC /* USObjCKeywords.m in Sources */ = {isa = PBXBuildFile; fileRef = 621D44F10E6E119B00CEF901 /* USObjCKeywords.m */; };
+		F4FAC29E1227E4C5006B61BC /* USAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = B93FECA70DF76C5A00145322 /* USAttribute.m */; };
+		F4FAC29F1227E4C7006B61BC /* USBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064760E709575006BEB94 /* USBinding.m */; };
+		F4FAC2A01227E4C8006B61BC /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
+		F4FAC2A11227E4C9006B61BC /* USMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063020E70692E006BEB94 /* USMessage.m */; };
+		F4FAC2A21227E4CA006B61BC /* USOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063700E7082C9006BEB94 /* USOperation.m */; };
+		F4FAC2A31227E4CB006B61BC /* USOperationFault.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240637D0E70877F006BEB94 /* USOperationFault.m */; };
+		F4FAC2A41227E4CD006B61BC /* USOperationInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063760E708572006BEB94 /* USOperationInterface.m */; };
+		F4FAC2A51227E4D0006B61BC /* USParser+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064720E709558006BEB94 /* USParser+Bindings.m */; };
+		F4FAC2A61227E4D1006B61BC /* USParser+Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FA0E706800006BEB94 /* USParser+Messages.m */; };
+		F4FAC2A71227E4D2006B61BC /* USParser+PortTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063640E70816C006BEB94 /* USParser+PortTypes.m */; };
+		F4FAC2A81227E4D3006B61BC /* USParser+Services.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064950E70A0D1006BEB94 /* USParser+Services.m */; };
+		F4FAC2A91227E4D5006B61BC /* USParser+Types.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ADD3980E6890140052979D /* USParser+Types.m */; };
+		F4FAC2AA1227E4D6006B61BC /* USParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA5C0E01F0C1002165CA /* USParser.m */; };
+		F4FAC2AB1227E4DA006B61BC /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
+		F4FAC2AC1227E4DB006B61BC /* USPart.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FD0E70687B006BEB94 /* USPart.m */; };
+		F4FAC2AD1227E4DC006B61BC /* USPort.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648F0E709FAC006BEB94 /* USPort.m */; };
+		F4FAC2AE1227E4DD006B61BC /* USPortType.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063680E70827A006BEB94 /* USPortType.m */; };
+		F4FAC2AF1227E4DF006B61BC /* USSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA8C0E01F59B002165CA /* USSchema.m */; };
+		F4FAC2B01227E4E0006B61BC /* USSequenceElement.m in Sources */ = {isa = PBXBuildFile; fileRef = B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */; };
+		F4FAC2B11227E4E3006B61BC /* USService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648C0E709F6B006BEB94 /* USService.m */; };
+		F4FAC2B21227E4E4006B61BC /* USType.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFB31D0E64D15900E19E18 /* USType.m */; };
+		F4FAC2B31227E4E5006B61BC /* USWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BFAF770E645D8500E19E18 /* USWriter.m */; };
+		F4FAC2B41227E4E6006B61BC /* USWSDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA870E01F4A0002165CA /* USWSDL.m */; };
+		F4FAC2B51227E4F0006B61BC /* LIFO.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2666F0E6371F900AD9FC9 /* LIFO.m */; };
+		F4FAC2B61227E4F2006B61BC /* STSNullError.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D266790E6371F900AD9FC9 /* STSNullError.m */; };
+		F4FAC2B71227E4F3006B61BC /* STSStringOps.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2667B0E6371F900AD9FC9 /* STSStringOps.m */; };
+		F4FAC2B81227E4F4006B61BC /* STSTemplateEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2667D0E6371F900AD9FC9 /* STSTemplateEngine.m */; };
+		F4FAC2B91227E4F6006B61BC /* STSTemplateEngineErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D2667F0E6371F900AD9FC9 /* STSTemplateEngineErrors.m */; };
+		F4FAC2C31227E7DF006B61BC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FAC2C21227E7DF006B61BC /* main.m */; };
+		F4FAC31C1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FAC31B1227F0F9006B61BC /* NSBundle+USAdditions.m */; };
+		F4FAC31D1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = F4FAC31B1227F0F9006B61BC /* NSBundle+USAdditions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,13 +100,13 @@
 		621D44F10E6E119B00CEF901 /* USObjCKeywords.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USObjCKeywords.m; sourceTree = "<group>"; };
 		623346310E759A5A0094F6F1 /* NSString+USAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+USAdditions.h"; sourceTree = "<group>"; };
 		623346320E759A5A0094F6F1 /* NSString+USAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+USAdditions.m"; sourceTree = "<group>"; };
-		6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WSDL2ObjC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6235ED0C0E63887A00DABBD6 /* WSDLParser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WSDLParser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6235ED0E0E63887A00DABBD6 /* WSDL2ObjC-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "WSDL2ObjC-Info.plist"; sourceTree = "<group>"; };
 		6235EE6E0E63897300DABBD6 /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
-		6235F0090E63953500DABBD6 /* SimpleType_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleType_H.template; sourceTree = "<group>"; };
-		6235F00A0E63954100DABBD6 /* ComplexType_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComplexType_H.template; sourceTree = "<group>"; };
-		6235F00C0E63958100DABBD6 /* SimpleType_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = SimpleType_M.template; sourceTree = "<group>"; };
-		6235F00D0E63958E00DABBD6 /* ComplexType_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ComplexType_M.template; sourceTree = "<group>"; };
+		6235F0090E63953500DABBD6 /* SimpleType_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = SimpleType_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		6235F00A0E63954100DABBD6 /* ComplexType_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = ComplexType_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		6235F00C0E63958100DABBD6 /* SimpleType_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = SimpleType_M.template; sourceTree = "<group>"; usesTabs = 1; };
+		6235F00D0E63958E00DABBD6 /* ComplexType_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = ComplexType_M.template; sourceTree = "<group>"; usesTabs = 1; };
 		624062F90E706800006BEB94 /* USParser+Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Messages.h"; sourceTree = "<group>"; };
 		624062FA0E706800006BEB94 /* USParser+Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Messages.m"; sourceTree = "<group>"; };
 		624062FC0E70687B006BEB94 /* USPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPart.h; sourceTree = "<group>"; };
@@ -101,23 +133,23 @@
 		6240648F0E709FAC006BEB94 /* USPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPort.m; sourceTree = "<group>"; };
 		624064940E70A0D1006BEB94 /* USParser+Services.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Services.h"; sourceTree = "<group>"; };
 		624064950E70A0D1006BEB94 /* USParser+Services.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Services.m"; sourceTree = "<group>"; };
-		624065390E70A6A0006BEB94 /* Service_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Service_H.template; sourceTree = "<group>"; };
-		6240653A0E70A6A8006BEB94 /* Service_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Service_M.template; sourceTree = "<group>"; };
-		6240653F0E70A8C5006BEB94 /* Binding_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Binding_H.template; sourceTree = "<group>"; };
-		624065410E70A8D0006BEB94 /* Binding_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Binding_M.template; sourceTree = "<group>"; };
+		624065390E70A6A0006BEB94 /* Service_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Service_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		6240653A0E70A6A8006BEB94 /* Service_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Service_M.template; sourceTree = "<group>"; usesTabs = 1; };
+		6240653F0E70A8C5006BEB94 /* Binding_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Binding_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		624065410E70A8D0006BEB94 /* Binding_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Binding_M.template; sourceTree = "<group>"; tabWidth = 4; usesTabs = 1; };
 		62ADD3970E6890140052979D /* USParser+Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Types.h"; sourceTree = "<group>"; };
 		62ADD3980E6890140052979D /* USParser+Types.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Types.m"; sourceTree = "<group>"; };
 		62ADD8740E68C16B0052979D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		62BF41B20E72004900FA8190 /* USAdditions_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAdditions_H.template; sourceTree = "<group>"; };
-		62BF41B30E72004900FA8190 /* USAdditions_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = USAdditions_M.template; sourceTree = "<group>"; };
-		62BF42030E72073F00FA8190 /* NSDate+ISO8601Parsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Parsing_H.template"; sourceTree = "<group>"; };
-		62BF42040E72073F00FA8190 /* NSDate+ISO8601Parsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Parsing_M.template"; sourceTree = "<group>"; };
-		62BF42050E72073F00FA8190 /* NSDate+ISO8601Unparsing_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Unparsing_H.template"; sourceTree = "<group>"; };
-		62BF42060E72073F00FA8190 /* NSDate+ISO8601Unparsing_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "NSDate+ISO8601Unparsing_M.template"; sourceTree = "<group>"; };
+		62BF41B20E72004900FA8190 /* USAdditions_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = USAdditions_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		62BF41B30E72004900FA8190 /* USAdditions_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = USAdditions_M.template; sourceTree = "<group>"; usesTabs = 1; };
+		62BF42030E72073F00FA8190 /* NSDate+ISO8601Parsing_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = "NSDate+ISO8601Parsing_H.template"; sourceTree = "<group>"; usesTabs = 1; };
+		62BF42040E72073F00FA8190 /* NSDate+ISO8601Parsing_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = "NSDate+ISO8601Parsing_M.template"; sourceTree = "<group>"; usesTabs = 1; };
+		62BF42050E72073F00FA8190 /* NSDate+ISO8601Unparsing_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = "NSDate+ISO8601Unparsing_H.template"; sourceTree = "<group>"; usesTabs = 1; };
+		62BF42060E72073F00FA8190 /* NSDate+ISO8601Unparsing_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = "NSDate+ISO8601Unparsing_M.template"; sourceTree = "<group>"; usesTabs = 1; };
 		62BFAF760E645D8500E19E18 /* USWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USWriter.h; sourceTree = "<group>"; };
 		62BFAF770E645D8500E19E18 /* USWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USWriter.m; sourceTree = "<group>"; };
-		62BFB2240E648CE100E19E18 /* Schema_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_H.template; sourceTree = "<group>"; };
-		62BFB2250E648CE900E19E18 /* Schema_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Schema_M.template; sourceTree = "<group>"; };
+		62BFB2240E648CE100E19E18 /* Schema_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Schema_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		62BFB2250E648CE900E19E18 /* Schema_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Schema_M.template; sourceTree = "<group>"; usesTabs = 1; };
 		62BFB31D0E64D15900E19E18 /* USType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USType.m; sourceTree = "<group>"; };
 		62D2666E0E6371F900AD9FC9 /* LIFO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LIFO.h; sourceTree = "<group>"; };
 		62D2666F0E6371F900AD9FC9 /* LIFO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LIFO.m; sourceTree = "<group>"; };
@@ -135,8 +167,8 @@
 		62D266800E6371F900AD9FC9 /* Sunrise Telephone Systems.webloc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Sunrise Telephone Systems.webloc"; sourceTree = "<group>"; };
 		62E6332B0E676DF40072DBDD /* USElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USElement.h; sourceTree = "<group>"; };
 		62E6332C0E676DF40072DBDD /* USElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USElement.m; sourceTree = "<group>"; };
-		62FF1EF80E883B8A006D6377 /* USGlobals_H.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = USGlobals_H.template; path = ../USGlobals_H.template; sourceTree = "<group>"; };
-		62FF1F010E883C22006D6377 /* USGlobals_M.template */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = USGlobals_M.template; path = ../USGlobals_M.template; sourceTree = "<group>"; };
+		62FF1EF80E883B8A006D6377 /* USGlobals_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; name = USGlobals_H.template; path = ../USGlobals_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		62FF1F010E883C22006D6377 /* USGlobals_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; name = USGlobals_M.template; path = ../USGlobals_M.template; sourceTree = "<group>"; usesTabs = 1; };
 		62FF20A80E8847FD006D6377 /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B93FECA60DF76C5A00145322 /* USAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USAttribute.h; sourceTree = "<group>"; };
 		B93FECA70DF76C5A00145322 /* USAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USAttribute.m; sourceTree = "<group>"; };
@@ -151,10 +183,22 @@
 		B9FEAA870E01F4A0002165CA /* USWSDL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USWSDL.m; sourceTree = "<group>"; };
 		B9FEAA8B0E01F59B002165CA /* USSchema.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = USSchema.h; path = Types/USSchema.h; sourceTree = "<group>"; };
 		B9FEAA8C0E01F59B002165CA /* USSchema.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = USSchema.m; path = Types/USSchema.m; sourceTree = "<group>"; };
+		F4FAC2931227E364006B61BC /* wsdl2objc */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = wsdl2objc; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4FAC2C21227E7DF006B61BC /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4FAC3061227EE32006B61BC /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F4FAC31A1227F0F9006B61BC /* NSBundle+USAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSBundle+USAdditions.h"; sourceTree = "<group>"; };
+		F4FAC31B1227F0F9006B61BC /* NSBundle+USAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSBundle+USAdditions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		6235ED0A0E63887A00DABBD6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FAC2911227E364006B61BC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -167,6 +211,7 @@
 		08FB7794FE84155DC02AAC07 /* WSDLParser */ = {
 			isa = PBXGroup;
 			children = (
+				F4FAC3071227EE9F006B61BC /* CLI */,
 				62D2666D0E6371F900AD9FC9 /* STSTemplateEngine */,
 				6235ECF60E6386D200DABBD6 /* Templates */,
 				B9FA26940DA6E8DD004C7479 /* Classes */,
@@ -189,6 +234,8 @@
 				621D44F10E6E119B00CEF901 /* USObjCKeywords.m */,
 				32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* WSDLParser.m */,
+				F4FAC31A1227F0F9006B61BC /* NSBundle+USAdditions.h */,
+				F4FAC31B1227F0F9006B61BC /* NSBundle+USAdditions.m */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -205,7 +252,8 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */,
+				6235ED0C0E63887A00DABBD6 /* WSDLParser.app */,
+				F4FAC2931227E364006B61BC /* wsdl2objc */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -373,12 +421,21 @@
 			path = Classes;
 			sourceTree = "<group>";
 		};
+		F4FAC3071227EE9F006B61BC /* CLI */ = {
+			isa = PBXGroup;
+			children = (
+				F4FAC3061227EE32006B61BC /* Info.plist */,
+				F4FAC2C21227E7DF006B61BC /* main.m */,
+			);
+			name = CLI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6235ED0B0E63887A00DABBD6 /* WSDL2ObjC */ = {
+		6235ED0B0E63887A00DABBD6 /* WSDLParser */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6235ED110E63887B00DABBD6 /* Build configuration list for PBXNativeTarget "WSDL2ObjC" */;
+			buildConfigurationList = 6235ED110E63887B00DABBD6 /* Build configuration list for PBXNativeTarget "WSDLParser" */;
 			buildPhases = (
 				6235ED080E63887A00DABBD6 /* Resources */,
 				6235ED090E63887A00DABBD6 /* Sources */,
@@ -388,10 +445,26 @@
 			);
 			dependencies = (
 			);
-			name = WSDL2ObjC;
+			name = WSDLParser;
 			productName = WSDL2ObjC;
-			productReference = 6235ED0C0E63887A00DABBD6 /* WSDL2ObjC.app */;
+			productReference = 6235ED0C0E63887A00DABBD6 /* WSDLParser.app */;
 			productType = "com.apple.product-type.application";
+		};
+		F4FAC2921227E364006B61BC /* wsdl2objc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F4FAC2971227E3A7006B61BC /* Build configuration list for PBXNativeTarget "wsdl2objc" */;
+			buildPhases = (
+				F4FAC2901227E364006B61BC /* Sources */,
+				F4FAC2911227E364006B61BC /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = wsdl2objc;
+			productName = wsdl2objc;
+			productReference = F4FAC2931227E364006B61BC /* wsdl2objc */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
@@ -405,7 +478,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6235ED0B0E63887A00DABBD6 /* WSDL2ObjC */,
+				6235ED0B0E63887A00DABBD6 /* WSDLParser */,
+				F4FAC2921227E364006B61BC /* wsdl2objc */,
 			);
 		};
 /* End PBXProject section */
@@ -434,7 +508,6 @@
 				62BF42360E72099000FA8190 /* NSDate+ISO8601Parsing_M.template in Resources */,
 				62BF42370E72099000FA8190 /* NSDate+ISO8601Unparsing_H.template in Resources */,
 				62BF42380E72099000FA8190 /* NSDate+ISO8601Unparsing_M.template in Resources */,
-				62FF20A90E8847FD006D6377 /* CHANGELOG in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -476,6 +549,46 @@
 				624064900E709FAC006BEB94 /* USPort.m in Sources */,
 				624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */,
 				623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */,
+				F4FAC31D1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4FAC2901227E364006B61BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4FAC29B1227E4BE006B61BC /* NSString+USAdditions.m in Sources */,
+				F4FAC29C1227E4BF006B61BC /* USObjCKeywords.m in Sources */,
+				F4FAC29E1227E4C5006B61BC /* USAttribute.m in Sources */,
+				F4FAC29F1227E4C7006B61BC /* USBinding.m in Sources */,
+				F4FAC2A01227E4C8006B61BC /* USElement.m in Sources */,
+				F4FAC2A11227E4C9006B61BC /* USMessage.m in Sources */,
+				F4FAC2A21227E4CA006B61BC /* USOperation.m in Sources */,
+				F4FAC2A31227E4CB006B61BC /* USOperationFault.m in Sources */,
+				F4FAC2A41227E4CD006B61BC /* USOperationInterface.m in Sources */,
+				F4FAC2A51227E4D0006B61BC /* USParser+Bindings.m in Sources */,
+				F4FAC2A61227E4D1006B61BC /* USParser+Messages.m in Sources */,
+				F4FAC2A71227E4D2006B61BC /* USParser+PortTypes.m in Sources */,
+				F4FAC2A81227E4D3006B61BC /* USParser+Services.m in Sources */,
+				F4FAC2A91227E4D5006B61BC /* USParser+Types.m in Sources */,
+				F4FAC2AA1227E4D6006B61BC /* USParser.m in Sources */,
+				F4FAC2AB1227E4DA006B61BC /* USParserApplication.m in Sources */,
+				F4FAC2AC1227E4DB006B61BC /* USPart.m in Sources */,
+				F4FAC2AD1227E4DC006B61BC /* USPort.m in Sources */,
+				F4FAC2AE1227E4DD006B61BC /* USPortType.m in Sources */,
+				F4FAC2AF1227E4DF006B61BC /* USSchema.m in Sources */,
+				F4FAC2B01227E4E0006B61BC /* USSequenceElement.m in Sources */,
+				F4FAC2B11227E4E3006B61BC /* USService.m in Sources */,
+				F4FAC2B21227E4E4006B61BC /* USType.m in Sources */,
+				F4FAC2B31227E4E5006B61BC /* USWriter.m in Sources */,
+				F4FAC2B41227E4E6006B61BC /* USWSDL.m in Sources */,
+				F4FAC2B51227E4F0006B61BC /* LIFO.m in Sources */,
+				F4FAC2B61227E4F2006B61BC /* STSNullError.m in Sources */,
+				F4FAC2B71227E4F3006B61BC /* STSStringOps.m in Sources */,
+				F4FAC2B81227E4F4006B61BC /* STSTemplateEngine.m in Sources */,
+				F4FAC2B91227E4F6006B61BC /* STSTemplateEngineErrors.m in Sources */,
+				F4FAC2C31227E7DF006B61BC /* main.m in Sources */,
+				F4FAC31C1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,6 +602,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
 		};
@@ -512,7 +626,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
@@ -527,9 +640,7 @@
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
-				PRODUCT_NAME = WSDL2ObjC;
-				WARNING_CFLAGS = "-Wall";
+				PRODUCT_NAME = WSDLParser;
 			};
 			name = Debug;
 		};
@@ -539,7 +650,6 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
 				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "ppc i386 ppc64 x86_64";
-				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
@@ -552,16 +662,68 @@
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				INFOPLIST_FILE = "WSDL2ObjC-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
-				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
 					"-framework",
 					AppKit,
 				);
-				PREBINDING = NO;
-				PRODUCT_NAME = WSDL2ObjC;
-				STRIP_INSTALLED_PRODUCT = YES;
+				PRODUCT_NAME = WSDLParser;
+				WARNING_CFLAGS = "-Wall";
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		F4FAC2951227E366006B61BC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Foundation.framework/Headers/Foundation.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					Info.plist,
+					"-framework",
+					Foundation,
+				);
+				PRODUCT_NAME = wsdl2objc;
+			};
+			name = Debug;
+		};
+		F4FAC2961227E366006B61BC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "ppc i386 ppc64 x86_64";
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_GC = supported;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Foundation.framework/Headers/Foundation.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-sectcreate",
+					__TEXT,
+					__info_plist,
+					Info.plist,
+					"-framework",
+					Foundation,
+				);
+				PRODUCT_NAME = wsdl2objc;
 				WARNING_CFLAGS = "-Wall";
 				ZERO_LINK = NO;
 			};
@@ -579,11 +741,20 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6235ED110E63887B00DABBD6 /* Build configuration list for PBXNativeTarget "WSDL2ObjC" */ = {
+		6235ED110E63887B00DABBD6 /* Build configuration list for PBXNativeTarget "WSDLParser" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6235ED0F0E63887B00DABBD6 /* Debug */,
 				6235ED100E63887B00DABBD6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4FAC2971227E3A7006B61BC /* Build configuration list for PBXNativeTarget "wsdl2objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4FAC2951227E366006B61BC /* Debug */,
+				F4FAC2961227E366006B61BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

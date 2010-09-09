@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USType;
 @class USSchema;
@@ -36,12 +36,12 @@
 	NSMutableArray *waitingSeqElements;
 }
 
-@property (copy) NSString *name;
-@property (retain) NSString *wsdlName;
-@property (retain) USType *type;
-@property (retain) USSchema *schema;
-@property (assign) BOOL hasBeenParsed;
-@property (retain) NSMutableArray *waitingSeqElements;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) NSString *wsdlName;
+@property (nonatomic, assign) USType *type;
+@property (nonatomic, assign) USSchema *schema;
+@property (nonatomic) BOOL hasBeenParsed;
+@property (nonatomic, retain) NSMutableArray *waitingSeqElements;
 
 - (NSString *)uname;
 

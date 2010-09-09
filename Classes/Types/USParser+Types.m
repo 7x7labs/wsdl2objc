@@ -214,7 +214,7 @@
 
 - (void)processSequenceElementElement:(NSXMLElement *)el type:(USType *)type
 {
-	USSequenceElement *seqElement = [[USSequenceElement new] autorelease];
+	USSequenceElement *seqElement = [USSequenceElement new];
 	
 	NSXMLNode *refNode = [el attributeForName:@"ref"];
 	if(refNode != nil) {
@@ -259,6 +259,7 @@
 					[el removeChildAtIndex:childIdx];
 					NVLOG(@"*** Reprocessing a type: %@", elType);
 					[self processSequenceElementElement:el type:type];
+                    [seqElement release];
 					return;
 				}
 				childIdx++;
@@ -290,6 +291,7 @@
 	}
 	
 	[type.sequenceElements addObject:seqElement];
+    [seqElement release];
 }
 
 - (void)processComplexContentElement:(NSXMLElement *)el type:(USType *)type
@@ -437,7 +439,7 @@
 	// If the schema is not nil, we assign the attribute to the schema
 	// Otherwise we assume the type is not nil and we assign the attribute to the type
 	
-	USAttribute *attribute = [[USAttribute new] autorelease];
+	USAttribute *attribute = [USAttribute new];
 	if (schema != nil) {
 		attribute.schema = schema;
 	} else {
@@ -498,6 +500,7 @@
 	} else {
 		[type.attributes addObject:attribute];
 	}
+    [attribute release];
 }
 
 - (void)processAttributeElementChildElement:(NSXMLElement *)el attribute:(USAttribute *)attribute

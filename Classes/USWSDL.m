@@ -32,22 +32,21 @@
 
 @synthesize schemas;
 @synthesize targetNamespace;
-@synthesize soapVersion;
 
--(id)init
+- (id)init
 {
 	if((self = [super init]))
 	{
 		self.schemas = [NSMutableArray array];
 		self.targetNamespace = nil;
-		self.soapVersion = @"1.1";
 	}
 	return self;
 }
 
--(void)dealloc
+- (void)dealloc
 {
 	[schemas release];
+    [targetNamespace release];
 	[super dealloc];
 }
 
@@ -59,9 +58,10 @@
 		}
 	}
 	
-	USSchema *newSchema = [[[USSchema alloc] initWithWSDL:self] autorelease];
+	USSchema *newSchema = [[USSchema alloc] initWithWSDL:self];
 	newSchema.fullName = aNamespace;
 	[self.schemas addObject:newSchema];
+    [newSchema release];
 	
 	return newSchema;
 }
@@ -97,10 +97,12 @@
 	xsd.prefix = @"xsd";
 	
 	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
+	[xsd addSimpleClassWithName:@"byte" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"integer" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"nonNegativeInteger" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"positiveInteger" representationClass:@"NSNumber *"];
+	[xsd addSimpleClassWithName:@"unsignedByte" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"unsignedInt" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"unsignedLong" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"unsignedShort" representationClass:@"NSNumber *"];

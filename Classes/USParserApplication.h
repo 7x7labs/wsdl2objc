@@ -20,8 +20,11 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
-#import "USSequenceElement.h"
+#ifdef APPKIT_EXTERN
+    #import <Cocoa/Cocoa.h>
+#else
+    #import <Foundation/Foundation.h>
+#endif
 #import "USType.h"
 #import "USAttribute.h"
 #import "USParser.h"
@@ -31,22 +34,30 @@
 
 @interface USParserApplication : NSObject {
 	BOOL parsing;
+#ifdef APPKIT_EXTERN
 	NSString *statusString;
+#endif
 }
 
+#ifdef APPKIT_EXTERN
 - (BOOL)canParseWSDL;
 - (BOOL)disableAllControls;
+#endif
 
+#ifdef APPKIT_EXTERN
 - (IBAction)browseWSDL:(id)sender;
 - (IBAction)browseOutput:(id)sender;
 
 - (IBAction)parseWSDL:(id)sender;
+#endif
 
-@property (readonly) NSURL *wsdlURL;
-@property (readonly) NSURL *outURL;
-@property (copy) NSString *statusString;
-@property (assign) BOOL parsing;
+@property (nonatomic, readonly) NSURL *wsdlURL;
+@property (nonatomic, readonly) NSURL *outURL;
+#ifdef APPKIT_EXTERN
+@property (nonatomic, copy) NSString *statusString;
+@property (nonatomic) BOOL parsing;
+#endif
 
--(void)writeDebugInfoForWSDL: (USWSDL*)wsdl;
+- (void)writeDebugInfoForWSDL:(USWSDL*)wsdl;
 
 @end

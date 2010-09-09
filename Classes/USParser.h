@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 	//#define DEBUG
 #ifdef DEBUG
 #define NVLOG(__NSSTRING, ...) \
@@ -36,9 +36,9 @@ NSLog(@"%s[%d] >> " __NSSTRING, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__ )
 	NSURL *baseURL;
 }
 
--(id)initWithURL:(NSURL *)anURL;
--(void)dealloc;
--(USWSDL*)parse;
+- (id)initWithURL:(NSURL *)anURL;
+- (void)dealloc;
+- (USWSDL*)parse;
 
 - (void)processDefinitionsElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
 - (void)processDefinitionsChildElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;

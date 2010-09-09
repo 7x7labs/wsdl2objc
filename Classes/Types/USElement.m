@@ -48,6 +48,14 @@
 	return self;
 }
 
+- (void) dealloc
+{
+    [name release];
+    [wsdlName release];
+    [waitingSeqElements release];
+    [super dealloc];
+}
+
 - (void)setName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];

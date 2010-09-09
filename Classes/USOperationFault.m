@@ -41,4 +41,11 @@
 	return self;
 }
 
+- (void) dealloc
+{
+    [name release];
+    [message release];
+    [super dealloc];
+}
+
 @end

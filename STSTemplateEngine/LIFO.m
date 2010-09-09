@@ -49,6 +49,7 @@
 
 // private method: deallocate instance
 - (void)dealloc {
+    [_stack release];
 	[super dealloc];
 } // end method
 
@@ -62,7 +63,7 @@
 {
 	LIFO *thisInstance = [[[LIFO alloc] init] autorelease];
 	
-	thisInstance->_stack = [NSMutableArray arrayWithCapacity:depth];
+	thisInstance->_stack = [[NSMutableArray alloc] initWithCapacity:depth];
 	return thisInstance;
 } // end method
 
@@ -89,7 +90,7 @@
 	NSException *exception;
 	
 	if (anObject == nil) {
-		exception = [NSException exceptionWithName:@"NSInvalidArgumentException"
+		exception = [NSException exceptionWithName:NSInvalidArgumentException
 											reason:@"object must not be nil" userInfo:nil];
 		[exception raise];
 	}
@@ -115,7 +116,7 @@
 	else {
 		[theObject retain];
 		[self->_stack removeLastObject];
-		return theObject;
+		return [theObject autorelease];
 	} // end if
 } // end method
 

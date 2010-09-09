@@ -29,6 +29,7 @@
 #import "USPortType.h"
 #import "USBinding.h"
 #import "USService.h"
+#import "NSBundle+USAdditions.h"
 
 @implementation USSchema
 
@@ -47,7 +48,7 @@
 @synthesize hasBeenParsed;
 @synthesize hasBeenWritten;
 
--(id)initWithWSDL:(USWSDL *)aWsdl
+- (id)initWithWSDL:(USWSDL *)aWsdl
 {
 	if((self = [super init]))
 	{
@@ -70,12 +71,20 @@
 }
 
 
--(void)dealloc
+- (void)dealloc
 {
 	[fullName release];
+    [prefix release];
+    [localPrefix release];
 	[types release];
+	[elements release];
+	[attributes release];
+	[imports release];
+	[messages release];
+	[portTypes release];
+	[bindings release];
+	[services release];
 	[super dealloc];
-	[wsdl release];
 }
 
 - (USType *)typeForName:(NSString *)aName
@@ -89,11 +98,12 @@
 		}
 	}
 	
-	USType *newType = [[USType new] autorelease];
+	USType *newType = [USType new];
 	newType.typeName = aName;
 	newType.schema = self;
 	
 	[self.types addObject:newType];
+    [newType release];
 	
 	// NSLog(@"New Type: %@ (%@)", newType.typeName, newType);
 	return newType;
@@ -115,11 +125,12 @@
 		}
 	}
 	
-	USElement *newElement = [[USElement new] autorelease];
+	USElement *newElement = [USElement new];
 	newElement.name = aName;
 	newElement.schema = self;
 	
 	[self.elements addObject:newElement];
+    [newElement release];
 	
 	// NSLog(@"New Element: %@ (%@), type: %@ (%@)", newElement.name, newElement, newElement.type.typeName, newElement.type);
 	return newElement;
@@ -141,14 +152,15 @@
 		}
 	}
 	
-	USAttribute *newattribute = [[USAttribute new] autorelease];
-	newattribute.name = aName;
-	newattribute.schema = self;
+	USAttribute *newAttribute = [USAttribute new];
+	newAttribute.name = aName;
+	newAttribute.schema = self;
 	
-	[self.attributes addObject:newattribute];
+	[self.attributes addObject:newAttribute];
+    [newAttribute release];
 	
 	// NSLog(@"New attribute: %@ (%@), type: %@ (%@)", newattribute.name, newattribute, newattribute.type.typeName, newattribute.type);
-	return newattribute;
+	return newAttribute;
 }
 
 - (USMessage *)messageForName:(NSString *)aName
@@ -161,10 +173,11 @@
 		}
 	}
 	
-	USMessage *newMessage = [[USMessage new] autorelease];
+	USMessage *newMessage = [USMessage new];
 	newMessage.schema = self;
 	newMessage.name = aName;
 	[self.messages addObject:newMessage];
+    [newMessage release];
 	
 	return newMessage;
 }
@@ -179,10 +192,11 @@
 		}
 	}
 	
-	USPortType *newPortType = [[USPortType new] autorelease];
+	USPortType *newPortType = [USPortType new];
 	newPortType.schema = self;
 	newPortType.name = aName;
 	[self.portTypes addObject:newPortType];
+    [newPortType release];
 	
 	return newPortType;
 }
@@ -197,10 +211,11 @@
 		}
 	}
 	
-	USBinding *newBinding = [[USBinding new] autorelease];
+	USBinding *newBinding = [USBinding new];
 	newBinding.schema = self;
 	newBinding.name = aName;
 	[self.bindings addObject:newBinding];
+    [newBinding release];
 	
 	return newBinding;
 }
@@ -215,10 +230,11 @@
 		}
 	}
 	
-	USService *newService = [[USService new] autorelease];
+	USService *newService = [USService new];
 	newService.schema = self;
 	newService.name = aName;
 	[self.services addObject:newService];
+    [newService release];
 	
 	return newService;
 }
@@ -259,12 +275,12 @@
 
 - (NSString *)templateFileHPath
 {
-	return [[NSBundle mainBundle] pathForResource:@"Schema_H" ofType:@"template"];
+	return [[NSBundle mainBundle] pathForTemplateNamed:@"Schema_H"];
 }
 
 - (NSString *)templateFileMPath
 {
-	return [[NSBundle mainBundle] pathForResource:@"Schema_M" ofType:@"template"];
+	return [[NSBundle mainBundle] pathForTemplateNamed:@"Schema_M"];
 }
 
 - (NSDictionary *)templateKeyDictionary

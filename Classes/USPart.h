@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USElement;
 @class USMessage;
@@ -31,9 +31,9 @@
 	USMessage *message;
 }
 
-@property (copy) NSString *name;
-@property (retain) USElement *element;
-@property (retain) USMessage *message;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) USElement *element;
+@property (nonatomic, assign) USMessage *message;
 
 - (NSString *)uname;
 

@@ -31,7 +31,6 @@
 
 #import "LIFO.h"
 #import "STSStringOps.h"
-#import "STSNullError.h"
 
 #import "STSTemplateEngine.h"
 
@@ -271,7 +270,7 @@ BOOL classExists (NSString *className) {
 	NSMutableString *remainder_ = [NSMutableString stringWithCapacity:[self length]];
 	NSMutableString *result = [NSMutableString stringWithCapacity:[self length]];
 	NSMutableString *placeholder = [NSMutableString stringWithCapacity:20];
-	NSMutableString *value = [NSMutableString stringWithCapacity:20];
+	NSMutableString *value;
 	NSMutableArray *_errorLog = [NSMutableArray arrayWithCapacity:5];
 	#define errorsHaveOcurred ([_errorLog count] > 0)
 	NSException* exception = nil;
@@ -394,7 +393,7 @@ BOOL classExists (NSString *className) {
 //
 // public method: return new flags, allocated, initialised and autoreleased.
 // initial values: consumed is false, expand is true, condex is false.
-+ (TEFlags *)newFlags;
++ (TEFlags *)flags;
 @end
 
 @implementation TEFlags
@@ -411,7 +410,7 @@ BOOL classExists (NSString *className) {
 
 // public method: return new flags, allocated, initialised and autoreleased.
 // initial values: consumed is false, expand is true, condex is false.
-+ (TEFlags *)newFlags {
++ (TEFlags *)flags {
 	TEFlags *thisInstance = [[[TEFlags alloc] init] autorelease];
 	// initialise flags
 	thisInstance->consumed = false;
@@ -614,7 +613,9 @@ BOOL classExists (NSString *className) {
 	NSArray *template = [templateString arrayBySeparatingLinesUsingEOLmarkers];
 	NSEnumerator *list = [template objectEnumerator];
 	NSMutableString *result = [NSMutableString stringWithCapacity:[templateString length]];
-	NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+//	NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
+	NSMutableCharacterSet *whitespaceSet = [NSMutableCharacterSet whitespaceCharacterSet];
+	[whitespaceSet addCharactersInString:@"\""];
 	NSMutableDictionary *_dictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
 	NSProcessInfo *processInfo = [NSProcessInfo processInfo];
 	
@@ -635,7 +636,7 @@ BOOL classExists (NSString *className) {
 	// the current state held in flags is saved to stack and a new set of flags
 	// is initialised. When an open if-block is closed by %ENDIF, the state of
 	// the previous if-block is restored from stack to flags.
-	TEFlags *flags = [TEFlags newFlags];
+	TEFlags *flags = [TEFlags flags];
 	LIFO *stack = [LIFO stackWithCapacity:8];
 	
 	// Error log:
@@ -757,7 +758,7 @@ BOOL classExists (NSString *className) {
 							// save flags to the stack
 							[stack pushObject:flags];
 							// and initialise a new set of flags
-							flags = [TEFlags newFlags];
+							flags = [TEFlags flags];
 						} // end if
 						// clear the expand flag to ignore this if-branch
 						flags->expand = false;
@@ -776,7 +777,7 @@ BOOL classExists (NSString *className) {
 							// save flags to the stack
 							[stack pushObject:flags];
 							// and initialise a new set of flags
-							flags = [TEFlags newFlags];
+							flags = [TEFlags flags];
 						} // end if
 						  // evaluate if the value of the key represents 'true'
 						flags->expand = ([value representsTrue]) ^ complement;
@@ -864,7 +865,7 @@ BOOL classExists (NSString *className) {
 							// save flags to the stack
 							[stack pushObject:flags];
 							// and initialise a new set of flags
-							flags = [TEFlags newFlags];
+							flags = [TEFlags flags];
 						} // end if
 						  // clear the expand flag to ignore this if-branch
 						flags->expand = false;
@@ -897,7 +898,7 @@ BOOL classExists (NSString *className) {
 								// save flags to the stack
 								[stack pushObject:flags];
 								// and initialise a new set of flags
-								flags = [TEFlags newFlags];
+								flags = [TEFlags flags];
 							} // end if
 							  // clear the expand flag to ignore this if-branch
 							flags->expand = false;
@@ -945,7 +946,7 @@ BOOL classExists (NSString *className) {
 								// save flags to the stack
 								[stack pushObject:flags];
 								// and initialise a new set of flags
-								flags = [TEFlags newFlags];
+								flags = [TEFlags flags];
 							} // end if
 							// compare the value of the key to the operand
 							flags->expand = ([value isEqual:operand] == YES) ^ complement;
@@ -1088,7 +1089,7 @@ BOOL classExists (NSString *className) {
 							// save flags to the stack
 							[stack pushObject:flags];
 							// and initialise a new set of flags
-							flags = [TEFlags newFlags];
+							flags = [TEFlags flags];
 						} // end if
 						// clear the expand flag to ignore this if-branch
 						flags->expand = false;
@@ -1104,7 +1105,7 @@ BOOL classExists (NSString *className) {
 							// this is a nested %IFDEF - save flags to the stack
 							[stack pushObject:flags];
 							// and initialise a new set of flags
-							flags = [TEFlags newFlags];
+							flags = [TEFlags flags];
 						} // end if
 						// set expand flag to true if key is defined, false if undefined
 						flags->expand = (keyDefined(_dictionary, key)) ^ complement;
@@ -1372,7 +1373,7 @@ BOOL classExists (NSString *className) {
 								// save flags to the stack
 								[stack pushObject:flags];
 								// and initialise a new set of flags
-								flags = [TEFlags newFlags];
+								flags = [TEFlags flags];
 							} // end if
 							// clear the expand flag to ignore this if-branch
 							flags->expand = false;
@@ -1402,7 +1403,7 @@ BOOL classExists (NSString *className) {
 								// save flags to the stack
 								[stack pushObject:flags];
 								// and initialise a new set of flags
-								flags = [TEFlags newFlags];
+								flags = [TEFlags flags];
 							} // end if
 							// compare the value of the key to the operand
 							flags->expand = false;
@@ -1415,7 +1416,7 @@ BOOL classExists (NSString *className) {
 					else {
 						[stack pushObject:flags];
 						
-						flags = [TEFlags newFlags];
+						flags = [TEFlags flags];
 						flags->expand = false;
 						flags->consumed = true;
 						flags->forBranch = true;
@@ -1514,7 +1515,7 @@ BOOL classExists (NSString *className) {
 		} // end if
 		if (flags->forBranch) {
 			if(innerString == nil) {
-				innerString = [NSMutableString string];
+				innerString = [[NSMutableString alloc] init];
 			} else {
 				[innerString appendString:line];
 				[innerString appendString:kLineFeed];
@@ -1626,8 +1627,7 @@ BOOL classExists (NSString *className) {
 	NSFileManager *fileMgr = [NSFileManager defaultManager];
 	NSString *templateString, *desc, *reason;
 	NSData *templateData;
-	NSError *fileError = [[NSError alloc] initWithNullError];
-	#define fileErrorOcurred ([fileError isNullError] == NO)
+	NSError *fileError = nil;
 	TEError *error;
 
 	// check if a path was specified
@@ -1698,11 +1698,11 @@ BOOL classExists (NSString *className) {
 		// use newer method as of MacOS X 10.4
 		templateString = [NSString stringWithContentsOfFile:path encoding:enc error:&fileError];
 		
-		if (fileErrorOcurred) {
+		if (fileError != nil) {
 			desc = [fileError localizedDescription];
 			reason = [fileError localizedFailureReason];
 			// if an error in the Cocoa Error Domain ocurred ...
-			if ([[fileError domain] isEqualToString:@"NSCocoaErrorDomain"]) {
+            if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]){
 				// get the error code and match it to a corresponding TEError
 				switch([fileError code]) {
 					case NSFileNoSuchFileError :
@@ -1773,7 +1773,6 @@ BOOL classExists (NSString *className) {
 									 andEndTag:endTag
 							   usingDictionary:dictionary
 								errorsReturned:errorLog];
-	#undef fileErrorOcurred
 } // end method
 
 + (id)valueForDictionary:(id)dictionary key:(NSString *)key

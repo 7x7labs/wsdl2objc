@@ -55,6 +55,14 @@
 	return self;
 }
 
+- (void) dealloc
+{
+    [name release];
+    [headers release];
+    [body release];
+    [super dealloc];
+}
+
 - (NSString *)className
 {
 	NSMutableArray *parts = self.body.parts;

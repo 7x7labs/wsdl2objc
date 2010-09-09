@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "USType.h"
 
 @interface USAttribute : NSObject {
@@ -28,17 +28,17 @@
 	NSString *wsdlName;
 	NSString *attributeDefault;
 	USSchema *schema;
-	USType * type;
+	USType   *type;
 }
 
-@property (copy) NSString *name;
-@property (retain) NSString *wsdlName;
-@property (copy) NSString *attributeDefault;
-@property (retain) USSchema * schema;
-@property (retain) USType * type;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) NSString *wsdlName;
+@property (nonatomic, copy) NSString *attributeDefault;
+@property (nonatomic, assign) USSchema * schema;
+@property (nonatomic, assign) USType * type;
 
--(id)init;
--(void)dealloc;
+- (id)init;
+- (void)dealloc;
 
 - (NSDictionary *)templateKeyDictionary;
 

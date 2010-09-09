@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Copyright (c) 2010 LightSPEED Technologies, Inc.
  
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -21,19 +21,10 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "USWSDL.h"
 
 
-@interface USWriter : NSObject {
-	USWSDL *wsdl;
-	NSURL *outDir;
-}
+@interface NSBundle(USAdditions)
 
-@property (nonatomic, copy) NSURL *outDir;
-@property (nonatomic, retain) USWSDL *wsdl;
-
-- (id)initWithWSDL:(USWSDL *)aWsdl outputDirectory:(NSURL *)anOutDir;
-
-- (BOOL)write;
+- (NSString *)pathForTemplateNamed:(NSString *)templateName;
 
 @end

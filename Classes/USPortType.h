@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USSchema;
 @class USOperation;
@@ -32,9 +32,9 @@
 	USSchema *schema;
 }
 
-@property (copy) NSString *name;
-@property (retain) NSMutableArray *operations;
-@property (retain) USSchema *schema;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) NSMutableArray *operations;
+@property (nonatomic, assign) USSchema *schema;
 
 - (USOperation *)operationForName:(NSString *)aName;
 

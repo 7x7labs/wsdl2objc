@@ -45,7 +45,7 @@
 
 - (id)initWithNullError;
 {
-	return [[NSError alloc] initWithDomain:kEmptyString code:0 userInfo:nil];
+	return [self initWithDomain:kEmptyString code:0 userInfo:nil];
 } // end method
 
 - (BOOL)isNullError;

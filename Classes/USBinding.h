@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USPortType;
 @class USSchema;
@@ -28,14 +28,16 @@
 @interface USBinding : NSObject {
 	NSString *name;
 	USPortType *portType;
+    NSString *soapVersion;
 	
 	USSchema *schema;
 }
 
-@property (copy) NSString *name;
-@property (retain) USPortType *portType;
-@property (retain) USSchema *schema;
-@property (readonly) NSString *className;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) USPortType *portType;
+@property (nonatomic, copy) NSString *soapVersion;
+@property (nonatomic, assign) USSchema *schema;
+@property (nonatomic, readonly) NSString *className;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;

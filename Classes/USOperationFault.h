@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USMessage;
 @class USOperation;
@@ -31,8 +31,8 @@
 	USOperation *operation;
 }
 
-@property (copy) NSString *name;
-@property (retain) USMessage *message;
-@property (retain) USOperation *operation;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) USMessage *message;
+@property (nonatomic, assign) USOperation *operation;
 
 @end

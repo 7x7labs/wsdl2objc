@@ -96,7 +96,13 @@
 - (void)processSoapAddressElement:(NSXMLElement *)el port:(USPort *)port
 {
 	NSString *location = [[el attributeForName:@"location"] stringValue];
+    NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
 	port.address = location;
+    if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
+        port.binding.soapVersion = @"1.1";
+    } else if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
+        port.binding.soapVersion = @"1.2";
+    }
 }
 
 

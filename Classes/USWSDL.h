@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 
 @class USSchema;
 @class USType;
@@ -28,15 +28,13 @@
 @interface USWSDL : NSObject {
 	NSMutableArray *schemas;	
 	USSchema *targetNamespace;
-	NSString *soapVersion;
 }
 
-@property (retain) NSMutableArray *schemas;
-@property (retain) USSchema *targetNamespace;
-@property (nonatomic, retain) NSString *soapVersion;
+@property (nonatomic, retain) NSMutableArray *schemas;
+@property (nonatomic, retain) USSchema *targetNamespace;
 
--(id)init;
--(void)dealloc;
+- (id)init;
+- (void)dealloc;
 
 - (void)addXSDSchema;
 

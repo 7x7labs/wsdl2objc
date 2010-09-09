@@ -20,7 +20,7 @@
  THE SOFTWARE.
  */
 
-#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import "UStype.h"
 
 @interface USSequenceElement : NSObject <NSCopying> {
@@ -31,11 +31,11 @@
 	USType * type;
 }
 
-@property (assign) NSInteger minOccurs; /* -1 represents 'unbounded' */
-@property (assign) NSInteger maxOccurs; /* -1 represents 'unbounded' */
-@property (copy) NSString *name;
-@property (retain) NSString *wsdlName;
-@property (retain) USType * type;
+@property (nonatomic) NSInteger minOccurs; /* -1 represents 'unbounded' */
+@property (nonatomic) NSInteger maxOccurs; /* -1 represents 'unbounded' */
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) NSString *wsdlName;
+@property (nonatomic, assign) USType * type;
 
 - (NSString *)uname;
 - (NSString *)useAnArray;
