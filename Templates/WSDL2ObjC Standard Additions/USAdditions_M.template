@@ -125,7 +125,7 @@
 
 + (NSDate *)deserializeNode:(xmlNodePtr)cur
 {
-	return [NSDate dateWithString:[NSString deserializeNode:cur]];
+	return [NSDate dateForString:[NSString deserializeNode:cur]];
 }
 
 @end
