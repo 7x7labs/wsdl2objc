@@ -633,23 +633,23 @@ static BOOL is_leap_year(unsigned year) {
 }
 
 + (NSDate *)dateForString:(NSString *)str {
-  return [self dateWithString:str strictly:NO getRange:NULL];
+  return [self dateForString:str strictly:NO getRange:NULL];
 }
 + (NSDate *)dateForString:(NSString *)str strictly:(BOOL)strict {
-  return [self dateWithString:str strictly:strict getRange:NULL];
+  return [self dateForString:str strictly:strict getRange:NULL];
 }
 + (NSDate *)dateForString:(NSString *)str strictly:(BOOL)strict getRange:(out NSRange *)outRange {
-  return [self dateWithString:str strictly:strict timeSeparator:ISO8601ParserDefaultTimeSeparatorCharacter getRange:NULL];
+  return [self dateForString:str strictly:strict timeSeparator:ISO8601ParserDefaultTimeSeparatorCharacter getRange:NULL];
 }
 
 + (NSDate *)dateForString:(NSString *)str timeSeparator:(unichar)timeSep getRange:(out NSRange *)outRange {
-  return [self dateWithString:str strictly:NO timeSeparator:timeSep getRange:outRange];
+  return [self dateForString:str strictly:NO timeSeparator:timeSep getRange:outRange];
 }
 + (NSDate *)dateForString:(NSString *)str timeSeparator:(unichar)timeSep {
-  return [self dateWithString:str strictly:NO timeSeparator:timeSep getRange:NULL];
+  return [self dateForString:str strictly:NO timeSeparator:timeSep getRange:NULL];
 }
 + (NSDate *)dateForString:(NSString *)str getRange:(out NSRange *)outRange {
-  return [self dateWithString:str strictly:NO timeSeparator:ISO8601ParserDefaultTimeSeparatorCharacter getRange:outRange];
+  return [self dateForString:str strictly:NO timeSeparator:ISO8601ParserDefaultTimeSeparatorCharacter getRange:outRange];
 }
 
 @end
