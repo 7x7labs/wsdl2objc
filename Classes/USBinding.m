@@ -56,7 +56,7 @@
 
 - (NSString *)className
 {
-	NSString *result = [self.name stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+	NSString *result = [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
 	if(![result.lowercaseString hasSuffix:@"binding"])
 		result = [result stringByAppendingString:@"Binding"];
 	return result;

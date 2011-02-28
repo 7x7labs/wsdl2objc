@@ -70,7 +70,7 @@
 
 - (NSString *)className
 {
-	return [self.name stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+	return [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
 }
 
 - (NSString *)templateFileHPath

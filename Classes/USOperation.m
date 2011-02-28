@@ -29,6 +29,7 @@
 #import "USMessage.h"
 #import "USElement.h"
 #import "USType.h"
+#import "USObjCKeywords.h"
 
 @implementation USOperation
 
@@ -38,6 +39,7 @@
 @synthesize output;
 @synthesize faults;
 @synthesize portType;
+@dynamic className;
 
 - (id)init
 {
@@ -80,15 +82,20 @@
 	return newFault;
 }
 
+- (NSString *)className
+{
+	return [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
+}
+
 - (NSString *)invokeStringWithAsync:(BOOL)async
 {
 	if(self.input.body == nil && self.input.headers == nil && !async) {
-		return self.name;
+		return self.className;
 	}
 	
 	NSMutableString *invokeString = [NSMutableString string];
 	
-	[invokeString appendFormat:@"%@%@Using", self.name, ((async)?@"Async":@"")];
+	[invokeString appendFormat:@"%@%@Using", self.className, ((async)?@"Async":@"")];
 	
 	BOOL firstArgument = YES;
 	for(USPart *part in self.input.body.parts) {

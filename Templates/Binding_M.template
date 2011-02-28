@@ -7,6 +7,7 @@
 @synthesize customHeaders;
 @synthesize authUsername;
 @synthesize authPassword;
+@synthesize credentialPersistence;
 
 + (NSTimeInterval)defaultTimeout
 {
@@ -22,6 +23,7 @@
 		timeout = [[self class] defaultTimeout];
 		logXMLInOut = NO;
 		synchronousOperationComplete = NO;
+		credentialPersistence = NSURLCredentialPersistenceForSession;
 	}
 	
 	return self;
@@ -79,7 +81,7 @@
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»
 {
-	return [self performSynchronousOperation:[[(%«className»_%«operation.name»*)[%«className»_%«operation.name» alloc] initWithBinding:self delegate:self
+	return [self performSynchronousOperation:[[(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:self
 %FOREACH part in operation.input.body.parts
 																							%«part.name»:a%«part.uname»
 %ENDFOR
@@ -91,7 +93,7 @@
 
 - (void)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate
 {
-	[self performAsynchronousOperation: [[(%«className»_%«operation.name»*)[%«className»_%«operation.name» alloc] initWithBinding:self delegate:responseDelegate
+	[self performAsynchronousOperation: [[(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
 %FOREACH part in operation.input.body.parts
 																							 %«part.name»:a%«part.uname»
 %ENDFOR
@@ -174,7 +176,7 @@
 		NSURLCredential *newCredential;
 		newCredential=[NSURLCredential credentialWithUser:self.binding.authUsername
 												 password:self.binding.authPassword
-											  persistence:NSURLCredentialPersistenceForSession];
+											  persistence:self.binding.credentialPersistence];
 		[[challenge sender] useCredential:newCredential
 			   forAuthenticationChallenge:challenge];
 	} else {
@@ -252,7 +254,7 @@
 @end
 
 %FOREACH operation in operations
-@implementation %«className»_%«operation.name»
+@implementation %«className»_%«operation.className»
 
 %FOREACH part in operation.input.body.parts
 @synthesize %«part.name»;

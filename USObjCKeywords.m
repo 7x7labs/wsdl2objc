@@ -97,6 +97,10 @@ static USObjCKeywords *sharedInstance = nil;
 					@"xsi",
 					@"node",
 					@"buf",
+					
+					// more:
+					@"method",
+					@"category",
 					nil];
 	}
 	

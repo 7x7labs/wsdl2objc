@@ -143,7 +143,7 @@
 	}
 	enumerationValue = [enumerationValue stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 	enumerationValue = [enumerationValue stringByReplacingOccurrencesOfString:@":" withString:@"_"];
-	[type.enumerationValues addObject:[enumerationValue stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""]];
+	[type.enumerationValues addObject:[[enumerationValue componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""]];
 }
 
 #pragma mark Types:Schema:ComplexType
@@ -238,7 +238,7 @@
 		
 	} else {
 		
-		NSString *name = [[[el attributeForName:@"name"] stringValue] stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+		NSString *name = [[[[el attributeForName:@"name"] stringValue] componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
 		seqElement.name = name;
 		NVLOG(@"SEQELEMENT NAME: %@ (%@)", name, [[[el parent] parent] name]);
 		

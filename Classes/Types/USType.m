@@ -94,10 +94,10 @@
 		if(self.behavior == TypeBehavior_simple && [self.representationClass length] > 0 && [self.enumerationValues count] == 0) {
 			return self.representationClass;
 		}
-		return [NSString stringWithFormat:@"%@_%@", [schema prefix], [self.typeName stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""]];
+		return [NSString stringWithFormat:@"%@_%@", [schema prefix], [[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""]];
 	}
 	
-	return [self.typeName stringByReplacingOccurrencesOfString:kIllegalClassCharactersString withString:@""];
+	return [[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
 }
 
 - (NSString *)classNameWithPtr

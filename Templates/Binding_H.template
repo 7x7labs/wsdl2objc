@@ -1,4 +1,3 @@
-
 @class %«className»Response;
 @class %«className»Operation;
 
@@ -16,6 +15,7 @@
 	BOOL synchronousOperationComplete;
 	NSString *authUsername;
 	NSString *authPassword;
+	NSURLCredentialPersistence credentialPersistence;
 }
 
 @property (nonatomic, copy) NSURL *address;
@@ -25,6 +25,7 @@
 @property (nonatomic, retain) NSMutableDictionary *customHeaders;
 @property (nonatomic, retain) NSString *authUsername;
 @property (nonatomic, retain) NSString *authPassword;
+@property (nonatomic) NSURLCredentialPersistence credentialPersistence;
 
 + (NSTimeInterval) defaultTimeout;
 
@@ -59,7 +60,7 @@
 @end
 
 %FOREACH operation in operations
-@interface %«className»_%«operation.name» : %«className»Operation {
+@interface %«className»_%«operation.className» : %«className»Operation {
 %FOREACH part in operation.input.body.parts
 %IFDEF part.element.type.classNameWithPtr
 	%«part.element.type.classNameWithPtr» %«part.name»;
