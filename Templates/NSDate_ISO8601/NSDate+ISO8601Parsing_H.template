@@ -27,13 +27,13 @@ extern unichar ISO8601ParserDefaultTimeSeparatorCharacter;
 @interface NSDate(ISO8601Parsing)
 
 //This method is the one that does all the work. All the others are convenience methods.
-+ (NSDate *)dateForString:(NSString *)str strictly:(BOOL)strict getRange:(out NSRange *)outRange;
-+ (NSDate *)dateForString:(NSString *)str strictly:(BOOL)strict;
++ (NSDate *)dateWithISO8601String:(NSString *)str strictly:(BOOL)strict getRange:(out NSRange *)outRange;
++ (NSDate *)dateWithISO8601String:(NSString *)str strictly:(BOOL)strict;
 
 //Strictly: NO.
-+ (NSDate *)dateForString:(NSString *)str timeSeparator:(unichar)timeSep getRange:(out NSRange *)outRange;
-+ (NSDate *)dateForString:(NSString *)str timeSeparator:(unichar)timeSep;
-+ (NSDate *)dateForString:(NSString *)str getRange:(out NSRange *)outRange;
-+ (NSDate *)dateForString:(NSString *)str;
++ (NSDate *)dateWithISO8601String:(NSString *)str timeSeparator:(unichar)timeSep getRange:(out NSRange *)outRange;
++ (NSDate *)dateWithISO8601String:(NSString *)str timeSeparator:(unichar)timeSep;
++ (NSDate *)dateWithISO8601String:(NSString *)str getRange:(out NSRange *)outRange;
++ (NSDate *)dateWithISO8601String:(NSString *)str;
 
 @end
