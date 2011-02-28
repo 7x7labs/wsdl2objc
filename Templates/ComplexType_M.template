@@ -251,6 +251,15 @@ _content = nil;
 {
 	%«className» *newObject = [[%«className» new] autorelease];
 	
+%IFDEF IsAttributedString
+	// Set the string content
+	xmlChar *theContent = xmlNodeGetContent(cur);
+	if (theContent != NULL) {
+		newObject._content = [NSString stringWithCString:(char*)theContent encoding:NSUTF8StringEncoding];
+		xmlFree(theContent);
+	}
+%ENDIF
+
 	[newObject deserializeAttributesFromNode:cur];
 	[newObject deserializeElementsFromNode:cur];
 	
