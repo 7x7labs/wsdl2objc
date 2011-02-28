@@ -168,6 +168,8 @@ static BOOL is_leap_year(unsigned year) {
  *  -W-d
  */
 + (NSDate *)dateWithISO8601String:(NSString *)str strictly:(BOOL)strict timeSeparator:(unichar)timeSep getRange:(out NSRange *)outRange {
+  if (str == nil)
+    return nil;
   NSCalendar *gregorian = [[NSCalendar alloc]
                            initWithCalendarIdentifier:NSGregorianCalendar];
   NSDate *now = [NSDate date];
