@@ -9,11 +9,13 @@
 %IFDEF superClass
 %IFDEF IsAttributedString
 @interface %«className» : NSObject <NSCoding> {
+SOAPSigner *soapSigner;
 %ELSE
 @interface %«className» : %«superClass.classNameWithoutPtr» {
 %ENDIF
 %ELSE
 @interface %«className» : NSObject <NSCoding> {
+SOAPSigner *soapSigner;
 %ENDIF
 
 %IFDEF IsAttributedString
@@ -50,6 +52,14 @@ NSString *_content;
 + (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur;
 - (void)deserializeAttributesFromNode:(xmlNodePtr)cur;
 - (void)deserializeElementsFromNode:(xmlNodePtr)cur;
+
+%IFNDEF superClass
+@property (retain) SOAPSigner *soapSigner;
+%ELSE
+%IFDEF IsAttributedString
+@property (retain) SOAPSigner *soapSigner;
+%ENDIF
+%ENDIF
 
 %IFDEF IsAttributedString
 /* content */

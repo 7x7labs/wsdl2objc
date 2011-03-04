@@ -1,0 +1,4 @@
+.DS_Store
+WSDLParser.xcodeproj/*.pbxuser
+WSDLParser.xcodeproj/*.perspectivev3
+build

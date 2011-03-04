@@ -6,26 +6,33 @@
 
 @end
 
+#define kServerAnchorCertificates   @"kServerAnchorCertificates"
+#define kServerAnchorsOnly          @"kServerAnchorsOnly"
+#define kClientIdentity             @"kClientIdentity"
+#define kClientCertificates         @"kClientCertificates"
+#define kClientUsername             @"kClientUsername"
+#define kClientPassword             @"kClientPassword"
+#define kNSURLCredentialPersistence @"kNSURLCredentialPersistence"
+#define kValidateResult             @"kValidateResult"
+
 @interface %«className» : NSObject <%«className»ResponseDelegate> {
 	NSURL *address;
 	NSTimeInterval timeout;
 	NSMutableArray *cookies;
 	NSMutableDictionary *customHeaders;
 	BOOL logXMLInOut;
+	BOOL ignoreEmptyResponse;
 	BOOL synchronousOperationComplete;
-	NSString *authUsername;
-	NSString *authPassword;
-	NSURLCredentialPersistence credentialPersistence;
+	NSDictionary *authenticationProperties;
 }
 
 @property (nonatomic, copy) NSURL *address;
 @property (nonatomic) BOOL logXMLInOut;
+@property (nonatomic) BOOL ignoreEmptyResponse;
 @property (nonatomic) NSTimeInterval timeout;
 @property (nonatomic, retain) NSMutableArray *cookies;
 @property (nonatomic, retain) NSMutableDictionary *customHeaders;
-@property (nonatomic, retain) NSString *authUsername;
-@property (nonatomic, retain) NSString *authPassword;
-@property (nonatomic) NSURLCredentialPersistence credentialPersistence;
+@property (nonatomic, retain) NSDictionary *authenticationProperties;
 
 + (NSTimeInterval) defaultTimeout;
 
@@ -51,7 +58,7 @@
 
 @property (nonatomic, retain) %«className» *binding;
 @property (nonatomic, readonly) %«className»Response *response;
-@property (nonatomic, assign) id<%«className»ResponseDelegate> delegate;
+@property (nonatomic, retain) id<%«className»ResponseDelegate> delegate;
 @property (nonatomic, retain) NSMutableData *responseData;
 @property (nonatomic, retain) NSURLConnection *urlConnection;
 

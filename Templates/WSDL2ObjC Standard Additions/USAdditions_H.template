@@ -29,6 +29,23 @@
 
 @end
 
+@interface USDecimal : NSObject {
+    long long value;
+    NSUInteger numDecimals;
+}
+
+@property(assign) long long value;
+@property(assign) NSUInteger numDecimals;
+
+- (id)initWithValue:(long long)val decimals:(NSUInteger)decimals;
+- (NSString *)stringValue;
+
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
++ (USDecimal *)deserializeString:(NSString *)stringValue;
++ (USDecimal *)deserializeNode:(xmlNodePtr)cur;
+
+@end
+
 @interface NSDate (USAdditions)
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
@@ -73,10 +90,26 @@
 @property (nonatomic, retain) NSString *faultcode;
 @property (nonatomic, retain) NSString *faultstring;
 @property (nonatomic, retain) NSString *faultactor;
-@property (nonatomic, retain) NSString *detail;
-@property (nonatomic, readonly) NSString *simpleFaultString;
+@property (nonatomic, retain) id detail;
+@property (readonly) NSString *simpleFaultString;
 
-+ (SOAPFault *)deserializeNode:(xmlNodePtr)cur;
++ (SOAPFault *)deserializeNode:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions;
+
+@end
+
+@protocol SOAPSignerDelegate
+- (NSData *)signData:(NSData *)rawData;
+- (NSData *)digestData:(NSData *)rawData;
+- (NSString *)base64Encode:(NSData *)rawData;
+@end
+
+@interface SOAPSigner : NSObject {
+    id<SOAPSignerDelegate> delegate;
+}
+
+@property (nonatomic, assign) id<SOAPSignerDelegate> delegate;
+
+- (NSString *)signRequest:(NSString *)req;
 
 @end
 

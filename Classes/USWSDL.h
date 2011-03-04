@@ -35,7 +35,6 @@
 
 - (id)init;
 - (void)dealloc;
-
 - (void)addXSDSchema;
 
 - (USSchema *)schemaForNamespace:(NSString *)aNamespace;
