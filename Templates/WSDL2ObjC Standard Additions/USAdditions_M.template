@@ -108,35 +108,7 @@
 
 @end
 
-@implementation USDecimal
-@synthesize value;
-@synthesize numDecimals;
-
-- (id)initWithValue:(long long)val decimals:(NSUInteger)decimals;
-{
-    if (self = [super init]) {
-        value = val;
-        numDecimals = decimals;
-    }
-    return self;
-}
-
-- (NSString *)stringValue
-{
-    NSString *strValue;
-    if ([self numDecimals] == 0) {
-        strValue = [NSString stringWithFormat:@"%qi", value];
-    } else {
-        long long decimals = value % (int) pow(10, numDecimals);
-        NSString *decimalsString = [NSString stringWithFormat:@"%qi", decimals];
-        while ([decimalsString length] < numDecimals) {
-            decimalsString = [NSString stringWithFormat:@"0%@", decimalsString];
-        }
-        strValue = [NSString stringWithFormat:@"%qi.%@", 
-                    value / (int) pow(10, numDecimals), decimalsString];
-    }
-    return strValue;
-}
+@implementation NSDecimalNumber (USAdditions)
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
@@ -155,35 +127,10 @@
 	return node;
 }
 
-+ (USDecimal *)deserializeString:(NSString *)stringValue
-{
-    NSArray *parts = nil;
-    
-    NSRange tempRange = [stringValue rangeOfString:@","];
-    if (tempRange.location != NSNotFound) {
-        parts = [stringValue componentsSeparatedByString:@","];
-    }
-    tempRange = [stringValue rangeOfString:@"."];
-    if (tempRange.location != NSNotFound) {
-        parts = [stringValue componentsSeparatedByString:@"."];
-    }
-    
-    if (parts) {
-        NSUInteger decimals = [[parts objectAtIndex:1] length];
-        long long val = [[NSString stringWithFormat:@"%@%@", [parts objectAtIndex:0], [parts objectAtIndex:1]] longLongValue];
-        USDecimal *decimal = [[[USDecimal alloc] initWithValue:val decimals:decimals] autorelease];
-        return decimal;
-    } else {
-        USDecimal *decimal = [[[USDecimal alloc] initWithValue:[stringValue longLongValue] decimals:0] autorelease];
-        return decimal;
-    }
-    return nil;
-}
-
-+ (USDecimal *)deserializeNode:(xmlNodePtr)cur
++ (NSDecimalNumber *)deserializeNode:(xmlNodePtr)cur
 {
     NSString *stringValue = [NSString deserializeNode:cur];
-    return [USDecimal deserializeString:stringValue];
+    return [NSDecimalNumber decimalNumberWithString:stringValue];
 }
 
 @end

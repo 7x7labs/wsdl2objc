@@ -6,7 +6,22 @@
 @synthesize ignoreEmptyResponse;
 @synthesize cookies;
 @synthesize customHeaders;
-@synthesize authenticationProperties;
+
+- (void)setAuthenticationProperties:(NSMutableDictionary *)aAuthenticationPropperties
+{
+	[authenticationProperties release];
+	authenticationProperties = [aAuthenticationPropperties mutableCopy];
+	if ([authenticationProperties objectForKey:kNSURLCredentialPersistence] == nil)
+	{
+		[authenticationProperties setObject:[NSNumber numberWithInt:NSURLCredentialPersistenceForSession]
+									 forKey:kNSURLCredentialPersistence];
+	}
+}
+
+- (NSDictionary *)authenticationProperties
+{
+    return authenticationProperties;
+}
 
 + (NSTimeInterval)defaultTimeout
 {
@@ -302,7 +317,6 @@
 			if ([httpResponse statusCode] >= 400) {
 				NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]],NSLocalizedDescriptionKey,
 																			  httpResponse.URL, NSURLErrorKey,nil];
-				
 				error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
 			} else {
 				NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:

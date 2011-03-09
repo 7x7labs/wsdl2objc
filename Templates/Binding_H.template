@@ -32,7 +32,7 @@
 @property (nonatomic) NSTimeInterval timeout;
 @property (nonatomic, retain) NSMutableArray *cookies;
 @property (nonatomic, retain) NSMutableDictionary *customHeaders;
-@property (nonatomic, retain) NSDictionary *authenticationProperties;
+@property (nonatomic, copy) NSDictionary *authenticationProperties;
 
 + (NSTimeInterval) defaultTimeout;
 

@@ -29,20 +29,11 @@
 
 @end
 
-@interface USDecimal : NSObject {
-    long long value;
-    NSUInteger numDecimals;
-}
-
-@property(assign) long long value;
-@property(assign) NSUInteger numDecimals;
-
-- (id)initWithValue:(long long)val decimals:(NSUInteger)decimals;
-- (NSString *)stringValue;
+@interface NSDecimalNumber (USAdditions) 
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
-+ (USDecimal *)deserializeString:(NSString *)stringValue;
-+ (USDecimal *)deserializeNode:(xmlNodePtr)cur;
++ (NSDecimalNumber *)deserializeString:(NSString *)stringValue;
++ (NSDecimalNumber *)deserializeNode:(xmlNodePtr)cur;
 
 @end
 

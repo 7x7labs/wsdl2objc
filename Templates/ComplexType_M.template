@@ -2,10 +2,6 @@
 
 %IFNDEF superClass
 @synthesize soapSigner;
-%ELSE
-%IFDEF IsAttributedString
-@synthesize soapSigner;
-%ENDIF
 %ENDIF
 
 %IFEQ superClass.className "NSString *"
@@ -46,11 +42,7 @@ _content = nil;
 - (void)dealloc
 {
 %IFNDEF superClass
-    [soapSigner release];
-%ELSE
-%IFDEF IsAttributedString
-    [soapSigner release];
-%ENDIF
+	[soapSigner release];
 %ENDIF
 
 %IFDEF sequenceElements
