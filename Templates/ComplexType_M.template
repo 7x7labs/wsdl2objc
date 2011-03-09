@@ -1,5 +1,9 @@
 @implementation %«className»
 
+%IFNDEF superClass
+@synthesize soapSigner;
+%ENDIF
+
 %IFEQ superClass.className "NSString *"
 %IFDEF attributes
 %DEFINE IsAttributedString 1
@@ -37,6 +41,10 @@ _content = nil;
 
 - (void)dealloc
 {
+%IFNDEF superClass
+	[soapSigner release];
+%ENDIF
+
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
 %IFEQ element.type.assignOrRetain retain

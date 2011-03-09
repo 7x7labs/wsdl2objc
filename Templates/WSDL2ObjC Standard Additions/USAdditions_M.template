@@ -15,6 +15,10 @@
 #import "USAdditions.h"
 #import "NSDate+ISO8601Parsing.h"
 #import "NSDate+ISO8601Unparsing.h"
+#import <libxml/parser.h>
+#import <libxml/xpath.h>
+#import <libxml/xpathInternals.h>
+#import <libxml/c14n.h>
 
 @implementation NSString (USAdditions)
 
@@ -100,6 +104,33 @@
 {
 	NSString *stringValue = [NSString deserializeNode:cur];
 	return [NSNumber numberWithDouble:[stringValue doubleValue]];
+}
+
+@end
+
+@implementation NSDecimalNumber (USAdditions)
+
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
+{
+	NSString *nodeName = nil;
+	if(elNSPrefix != nil && [elNSPrefix length] > 0)
+	{
+		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
+	}
+	else
+	{
+		nodeName = elName;
+	}
+	
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self stringValue] xmlString]);
+	
+	return node;
+}
+
++ (NSDecimalNumber *)deserializeNode:(xmlNodePtr)cur
+{
+    NSString *stringValue = [NSString deserializeNode:cur];
+    return [NSDecimalNumber decimalNumberWithString:stringValue];
 }
 
 @end
@@ -339,7 +370,28 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 @synthesize faultcode, faultstring, faultactor, detail;
 
-+ (SOAPFault *)deserializeNode:(xmlNodePtr)cur
++ (id)deserializeFaultDetails:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions
+{
+    if (cur->children) {
+        cur = cur->children;
+        if (cur && cur->type == XML_ELEMENT_NODE) {
+            // check if any expected exception is in details
+            for (NSString *eName in [exceptions allKeys]) {
+                if (xmlStrEqual(cur->name, (const xmlChar *) [eName cStringUsingEncoding:NSASCIIStringEncoding])) {
+                    // expect only one exception
+                    return [NSClassFromString([exceptions objectForKey:eName]) deserializeNode:cur];
+                }
+            }
+        }
+        
+        cur = cur->parent;
+    }
+    
+    // the old NSString fallback
+    return [NSString deserializeNode:cur];
+}
+
++ (SOAPFault *)deserializeNode:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions
 {
 	SOAPFault *soapFault = [[SOAPFault new] autorelease];
 	NSString *ns = [NSString stringWithCString:(char*)cur->ns->href encoding:NSUTF8StringEncoding];
@@ -358,7 +410,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 					soapFault.faultactor = [NSString deserializeNode:cur];
 				}
 				if(xmlStrEqual(cur->name, (const xmlChar *) "detail")) {
-					soapFault.detail = [NSString deserializeNode:cur];
+                    soapFault.detail = [SOAPFault deserializeFaultDetails:cur expectedExceptions:exceptions];
 				}
 			}
 		}
@@ -388,7 +440,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 					soapFault.faultactor = [NSString deserializeNode:cur];
 				}
 				if(xmlStrEqual(cur->name, (const xmlChar *) "Detail")) {
-					soapFault.detail = [NSString deserializeNode:cur];
+					soapFault.detail = [SOAPFault deserializeFaultDetails:cur expectedExceptions:exceptions];
 				}
 				// TODO: Add "Role" ivar
 			}
@@ -418,4 +470,264 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 	[super dealloc];
 }
 
+@end
+
+@implementation SOAPSigner
+
+@synthesize delegate;
+
+- (id) initWithDelegate:(id<SOAPSignerDelegate>)del
+{
+    self = [super init];
+    if (self != nil) {
+        delegate = del;
+    }
+    return self;
+}
+
+int register_namespaces(xmlXPathContextPtr xpathCtx, const xmlChar* nsList) {
+    xmlChar* nsListDup;
+    xmlChar* prefix;
+    xmlChar* href;
+    xmlChar* next;
+    
+    if(!xpathCtx || !nsList) {
+        return -1;
+    }
+    
+    nsListDup = xmlStrdup(nsList);
+    if(nsListDup == NULL) {
+        return -1;	
+    }
+    
+    next = nsListDup; 
+    while(next != NULL) {
+        /* skip spaces */
+        while((*next) == ' ') next++;
+        if((*next) == '\0') break;
+        
+        /* find prefix */
+        prefix = next;
+        next = (xmlChar*)xmlStrchr(next, '=');
+        if(next == NULL) {
+            xmlFree(nsListDup);
+            return -1;	
+        }
+        *(next++) = '\0';	
+        
+        /* find href */
+        href = next;
+        next = (xmlChar*)xmlStrchr(next, ' ');
+        if(next != NULL) {
+            *(next++) = '\0';	
+        }
+        
+        /* do register namespace */
+        if(xmlXPathRegisterNs(xpathCtx, prefix, href) != 0) {
+            xmlFree(nsListDup);
+            return -1;	
+        }
+    }
+    
+    xmlFree(nsListDup);
+    return 0;
+}
+
+xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathExpr, const xmlChar* nsList) {
+    xmlXPathContextPtr xpathCtx; 
+    xmlXPathObjectPtr xpathObj; 
+    
+    if (!doc || !xpathExpr) {
+        return NULL;
+    }
+    
+    /* Create xpath evaluation context */
+    xpathCtx = xmlXPathNewContext(doc);
+    if(xpathCtx == NULL) {
+        return NULL;
+    }
+    
+    /* Register namespaces from list (if any) */
+    if((nsList != NULL) && (register_namespaces(xpathCtx, nsList) < 0)) {
+        xmlXPathFreeContext(xpathCtx); 
+        return NULL;
+    }
+    
+    /* Evaluate xpath expression */
+    xpathObj = xmlXPathEvalExpression(xpathExpr, xpathCtx);
+    xmlXPathFreeContext(xpathCtx); 
+    
+    return xpathObj; 
+}
+
+- (xmlNodePtr)securityHeaderTemplate
+{
+    xmlNodePtr securityRoot = xmlNewNode(NULL, (const xmlChar*)"Security");
+    xmlNsPtr wsse = xmlNewNs(securityRoot, (const xmlChar*)"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd", (const xmlChar*)"wsse");
+    xmlSetNs(securityRoot, wsse);
+    
+    xmlNodePtr n0 = securityRoot;
+    xmlNodePtr n1 = xmlNewNode(NULL, (const xmlChar*)"Signature");
+    xmlNsPtr ds = xmlNewNs(securityRoot, (const xmlChar*)"http://www.w3.org/2000/09/xmldsig#", (const xmlChar*)"ds");
+    xmlSetNs(n1, ds);
+    xmlAddChild(n0, n1);
+    
+    n0 = n1;
+    n1 = xmlNewNode(ds, (const xmlChar*)"SignedInfo");
+    xmlAddChild(n0, n1);
+    
+    n0 = n1;
+    n1 = xmlNewNode(ds, (const xmlChar*)"SignatureValue");
+    xmlAddNextSibling(n0, n1);
+    
+    n1 = xmlNewNode(ds, (const xmlChar*)"CanonicalizationMethod");
+    xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2001/10/xml-exc-c14n#");
+    xmlAddChild(n0, n1);
+    
+    n1 = xmlNewNode(ds, (const xmlChar*)"SignatureMethod");
+    xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+    xmlAddChild(n0, n1);
+    
+    n1 = xmlNewNode(ds, (const xmlChar*)"Reference");
+    xmlNewProp(n1, (const xmlChar*)"URI", (const xmlChar*)"");
+    xmlAddChild(n0, n1);
+    
+    n0 = n1;
+    n1 = xmlNewNode(ds, (const xmlChar*)"Transforms");
+    xmlAddChild(n0, n1);
+    
+    n0 = n1;
+    n1 = xmlNewNode(ds, (const xmlChar*)"DigestMethod");
+    xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2000/09/xmldsig#sha1");
+    xmlAddSibling(n0, n1);
+    
+    n1 = xmlNewNode(ds, (const xmlChar*)"DigestValue");
+    xmlAddSibling(n0, n1);
+    
+    n1 = xmlNewNode(ds, (const xmlChar*)"Transform");
+    xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2002/06/xmldsig-filter2");
+    xmlAddChild(n0, n1);
+    
+    n0 = n1;
+    n1 = xmlNewNode(NULL, (const xmlChar*)"XPath");
+    ds = xmlNewNs(n1, (const xmlChar*)"http://www.w3.org/2002/06/xmldsig-filter2", (const xmlChar*)"ds");
+    xmlNewNs(n1, (const xmlChar*)"http://schemas.xmlsoap.org/soap/envelope/", (const xmlChar*)"soap");
+    xmlNewProp(n1, (const xmlChar*)"Filter", (const xmlChar*)"intersect");
+    xmlNodeSetContent(n1, [@"/soap:Envelope/soap:Body/*" xmlString]);
+    xmlSetNs(n1, ds);
+    xmlAddChild(n0, n1);    
+    
+    n1 = xmlNewNode(ds, (const xmlChar*)"Transform");
+    xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2001/10/xml-exc-c14n#");
+    xmlAddSibling(n0, n1);
+    
+    
+    return securityRoot;
+}
+
+- (NSString *)signRequest:(NSString *)req
+{
+    // TODO: handle errors
+    
+    // convert request back to xmlDoc
+    NSData *reqData = [req dataUsingEncoding:NSUTF8StringEncoding];
+    xmlDocPtr doc = xmlReadMemory([reqData bytes], 
+                                  [reqData length], 
+                                  NULL, 
+                                  NULL, 
+                                  XML_PARSE_COMPACT | XML_PARSE_NOBLANKS);
+    
+    // find the SOAP Header
+    xmlXPathObjectPtr xpathObj = execute_xpath_expression(doc, 
+                                                          (const xmlChar *)"/soap:Envelope/soap:Header",
+                                                          (const xmlChar *)"soap=http://schemas.xmlsoap.org/soap/envelope/");
+    
+    xmlNodePtr headerPtr = (xpathObj && xpathObj->nodesetval && xpathObj->nodesetval->nodeTab)
+                           ? xpathObj->nodesetval->nodeTab[0]
+                           : NULL;
+
+    // if not present create it
+    if (!headerPtr) {
+        xmlNsPtr *nss = xmlGetNsList(doc, doc->children);
+        xmlNsPtr soap = NULL;
+        for(int i = 0; nss && nss[i]; i++) {
+            if (xmlStrcmp(nss[i]->href, (const xmlChar *)"http://schemas.xmlsoap.org/soap/envelope/") == 0) {
+                soap = nss[i];
+                break;
+            }
+        }
+        
+        headerPtr = xmlNewDocNode(doc, soap, (const xmlChar *)"Header", NULL);
+        xmlAddPrevSibling(doc->children->children, headerPtr); // the envelope and the body should be there
+    }
+    
+    // add the security template in the header
+    xmlAddChild(headerPtr, [self securityHeaderTemplate]);
+    xmlXPathFreeObject(xpathObj);
+    
+    // find the referenced content (the XPath expression in the template + all children)
+    xpathObj = execute_xpath_expression(doc, 
+                                        (const xmlChar *)"/soap:Envelope/soap:Body//node() "
+                                        "| /soap:Envelope/soap:Body//node()/namespace::* "
+                                        "| /soap:Envelope/soap:Body//node()/attribute::*",
+                                        (const xmlChar *)"soap=http://schemas.xmlsoap.org/soap/envelope/");
+    
+    xmlChar *canonicalized;
+    int size = xmlC14NDocDumpMemory(doc, xpathObj->nodesetval, 1, NULL, 1, &canonicalized);
+    
+    // calculate and add its digest value
+    NSString *digestValue = [delegate base64Encode:[delegate digestData:[NSData dataWithBytes:canonicalized length:size]]];
+    xmlFree(canonicalized);
+    xmlXPathFreeObject(xpathObj);
+    
+    xpathObj = execute_xpath_expression(doc, 
+                                        (const xmlChar *)"/soap:Envelope/soap:Header/wsse:Security/ds:Signature/ds:SignedInfo/ds:Reference/ds:DigestValue",
+                                        (const xmlChar *)"soap=http://schemas.xmlsoap.org/soap/envelope/ "
+                                        "wsse=http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd "
+                                        "ds=http://www.w3.org/2000/09/xmldsig#");
+    
+    xmlNodePtr dvPtr = xpathObj->nodesetval->nodeTab[0];
+    xmlNodeSetContent(dvPtr, [digestValue xmlString]);
+    xmlXPathFreeObject(xpathObj);
+    
+    // sign the SignedInfo
+    xpathObj = execute_xpath_expression(doc, 
+                                        (const xmlChar *)"/soap:Envelope/soap:Header/wsse:Security/ds:Signature/ds:SignedInfo/descendant-or-self::node() "
+                                        "| /soap:Envelope/soap:Header/wsse:Security/ds:Signature/ds:SignedInfo/descendant-or-self::node()/namespace::* "
+                                        "| /soap:Envelope/soap:Header/wsse:Security/ds:Signature/ds:SignedInfo/descendant-or-self::node()/attribute::*",
+                                        (const xmlChar *)"soap=http://schemas.xmlsoap.org/soap/envelope/ "
+                                        "wsse=http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd "
+                                        "ds=http://www.w3.org/2000/09/xmldsig#");
+    
+    size = xmlC14NDocDumpMemory(doc, xpathObj->nodesetval, 1, NULL, 1, &canonicalized);
+    
+    NSData *signedData = [delegate signData:[NSData dataWithBytes:canonicalized length:size]];
+    xmlFree(canonicalized);
+    xmlXPathFreeObject(xpathObj);
+    
+    // if the signing fails for any reason return NULL so that the request is not sent at all
+    if (!signedData) {
+        xmlFreeDoc(doc);
+        return nil;
+    }
+    
+    NSString *signatureValue = [delegate base64Encode:signedData];
+    xpathObj = execute_xpath_expression(doc, 
+                                        (const xmlChar *)"/soap:Envelope/soap:Header/wsse:Security/ds:Signature/ds:SignatureValue",
+                                        (const xmlChar *)"soap=http://schemas.xmlsoap.org/soap/envelope/ "
+                                        "wsse=http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd "
+                                        "ds=http://www.w3.org/2000/09/xmldsig#");
+    
+    xmlNodePtr svPtr = xpathObj->nodesetval->nodeTab[0];
+    xmlNodeSetContent(svPtr, [signatureValue xmlString]);
+    xmlXPathFreeObject(xpathObj);    
+    
+    xmlC14NDocDumpMemory(doc, NULL, 1, NULL, 1, &canonicalized);
+    NSString *serializedForm = [NSString stringWithCString:(const char*)canonicalized encoding:NSUTF8StringEncoding];
+    
+    xmlFree(canonicalized);
+    xmlFreeDoc(doc);
+    
+    return serializedForm;
+}
 @end

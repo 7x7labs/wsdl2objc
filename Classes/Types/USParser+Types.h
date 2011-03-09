@@ -21,7 +21,6 @@
  */
 
 #import <Foundation/Foundation.h>
-
 #import "USParser.h"
 
 @class USSchema;

@@ -3,11 +3,25 @@
 @synthesize address;
 @synthesize timeout;
 @synthesize logXMLInOut;
+@synthesize ignoreEmptyResponse;
 @synthesize cookies;
 @synthesize customHeaders;
-@synthesize authUsername;
-@synthesize authPassword;
-@synthesize credentialPersistence;
+
+- (void)setAuthenticationProperties:(NSMutableDictionary *)aAuthenticationPropperties
+{
+	[authenticationProperties release];
+	authenticationProperties = [aAuthenticationPropperties mutableCopy];
+	if ([authenticationProperties objectForKey:kNSURLCredentialPersistence] == nil)
+	{
+		[authenticationProperties setObject:[NSNumber numberWithInt:NSURLCredentialPersistenceForSession]
+									 forKey:kNSURLCredentialPersistence];
+	}
+}
+
+- (NSDictionary *)authenticationProperties
+{
+    return authenticationProperties;
+}
 
 + (NSTimeInterval)defaultTimeout
 {
@@ -23,7 +37,6 @@
 		timeout = [[self class] defaultTimeout];
 		logXMLInOut = NO;
 		synchronousOperationComplete = NO;
-		credentialPersistence = NSURLCredentialPersistenceForSession;
 	}
 	
 	return self;
@@ -106,6 +119,15 @@
 
 - (void)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation
 {
+    if (!outputBody) {
+        NSError * err = [NSError errorWithDomain:@"%«className»NULLRequestExcpetion"
+                                            code:0
+                                        userInfo:nil];
+        
+        [operation connection:nil didFailWithError:err];
+        return;
+    }
+
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.address 
 																												 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
 																										 timeoutInterval:self.timeout];
@@ -139,11 +161,10 @@
 
 - (void) dealloc
 {
+	[authenticationProperties release];
 	[address release];
 	[cookies release];
 	[customHeaders release];
-	[authUsername release];
-	[authPassword release];
 	[super dealloc];
 }
 
@@ -170,21 +191,105 @@
 	return self;
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
+    return (BOOL)[binding.authenticationProperties objectForKey:protectionSpace.authenticationMethod];
+}
+
+-(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-	if ([challenge previousFailureCount] == 0) {
-		NSURLCredential *newCredential;
-		newCredential=[NSURLCredential credentialWithUser:self.binding.authUsername
-												 password:self.binding.authPassword
-											  persistence:self.binding.credentialPersistence];
-		[[challenge sender] useCredential:newCredential
-			   forAuthenticationChallenge:challenge];
-	} else {
-		[[challenge sender] cancelAuthenticationChallenge:challenge];
+    if ([challenge previousFailureCount] > 0) {
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
 		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
 		NSError *authError = [NSError errorWithDomain:@"Connection Authentication" code:0 userInfo:userInfo];
 		[self connection:connection didFailWithError:authError];
-	}
+        
+        return;
+    }
+    
+    NSURLCredential *newCredential = nil;
+    NSURLProtectionSpace *protectionSpace = [challenge protectionSpace];
+
+#if ADVANCED_AUTHENTICATION
+#if TARGET_OS_IPHONE
+        
+    // server authentication - NSURLAuthenticationMethodServerTrust
+    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        SecTrustRef trust = [protectionSpace serverTrust];
+        NSDictionary *serverProperties = [binding.authenticationProperties objectForKey:NSURLAuthenticationMethodServerTrust];
+        NSArray *anchors = [serverProperties objectForKey:kServerAnchorCertificates];
+        BOOL anchorsOnly = [[serverProperties objectForKey:kServerAnchorsOnly] boolValue];
+        
+        if (anchors) {
+            SecTrustSetAnchorCertificates(trust, (CFArrayRef)anchors);
+            SecTrustSetAnchorCertificatesOnly(trust, anchorsOnly);
+        }
+        
+        SecTrustResultType res = kSecTrustResultInvalid;
+        OSStatus sanityChesk = SecTrustEvaluate(trust, &res);
+        SEL authCallback = [[serverProperties objectForKey:kValidateResult] pointerValue];
+        
+        if ((sanityChesk == noErr) &&
+            ([delegate performSelector:authCallback withObject:[NSNumber numberWithInt:res]])) {
+            
+            newCredential = [NSURLCredential credentialForTrust:trust];
+            [[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
+            
+            return;
+        }
+        
+        // validation error
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
+		NSError *authError = [NSError errorWithDomain:@"Server Authentication" code:res userInfo:userInfo];
+		[self connection:connection didFailWithError:authError];
+        
+        return;
+    }
+    
+    // client authentication - NSURLAuthenticationMethodClientCertificate
+    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+        NSDictionary *clientProperties = [binding.authenticationProperties objectForKey:NSURLAuthenticationMethodClientCertificate];
+        SecIdentityRef identity = (SecIdentityRef)[clientProperties objectForKey:kClientIdentity];
+        NSArray *certs = [clientProperties objectForKey:kClientCertificates];
+        
+        // check if we support client certificate authentication
+        if (identity && certs) {
+            newCredential = [NSURLCredential credentialWithIdentity:identity
+                                                       certificates:certs
+                                                        persistence:[[clientProperties objectForKey:kNSURLCredentialPersistence] intValue]];
+            [[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
+            
+            return;
+        }
+        
+        // validation error
+        [[challenge sender] cancelAuthenticationChallenge:challenge];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
+		NSError *authError = [NSError errorWithDomain:@"Client Authentication" code:0 userInfo:userInfo];
+		[self connection:connection didFailWithError:authError];
+        
+        return;
+    }
+    
+#else    
+    [NSException raise:@"Authentication method not supported" format:@"Manual authentication not supported on Mac OS X."];
+#endif
+#endif
+
+    // client authentication - NSURLAuthenticationMethodHTTPBasic
+    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic]) {
+        NSDictionary *clientProperties = [binding.authenticationProperties objectForKey:NSURLAuthenticationMethodHTTPBasic];
+        NSString *username = [clientProperties objectForKey:kClientUsername];
+        NSString *password = [clientProperties objectForKey:kClientPassword];
+        newCredential=[NSURLCredential credentialWithUser:username
+                                                password:password
+                                            persistence:[[clientProperties objectForKey:kNSURLCredentialPersistence] intValue]];
+        [[challenge sender] useCredential:newCredential forAuthenticationChallenge:challenge];
+        
+        return;
+    }
+    
+    [NSException raise:@"Authentication method not supported" format:@"%@ not supported.", [protectionSpace authenticationMethod]];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)urlResponse
@@ -201,24 +306,29 @@
 		NSLog(@"ResponseStatus: %ld\n", (long)[httpResponse statusCode]);
 		NSLog(@"ResponseHeaders:\n%@", [httpResponse allHeaderFields]);
 	}
+
+    NSInteger contentLength = [[[httpResponse allHeaderFields] objectForKey:@"Content-Length"] integerValue];
 	
 	if ([urlResponse.MIMEType rangeOfString:[self.binding MIMEType]].length == 0) {
-		NSError *error = nil;
 
-		[connection cancel];
-		if ([httpResponse statusCode] >= 400) {
-			NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]],NSLocalizedDescriptionKey,
-                                                                          httpResponse.URL, NSURLErrorKey,nil];
+		if ((self.binding.ignoreEmptyResponse == NO) || (contentLength != 0)) {
+			NSError *error = nil;
+			[connection cancel];
+			if ([httpResponse statusCode] >= 400) {
+				NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]],NSLocalizedDescriptionKey,
+																			  httpResponse.URL, NSURLErrorKey,nil];
+				error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
+			} else {
+				NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+														[NSString stringWithFormat: @"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType],NSLocalizedDescriptionKey,
+																			  httpResponse.URL, NSURLErrorKey,nil];
+				error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
+			}
 				
-			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
+			[self connection:connection didFailWithError:error];
 		} else {
-			NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-	 												[NSString stringWithFormat: @"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType],NSLocalizedDescriptionKey,
-                                                                          httpResponse.URL, NSURLErrorKey,nil];
-			error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
+            [delegate operation:self completedWithResponse:response];
 		}
-				
-		[self connection:connection didFailWithError:error];
 	}
 }
 
@@ -244,6 +354,7 @@
 {
 	[binding release];
 	[response release];
+	[delegate release];
 	delegate = nil;
 	[responseData release];
 	[urlConnection release];
@@ -399,6 +510,7 @@
 %ENDIF
 	
 	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:bodyKeys];
+	operationXMLString = parameters.soapSigner ? [parameters.soapSigner signRequest:operationXMLString] : operationXMLString;
 	
 	[binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
 }
@@ -467,7 +579,12 @@
 %ENDFOR
 								if ((bodyNode->ns != nil && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) && 
 									xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
-									SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode];
+                                    NSDictionary *exceptions = [NSDictionary dictionaryWithObjectsAndKeys:
+%FOREACH fault in operation.faults
+                                                                @"%«schema.prefix»_%«fault.name»", @"%«fault.name»",
+%ENDFOR
+                                                                nil];
+									SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode expectedExceptions:exceptions];
 									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
 									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
 								}
