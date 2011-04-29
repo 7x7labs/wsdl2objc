@@ -509,7 +509,7 @@
 %ENDIF
 	
 	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:bodyKeys];
-	operationXMLString = parameters.soapSigner ? [parameters.soapSigner signRequest:operationXMLString] : operationXMLString;
+	//operationXMLString = parameters.soapSigner ? [parameters.soapSigner signRequest:operationXMLString] : operationXMLString;
 	
 	[binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
 }
