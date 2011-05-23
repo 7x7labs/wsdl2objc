@@ -632,6 +632,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_GC = supported;
@@ -648,6 +649,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = WSDLParser;
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -676,6 +678,7 @@
 					AppKit,
 				);
 				PRODUCT_NAME = WSDLParser;
+				SDKROOT = macosx;
 				WARNING_CFLAGS = "-Wall";
 				ZERO_LINK = NO;
 			};

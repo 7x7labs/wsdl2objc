@@ -6,16 +6,22 @@
 @synthesize ignoreEmptyResponse;
 @synthesize cookies;
 @synthesize customHeaders;
+@synthesize soapSigner;
 
-- (void)setAuthenticationProperties:(NSMutableDictionary *)aAuthenticationPropperties
+- (void)setAuthenticationProperties:(NSDictionary *)aAuthenticationProperties
 {
 	[authenticationProperties release];
-	authenticationProperties = [aAuthenticationPropperties mutableCopy];
-	if ([authenticationProperties objectForKey:kNSURLCredentialPersistence] == nil)
+	if ([aAuthenticationProperties objectForKey:kNSURLCredentialPersistence] == nil)
 	{
-		[authenticationProperties setObject:[NSNumber numberWithInt:NSURLCredentialPersistenceForSession]
-									 forKey:kNSURLCredentialPersistence];
-	}
+		NSMutableDictionary *tempProperties = [aAuthenticationProperties mutableCopy];
+		[tempProperties setObject:[NSNumber numberWithInt:NSURLCredentialPersistenceForSession]
+						   forKey:kNSURLCredentialPersistence];
+
+		authenticationProperties = [tempProperties copy];
+		[tempProperties release];
+	} else  {
+		authenticationProperties = [aAuthenticationProperties copy];
+	}    
 }
 
 - (NSDictionary *)authenticationProperties
@@ -161,6 +167,7 @@
 
 - (void) dealloc
 {
+	[soapSigner release];
 	[authenticationProperties release];
 	[address release];
 	[cookies release];
@@ -509,7 +516,7 @@
 %ENDIF
 	
 	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:bodyKeys];
-	//operationXMLString = parameters.soapSigner ? [parameters.soapSigner signRequest:operationXMLString] : operationXMLString;
+	operationXMLString = binding.soapSigner ? [binding.soapSigner signRequest:operationXMLString] : operationXMLString;
 	
 	[binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
 }

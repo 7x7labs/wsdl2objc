@@ -24,6 +24,7 @@
 	BOOL ignoreEmptyResponse;
 	BOOL synchronousOperationComplete;
 	NSDictionary *authenticationProperties;
+	SOAPSigner *soapSigner;
 }
 
 @property (nonatomic, copy) NSURL *address;
@@ -33,6 +34,7 @@
 @property (nonatomic, retain) NSMutableArray *cookies;
 @property (nonatomic, retain) NSMutableDictionary *customHeaders;
 @property (nonatomic, copy) NSDictionary *authenticationProperties;
+@property (nonatomic, retain) SOAPSigner *soapSigner;
 
 + (NSTimeInterval) defaultTimeout;
 

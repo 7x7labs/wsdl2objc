@@ -122,9 +122,15 @@
 		nodeName = elName;
 	}
 	
-	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self stringValue] xmlString]);
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self currencyStringValue] xmlString]);
 	
 	return node;
+}
+
++ (NSDecimalNumber *)deserializeString:(NSString *)stringValue
+{
+	stringValue = [stringValue stringByReplacingOccurrencesOfString:@"," withString:@"."];
+	return [NSDecimalNumber decimalNumberWithString:stringValue];
 }
 
 + (NSDecimalNumber *)deserializeNode:(xmlNodePtr)cur
