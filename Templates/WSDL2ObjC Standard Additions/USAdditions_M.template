@@ -122,7 +122,7 @@
 		nodeName = elName;
 	}
 	
-	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self currencyStringValue] xmlString]);
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self stringValue] xmlString]);
 	
 	return node;
 }
