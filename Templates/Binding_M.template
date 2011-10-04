@@ -199,16 +199,13 @@
 }
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
-    return (BOOL)[binding.authenticationProperties objectForKey:protectionSpace.authenticationMethod];
+    return (nil != [binding.authenticationProperties objectForKey:protectionSpace.authenticationMethod]);
 }
 
 -(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
     if ([challenge previousFailureCount] > 0) {
         [[challenge sender] cancelAuthenticationChallenge:challenge];
-		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
-		NSError *authError = [NSError errorWithDomain:@"Connection Authentication" code:0 userInfo:userInfo];
-		[self connection:connection didFailWithError:authError];
         
         return;
     }
@@ -246,9 +243,6 @@
         
         // validation error
         [[challenge sender] cancelAuthenticationChallenge:challenge];
-		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
-		NSError *authError = [NSError errorWithDomain:@"Server Authentication" code:res userInfo:userInfo];
-		[self connection:connection didFailWithError:authError];
         
         return;
     }
@@ -271,9 +265,6 @@
         
         // validation error
         [[challenge sender] cancelAuthenticationChallenge:challenge];
-		NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Authentication Error" forKey:NSLocalizedDescriptionKey];
-		NSError *authError = [NSError errorWithDomain:@"Client Authentication" code:0 userInfo:userInfo];
-		[self connection:connection didFailWithError:authError];
         
         return;
     }
