@@ -737,3 +737,63 @@ xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathEx
     return serializedForm;
 }
 @end
+
+@implementation BasicSSLCredentialsManager
+
++ (id)managerWithUsername:(NSString *)usr andPassword:(NSString *)pwd
+{
+    return [[[BasicSSLCredentialsManager alloc]
+             initWithUsername:usr andPassword:pwd] autorelease];
+}
+
+- (id)initWithUsername:(NSString *)usr andPassword:(NSString *)pwd
+{
+    self = [super init];
+    if (self != nil) {
+        username = [usr retain];
+        password = [pwd retain];
+    }
+    return self;
+}
+
+- (BOOL)canAuthenticateForAuthenticationMethod:(NSString *)authMethod
+{
+    return [authMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic];
+}
+
+- (BOOL)authenticateForChallenge:(NSURLAuthenticationChallenge *)challenge
+{
+    if ([challenge previousFailureCount] > 0) {        
+        return NO;
+    }
+    
+    NSURLCredential *newCredential = nil;
+    NSURLProtectionSpace *protectionSpace = [challenge protectionSpace];
+
+    // client authentication - NSURLAuthenticationMethodHTTPBasic
+    if ([protectionSpace.authenticationMethod isEqualToString:
+         NSURLAuthenticationMethodHTTPBasic]) {
+        
+        newCredential=[NSURLCredential 
+                       credentialWithUser:username
+                                 password:password
+                              persistence:NSURLCredentialPersistenceForSession];
+        
+        [[challenge sender] useCredential:newCredential 
+               forAuthenticationChallenge:challenge];
+        
+        return YES;
+    }
+
+    [NSException raise:@"Authentication method not supported" 
+                format:@"%@ not supported.", [protectionSpace authenticationMethod]];
+    return NO;
+}
+
+-(void)dealloc
+{
+    [username release];
+    [password release];
+    [super dealloc];
+}
+@end

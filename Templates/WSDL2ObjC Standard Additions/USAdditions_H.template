@@ -105,3 +105,18 @@
 
 @end
 
+@protocol SSLCredentialsManaging
+- (BOOL)canAuthenticateForAuthenticationMethod:(NSString *)authMethod;
+- (BOOL)authenticateForChallenge:(NSURLAuthenticationChallenge *)challenge;
+@end
+
+@interface BasicSSLCredentialsManager : NSObject <SSLCredentialsManaging> {
+    NSString *username;
+    NSString *password;
+}
+
++ (id)managerWithUsername:(NSString *)usr andPassword:(NSString *)pwd;
+- (id)initWithUsername:(NSString *)usr andPassword:(NSString *)pwd;
+
+@end
+

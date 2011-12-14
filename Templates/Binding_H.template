@@ -23,7 +23,7 @@
 	BOOL logXMLInOut;
 	BOOL ignoreEmptyResponse;
 	BOOL synchronousOperationComplete;
-	NSDictionary *authenticationProperties;
+	id<SSLCredentialsManaging> sslManager;
 	SOAPSigner *soapSigner;
 }
 
@@ -33,7 +33,7 @@
 @property (nonatomic) NSTimeInterval timeout;
 @property (nonatomic, retain) NSMutableArray *cookies;
 @property (nonatomic, retain) NSMutableDictionary *customHeaders;
-@property (nonatomic, copy) NSDictionary *authenticationProperties;
+@property (nonatomic, retain) id<SSLCredentialsManaging> sslManager;
 @property (nonatomic, retain) SOAPSigner *soapSigner;
 
 + (NSTimeInterval) defaultTimeout;
