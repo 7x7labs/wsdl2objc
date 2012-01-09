@@ -1,8 +1,18 @@
+
 @class %«className»Response;
 @class %«className»Operation;
+%FOREACH operation in operations
+@class %«className»_%«operation.className»;
+%ENDFOR
 
 @protocol %«className»ResponseDelegate <NSObject>
-- (void) operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response;
+@optional
+
+/**
+ * Will first try method <name>Operation:completedWithResponse: where <name> is the name of the operation.
+ * If delegate does not implement method, it must implement operation:completedWithResponse:
+ */
+- (void)operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response;
 
 @end
 
@@ -16,25 +26,17 @@
 #define kValidateResult             @"kValidateResult"
 
 @interface %«className» : NSObject <%«className»ResponseDelegate> {
-	NSURL *address;
-	NSTimeInterval timeout;
-	NSMutableArray *cookies;
-	NSMutableDictionary *customHeaders;
-	BOOL logXMLInOut;
-	BOOL ignoreEmptyResponse;
-	BOOL synchronousOperationComplete;
-	id<SSLCredentialsManaging> sslManager;
-	SOAPSigner *soapSigner;
+	BOOL	synchronousOperationComplete;
 }
 
 @property (nonatomic, copy) NSURL *address;
 @property (nonatomic) BOOL logXMLInOut;
 @property (nonatomic) BOOL ignoreEmptyResponse;
 @property (nonatomic) NSTimeInterval timeout;
-@property (nonatomic, retain) NSMutableArray *cookies;
-@property (nonatomic, retain) NSMutableDictionary *customHeaders;
-@property (nonatomic, retain) id<SSLCredentialsManaging> sslManager;
-@property (nonatomic, retain) SOAPSigner *soapSigner;
+@property (nonatomic, strong) NSMutableArray *cookies;
+@property (nonatomic, strong) NSMutableDictionary *customHeaders;
+@property (nonatomic, strong) id <SSLCredentialsManaging> sslManager;
+@property (nonatomic, strong) SOAPSigner *soapSigner;
 
 + (NSTimeInterval) defaultTimeout;
 
@@ -45,51 +47,53 @@
 
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»;
-- (void)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate;
+- (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate;
 %ENDFOR
 
 @end
 
-@interface %«className»Operation : NSOperation {
-	%«className» *binding;
-	%«className»Response *response;
-	id<%«className»ResponseDelegate> delegate;
-	NSMutableData *responseData;
-	NSURLConnection *urlConnection;
-}
+@interface %«className»Operation : NSOperation
+#ifdef __IPHONE_5_0
+<NSURLConnectionDelegate>
+#endif
 
-@property (nonatomic, retain) %«className» *binding;
-@property (nonatomic, readonly) %«className»Response *response;
-@property (nonatomic, assign) id<%«className»ResponseDelegate> delegate;
-@property (nonatomic, retain) NSMutableData *responseData;
-@property (nonatomic, retain) NSURLConnection *urlConnection;
+@property(nonatomic, strong) %«className» *binding;
+@property(nonatomic, strong, readonly) %«className»Response *response;
+#if ((TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR) && (!defined(__IPHONE_5_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_5_0)) || (TARGET_OS_MAC && (!defined(MAC_OS_X_VERSION_10_7) || MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_7))
+@property(nonatomic, unsafe_unretained) id <%«className»ResponseDelegate> delegate;
+#else
+@property(nonatomic, weak) id <%«className»ResponseDelegate> delegate;
+#endif
+@property(nonatomic, strong) NSMutableData *responseData;
+@property(nonatomic, strong) NSURLConnection *urlConnection;
 
-- (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate;
+- (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate;
+
+/**
+ * Cancels connection. Response has error with code kCFURLErrorCancelled in domain kCFErrorDomainCFNetwork.
+ */
+- (void)cancel;
 
 @end
 
 %FOREACH operation in operations
-@interface %«className»_%«operation.className» : %«className»Operation {
+@interface %«className»_%«operation.className» : %«className»Operation
 %FOREACH part in operation.input.body.parts
-%IFDEF part.element.type.classNameWithPtr
-	%«part.element.type.classNameWithPtr» %«part.name»;
+%IFEQ part.element.type.assignOrRetain strong
+@property(nonatomic, strong) %«part.element.type.classNameWithPtr» %«part.name»;
+%ELSE
+@property(nonatomic) %«part.element.type.classNameWithPtr» %«part.name»;
 %ENDIF
 %ENDFOR
 %FOREACH header in operation.input.headers
-%IFDEF header.type.classNameWithPtr
-	%«header.type.classNameWithPtr» %«header.name»;
+%IFEQ header.type.assignOrRetain strong
+@property(nonatomic, strong) %«header.type.classNameWithPtr» %«header.name»;
+%ELSE
+@property(nonatomic) %«header.type.classNameWithPtr» %«header.name»;
 %ENDIF
 %ENDFOR
-}
 
-%FOREACH part in operation.input.body.parts
-@property (nonatomic, %«part.element.type.assignOrRetain») %«part.element.type.classNameWithPtr» %«part.name»;
-%ENDFOR
-%FOREACH header in operation.input.headers
-@property (nonatomic, %«header.type.assignOrRetain») %«header.type.classNameWithPtr» %«header.name»;
-%ENDFOR
-
-- (id)initWithBinding:(%«className» *)aBinding delegate:(id<%«className»ResponseDelegate>)aDelegate
+- (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate
 %FOREACH part in operation.input.body.parts
 	%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
@@ -101,9 +105,7 @@
 @end
 %ENDFOR
 
-@interface %«className»_envelope : NSObject {
-
-}
+@interface %«className»_envelope : NSObject
 
 + (%«className»_envelope *)sharedInstance;
 
@@ -111,14 +113,10 @@
 
 @end
 
-@interface %«className»Response : NSObject {
-	NSArray *headers;
-	NSArray *bodyParts;
-	NSError *error;
-}
+@interface %«className»Response : NSObject
 
-@property (nonatomic, retain) NSArray *headers;
-@property (nonatomic, retain) NSArray *bodyParts;
-@property (nonatomic, retain) NSError *error;
+@property(nonatomic, strong) NSArray *headers;
+@property(nonatomic, strong) NSArray *bodyParts;
+@property(nonatomic, strong) NSError *error;
 
 @end

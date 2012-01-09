@@ -20,28 +20,38 @@
 #import <libxml/xpathInternals.h>
 #import <libxml/c14n.h>
 
-@implementation NSString (USAdditions)
+@implementation NSString(USAdditions)
 
 - (NSString *)stringByEscapingXML
 {
-	NSMutableString *escapedString = [[self mutableCopy] autorelease];
+	NSMutableString *escapedString = [self mutableCopy];
+	
 	[escapedString replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:0 range:NSMakeRange(0, [escapedString length])];
-	[escapedString replaceOccurrencesOfString:@"'" withString:@"&apos;" options:0 range:NSMakeRange(0, [escapedString length])];
-	[escapedString replaceOccurrencesOfString:@"<" withString:@"&lt;" options:0 range:NSMakeRange(0, [escapedString length])];
-	[escapedString replaceOccurrencesOfString:@">" withString:@"&gt;" options:0 range:NSMakeRange(0, [escapedString length])];
-	[escapedString replaceOccurrencesOfString:@"&" withString:@"&amp;" options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@"'"  withString:@"&apos;" options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@"<"  withString:@"&lt;"   options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@">"  withString:@"&gt;"   options:0 range:NSMakeRange(0, [escapedString length])];
+	[escapedString replaceOccurrencesOfString:@"&"  withString:@"&amp;"  options:0 range:NSMakeRange(0, [escapedString length])];
+#if !__has_feature(objc_arc)
+	return [escapedString autorelease];
+#else
 	return escapedString;
+#endif
 }
 
 - (NSString *)stringByUnescapingXML
 {
-	NSMutableString *unescapedString = [[self mutableCopy] autorelease];
-	[unescapedString replaceOccurrencesOfString:@"&amp;" withString:@"&" options:0 range:NSMakeRange(0, [unescapedString length])];
+	NSMutableString *unescapedString = [self mutableCopy];
+	
+	[unescapedString replaceOccurrencesOfString:@"&amp;"  withString:@"&"  options:0 range:NSMakeRange(0, [unescapedString length])];
 	[unescapedString replaceOccurrencesOfString:@"&quot;" withString:@"\"" options:0 range:NSMakeRange(0, [unescapedString length])];
-	[unescapedString replaceOccurrencesOfString:@"&apos;" withString:@"'" options:0 range:NSMakeRange(0, [unescapedString length])];
-	[unescapedString replaceOccurrencesOfString:@"&lt;" withString:@"<" options:0 range:NSMakeRange(0, [unescapedString length])];
-	[unescapedString replaceOccurrencesOfString:@"&gt;" withString:@">" options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&apos;" withString:@"'"  options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&lt;"   withString:@"<"  options:0 range:NSMakeRange(0, [unescapedString length])];
+	[unescapedString replaceOccurrencesOfString:@"&gt;"   withString:@">"  options:0 range:NSMakeRange(0, [unescapedString length])];
+#if !__has_feature(objc_arc)
+	return [unescapedString autorelease];
+#else
 	return unescapedString;
+#endif
 }
 
 - (const xmlChar *)xmlString
@@ -51,37 +61,36 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
-	NSString *nodeName = nil;
-	if(elNSPrefix != nil && [elNSPrefix length] > 0)
-	{
+	NSString	*nodeName = nil;
+	
+	if(elNSPrefix != nil && [elNSPrefix length] > 0){
 		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
 	}
-	else
-	{
+	else{
 		nodeName = elName;
 	}
-	
+
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [self xmlString]);
-	
+
 	return node;
 }
 
 + (NSString *)deserializeNode:(xmlNodePtr)cur
 {
-	xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
-	NSString *elementString = @"";
-	
-	if(elementText != NULL) {
+	xmlChar		*elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
+	NSString	*elementString = @"";
+
+	if(elementText != NULL){
 		elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
 		xmlFree(elementText);
 	}
-	
+
 	return [elementString stringByUnescapingXML];
 }
 
 @end
 
-@implementation NSNumber (USAdditions)
+@implementation NSNumber(USAdditions)
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
@@ -94,9 +103,9 @@
 	{
 		nodeName = elName;
 	}
-	
+
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self stringValue] xmlString]);
-	
+
 	return node;
 }
 
@@ -145,18 +154,17 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
-	NSString *nodeName = nil;
-	if(elNSPrefix != nil && [elNSPrefix length] > 0)
-	{
+	NSString	*nodeName = nil;
+	
+	if(elNSPrefix != nil && [elNSPrefix length] > 0){
 		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
 	}
-	else
-	{
+	else{
 		nodeName = elName;
 	}
-	
+
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self ISO8601DateString] xmlString]);
-	
+
 	return node;
 }
 
@@ -167,36 +175,34 @@
 
 @end
 
-@implementation NSData (USAdditions)
+@implementation NSData(USAdditions)
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
-	NSString *nodeName = nil;
-	if(elNSPrefix != nil && [elNSPrefix length] > 0)
-	{
+	NSString	*nodeName = nil;
+	
+	if(elNSPrefix != nil && [elNSPrefix length] > 0){
 		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
 	}
-	else
-	{
+	else{
 		nodeName = elName;
 	}
-	
+
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self base64Encoding] xmlString]);
-	
+
 	return node;
 }
 
 + (NSData *)deserializeNode:(xmlNodePtr)cur
 {
-	if(cur != NULL)
-	{
-		NSString *deserializedStringResult = [NSString deserializeNode:cur];
-		if(deserializedStringResult != nil)
-		{
+	if(cur != NULL){
+		NSString	*deserializedStringResult = [NSString deserializeNode:cur];
+		
+		if(deserializedStringResult != nil){
 			return [NSData dataWithBase64EncodedString:deserializedStringResult];
 		}
 	}
-	
+
 	return nil;
 }
 
@@ -206,104 +212,108 @@
 static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 
-@implementation NSData (MBBase64)
+@implementation NSData(MBBase64)
 
-+ (id)dataWithBase64EncodedString:(NSString *)string;
++ (id)dataWithBase64EncodedString:(NSString *)string
 {
-	if (string == nil)
+	if(string == nil)
 		[NSException raise:NSInvalidArgumentException format:@"Error: String must not be nil"];
-	if ([string length] == 0)
+	if([string length] == 0)
 		return [NSData data];
-	
+
 	static char *decodingTable = NULL;
-	if (decodingTable == NULL)
-	{
+	if(decodingTable == NULL){
 		decodingTable = malloc(256);
-		if (decodingTable == NULL)
+		if(decodingTable == NULL)
 			return nil;
 		memset(decodingTable, CHAR_MAX, 256);
-		NSUInteger i;
-		for (i = 0; i < 64; i++)
+		for(NSUInteger i = 0; i < 64; i++)
 			decodingTable[(short)encodingTable[i]] = i;
 	}
-	
+
 	const char *characters = [string cStringUsingEncoding:NSASCIIStringEncoding];
-	if (characters == NULL)     //  Not an ASCII string!
+	if(characters == NULL)     //  Not an ASCII string!
 		return nil;
 	char *bytes = malloc((([string length] + 3) / 4) * 3);
-	if (bytes == NULL)
+	if(bytes == NULL)
 		return nil;
+		
 	NSUInteger length = 0;
-
 	NSUInteger i = 0;
-	while (YES)
-	{
-		char buffer[4];
-		short bufferLength;
-		for (bufferLength = 0; bufferLength < 4; i++)
-		{
-			if (characters[i] == '\0')
+	
+	while(YES){
+		char	buffer[4];
+		short	bufferLength;
+		
+		for(bufferLength = 0; bufferLength < 4; i++){
+			if(characters[i] == '\0')
 				break;
-			if (isspace(characters[i]) || characters[i] == '=')
+			if(isspace(characters[i]) || characters[i] == '=')
 				continue;
 			buffer[bufferLength] = decodingTable[(short)characters[i]];
-			if (buffer[bufferLength++] == CHAR_MAX)      //  Illegal character!
-			{
+			if(buffer[bufferLength++] == CHAR_MAX){      //  Illegal character!
 				free(bytes);
 				return nil;
 			}
 		}
-		
-		if (bufferLength == 0)
+
+		if(bufferLength == 0)
 			break;
-		if (bufferLength == 1)      //  At least two characters are needed to produce one byte!
-		{
+		if(bufferLength == 1){      //  At least two characters are needed to produce one byte!
 			free(bytes);
 			return nil;
 		}
-		
+
 		//  Decode the characters in the buffer to bytes.
 		bytes[length++] = (buffer[0] << 2) | (buffer[1] >> 4);
-		if (bufferLength > 2)
+		if(bufferLength > 2)
 			bytes[length++] = (buffer[1] << 4) | (buffer[2] >> 2);
-		if (bufferLength > 3)
+		if(bufferLength > 3)
 			bytes[length++] = (buffer[2] << 6) | buffer[3];
 	}
-	
+
 	realloc(bytes, length);
 	return [NSData dataWithBytesNoCopy:bytes length:length];
 }
 
 - (NSString *)base64Encoding;
 {
-	if ([self length] == 0)
+	if([self length] == 0)
 		return @"";
 
-	char *characters = malloc((([self length] + 2) / 3) * 4);
-	if (characters == NULL)
+	char	*characters = malloc((([self length] + 2) / 3) * 4);
+	if(characters == NULL)
 		return nil;
-	NSUInteger length = 0;
+	NSUInteger	length = 0;
+	NSUInteger	i = 0;
 	
-	NSUInteger i = 0;
-	while (i < [self length])
-	{
-		char buffer[3] = {0,0,0};
-		short bufferLength = 0;
-		while (bufferLength < 3 && i < [self length])
-			buffer[bufferLength++] = ((char *)[self bytes])[i++];
+	while(i < [self length]){
+		char	buffer[3] = {0, 0, 0};
+		short	bufferLength = 0;
 		
+		while(bufferLength < 3 && i < [self length])
+			buffer[bufferLength++] = ((char *)[self bytes])[i++];
+
 		//  Encode the bytes in the buffer to four characters, including padding "=" characters if necessary.
 		characters[length++] = encodingTable[(buffer[0] & 0xFC) >> 2];
 		characters[length++] = encodingTable[((buffer[0] & 0x03) << 4) | ((buffer[1] & 0xF0) >> 4)];
-		if (bufferLength > 1)
+		if(bufferLength > 1)
 			characters[length++] = encodingTable[((buffer[1] & 0x0F) << 2) | ((buffer[2] & 0xC0) >> 6)];
-		else characters[length++] = '=';
-		if (bufferLength > 2)
+		else
+			characters[length++] = '=';
+		if(bufferLength > 2)
 			characters[length++] = encodingTable[buffer[2] & 0x3F];
-		else characters[length++] = '=';	
+		else
+			characters[length++] = '=';
 	}
-	
-	return [[[NSString alloc] initWithBytesNoCopy:characters length:length encoding:NSASCIIStringEncoding freeWhenDone:YES] autorelease];
+
+	NSString	*base64Encoding = [[NSString alloc] initWithBytesNoCopy:characters length:length encoding:NSASCIIStringEncoding freeWhenDone:YES];
+
+#if !__has_feature(objc_arc)
+	return [base64Encoding autorelease];
+#else
+	return base64Encoding;
+#endif
 }
 
 @end
@@ -318,7 +328,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 	if(self != nil) {
 		value = aValue;
 	}
-	
+
 	return self;
 }
 
@@ -329,32 +339,37 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
-	NSString *nodeName = nil;
-	if(elNSPrefix != nil && [elNSPrefix length] > 0)
-	{
+	NSString	*nodeName = nil;
+	
+	if(elNSPrefix != nil && [elNSPrefix length] > 0){
 		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
 	}
-	else
-	{
+	else{
 		nodeName = elName;
 	}
-	
+
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [[self stringValue] xmlString]);
-	
+
 	return node;
 }
 
 + (USBoolean *)deserializeNode:(xmlNodePtr)cur
 {
-	NSString *stringValue = [NSString deserializeNode:cur];
-	
-	if([stringValue isEqualToString:@"true"]) {
-		return [[[USBoolean alloc] initWithBool:YES] autorelease];
-	} else if([stringValue isEqualToString:@"false"]) {
-		return [[[USBoolean alloc] initWithBool:NO] autorelease];
+	NSString	*stringValue = [NSString deserializeNode:cur];
+	USBoolean	*booleanValue = nil;
+
+	if([stringValue isEqualToString:@"true"]){
+		booleanValue = [[USBoolean alloc] initWithBool:YES];
 	}
-	
-	return nil;
+	else if([stringValue isEqualToString:@"false"]){
+		booleanValue = [[USBoolean alloc] initWithBool:NO];
+	}
+
+#if !__has_feature(objc_arc)
+	return [booleanValue autorelease];
+#else
+	return booleanValue;
+#endif
 }
 
 - (void)encodeWithCoder:(NSCoder*)coder
@@ -364,9 +379,10 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 - (id)initWithCoder:(NSCoder*)coder
 {
-	if (self=[super init]) {
+	if((self=[super init])){
 		[coder decodeValueOfObjCType:@encode(BOOL) at:&value];
 	}
+	
 	return self;
 }
 
@@ -399,20 +415,23 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 + (SOAPFault *)deserializeNode:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions
 {
-	SOAPFault *soapFault = [[SOAPFault new] autorelease];
+	SOAPFault *soapFault = [SOAPFault new];
+#if !__has_feature(objc_arc)
+	[soapFault autorelease];
+#endif
 	NSString *ns = [NSString stringWithCString:(char*)cur->ns->href encoding:NSUTF8StringEncoding];
 	if (! ns) return soapFault;
 	if ([ns isEqualToString:@"http://schemas.xmlsoap.org/soap/envelope/"]) {
 		// soap 1.1
-		for( cur = cur->children ; cur != NULL ; cur = cur->next ) {
-			if(cur->type == XML_ELEMENT_NODE) {
-				if(xmlStrEqual(cur->name, (const xmlChar *) "faultcode")) {
+		for(cur = cur->children; cur != NULL; cur = cur->next){
+			if(cur->type == XML_ELEMENT_NODE){
+				if(xmlStrEqual(cur->name, (const xmlChar *) "faultcode")){
 					soapFault.faultcode = [NSString deserializeNode:cur];
 				}
-				if(xmlStrEqual(cur->name, (const xmlChar *) "faultstring")) {
+				if(xmlStrEqual(cur->name, (const xmlChar *) "faultstring")){
 					soapFault.faultstring = [NSString deserializeNode:cur];
 				}
-				if(xmlStrEqual(cur->name, (const xmlChar *) "faultactor")) {
+				if(xmlStrEqual(cur->name, (const xmlChar *) "faultactor")){
 					soapFault.faultactor = [NSString deserializeNode:cur];
 				}
 				if(xmlStrEqual(cur->name, (const xmlChar *) "detail")) {
@@ -420,29 +439,29 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 				}
 			}
 		}
-	} else if ([ns isEqualToString:@"http://www.w3.org/2003/05/soap-envelope"]) {
+	}
+	else if([ns isEqualToString:@"http://www.w3.org/2003/05/soap-envelope"]){
 		// soap 1.2
-				
-		for( cur = cur->children ; cur != NULL ; cur = cur->next ) {
-			if(cur->type == XML_ELEMENT_NODE) {
-				if(xmlStrEqual(cur->name, (const xmlChar *) "Code")) {
-					xmlNodePtr newcur = cur;
-					for ( newcur = newcur->children; newcur != NULL ; newcur = newcur->next ) {
-						if(xmlStrEqual(newcur->name, (const xmlChar *) "Value")) {
+		for(cur = cur->children; cur != NULL; cur = cur->next){
+			if(cur->type == XML_ELEMENT_NODE){
+				if(xmlStrEqual(cur->name, (const xmlChar *) "Code")){
+					for(xmlNodePtr newcur = cur->children; newcur != NULL; newcur = newcur->next){
+						if(xmlStrEqual(newcur->name, (const xmlChar *)"Value")){
 							soapFault.faultcode = [NSString deserializeNode:newcur];
 							break;
 						}
 					}
 					// TODO: Add Subcode handling
 				}
-				if(xmlStrEqual(cur->name, (const xmlChar *) "Reason")) {
-					xmlChar *theReason = xmlNodeGetContent(cur);
-					if (theReason != NULL) {
+				if(xmlStrEqual(cur->name, (const xmlChar *)"Reason")){
+					xmlChar	*theReason = xmlNodeGetContent(cur);
+					
+					if(theReason != NULL){
 						soapFault.faultstring = [NSString stringWithCString:(char*)theReason encoding:NSUTF8StringEncoding];
 						xmlFree(theReason);
 					}
 				}
-				if(xmlStrEqual(cur->name, (const xmlChar *) "Node")) {
+				if(xmlStrEqual(cur->name, (const xmlChar *)"Node")){
 					soapFault.faultactor = [NSString deserializeNode:cur];
 				}
 				if(xmlStrEqual(cur->name, (const xmlChar *) "Detail")) {
@@ -458,40 +477,43 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 - (NSString *)simpleFaultString
 {
-	NSString *simpleString = [faultstring stringByReplacingOccurrencesOfString: @"System.Web.Services.Protocols.SoapException: " withString: @""];
-	NSRange suffixRange = [simpleString rangeOfString: @"\n   at "];
+	NSString	*simpleString = [faultstring stringByReplacingOccurrencesOfString:@"System.Web.Services.Protocols.SoapException: " withString: @""];
+	NSRange		suffixRange = [simpleString rangeOfString: @"\n   at "];
 
-	if (suffixRange.length > 0)
-		simpleString = [simpleString substringToIndex: suffixRange.location];
+	if(suffixRange.length > 0)
+		simpleString = [simpleString substringToIndex:suffixRange.location];
 
 	return simpleString;
 }
 
+#if !__has_feature(objc_arc)
 - (void)dealloc
 {
 	[faultcode release];
 	[faultstring release];
 	[faultactor release];
 	[detail release];
+	
 	[super dealloc];
 }
+#endif
 
 @end
 
 @implementation SOAPSigner
 
-@synthesize delegate;
+@synthesize delegate = _delegate;
 
 - (id) initWithDelegate:(id<SOAPSignerDelegate>)del
 {
     self = [super init];
     if (self != nil) {
-        delegate = del;
+        self.delegate = del;
     }
     return self;
 }
 
-int register_namespaces(xmlXPathContextPtr xpathCtx, const xmlChar* nsList) {
+static int register_namespaces(xmlXPathContextPtr xpathCtx, const xmlChar* nsList) {
     xmlChar* nsListDup;
     xmlChar* prefix;
     xmlChar* href;
@@ -539,7 +561,7 @@ int register_namespaces(xmlXPathContextPtr xpathCtx, const xmlChar* nsList) {
     return 0;
 }
 
-xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathExpr, const xmlChar* nsList) {
+static xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathExpr, const xmlChar* nsList) {
     xmlXPathContextPtr xpathCtx; 
     xmlXPathObjectPtr xpathObj; 
     
@@ -682,7 +704,7 @@ xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathEx
     int size = xmlC14NDocDumpMemory(doc, xpathObj->nodesetval, 1, NULL, 1, &canonicalized);
     
     // calculate and add its digest value
-    NSString *digestValue = [delegate base64Encode:[delegate digestData:[NSData dataWithBytes:canonicalized length:size]]];
+    NSString *digestValue = [self.delegate base64Encode:[self.delegate digestData:[NSData dataWithBytes:canonicalized length:size]]];
     xmlFree(canonicalized);
     xmlXPathFreeObject(xpathObj);
     
@@ -707,7 +729,7 @@ xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathEx
     
     size = xmlC14NDocDumpMemory(doc, xpathObj->nodesetval, 1, NULL, 1, &canonicalized);
     
-    NSData *signedData = [delegate signData:[NSData dataWithBytes:canonicalized length:size]];
+    NSData *signedData = [self.delegate signData:[NSData dataWithBytes:canonicalized length:size]];
     xmlFree(canonicalized);
     xmlXPathFreeObject(xpathObj);
     
@@ -717,7 +739,7 @@ xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathEx
         return nil;
     }
     
-    NSString *signatureValue = [delegate base64Encode:signedData];
+    NSString *signatureValue = [self.delegate base64Encode:signedData];
     xpathObj = execute_xpath_expression(doc, 
                                         (const xmlChar *)"/soap:Envelope/soap:Header/wsse:Security/ds:Signature/ds:SignatureValue",
                                         (const xmlChar *)"soap=http://schemas.xmlsoap.org/soap/envelope/ "
@@ -742,16 +764,26 @@ xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathEx
 
 + (id)managerWithUsername:(NSString *)usr andPassword:(NSString *)pwd
 {
-    return [[[BasicSSLCredentialsManager alloc]
-             initWithUsername:usr andPassword:pwd] autorelease];
+    BasicSSLCredentialsManager	*manager = [[self alloc] initWithUsername:usr andPassword:pwd];
+	
+#if !__has_feature(objc_arc)
+	return [manager autorelease];
+#else
+	return manager;
+#endif
 }
 
 - (id)initWithUsername:(NSString *)usr andPassword:(NSString *)pwd
 {
     self = [super init];
     if (self != nil) {
+#if !__has_feature(objc_arc)
         username = [usr retain];
         password = [pwd retain];
+#else
+        username = usr;
+        password = pwd;
+#endif
     }
     return self;
 }
@@ -790,10 +822,12 @@ xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* xpathEx
     return NO;
 }
 
+#if !__has_feature(objc_arc)
 -(void)dealloc
 {
     [username release];
     [password release];
     [super dealloc];
 }
+#endif
 @end

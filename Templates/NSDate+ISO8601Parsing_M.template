@@ -629,7 +629,9 @@ static BOOL is_leap_year(unsigned year) {
     *outRange = range;
   }
   
+#if !__has_feature(objc_arc)
   [gregorian release];
+#endif
 
   return date;
 }

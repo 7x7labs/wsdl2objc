@@ -1,0 +1,10 @@
+#!/bin/sh
+
+#  wsdl2objc.sh
+
+/usr/local/bin/wsdl2objc \
+    -wsdlPath "${SRCROOT}/Service1.wsdl" \
+    -outPath "${SRCROOT}/Service1/" \
+    -addTagToServiceName YES \
+    -usePrefix YES \
+    -templateDirectory "${SRCROOT}/wsdl2objc Templates"

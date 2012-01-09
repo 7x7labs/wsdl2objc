@@ -23,6 +23,8 @@
 #import "USBinding.h"
 
 #import "USPortType.h"
+#import "USSchema.h"
+#import "USWSDL.h"
 #import "USObjCKeywords.h"
 #import "NSBundle+USAdditions.h"
 
@@ -54,9 +56,19 @@
     [super dealloc];
 }
 
-- (NSString *)className
+- (NSString *)cleanName
 {
 	NSString *result = [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
+	if(![result.lowercaseString hasSuffix:@"binding"])
+		result = [result stringByAppendingString:@"Binding"];
+	return result;
+}
+
+- (NSString *)className
+{
+    NSString    *prefixedName = [NSString stringWithFormat:@"%@_%@", self.schema.wsdl.targetNamespace.prefix, self.name];
+    ;
+	NSString *result = [[prefixedName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
 	if(![result.lowercaseString hasSuffix:@"binding"])
 		result = [result stringByAppendingString:@"Binding"];
 	return result;

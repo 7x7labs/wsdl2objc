@@ -55,13 +55,12 @@
 
 + (id)dataWithBase64EncodedString:(NSString *)string; // Padding '=' characters are optional. Whitespace is ignored.
 - (NSString *)base64Encoding;
+
 @end
 
-@interface USBoolean : NSObject <NSCoding> {
-	BOOL value;
-}
+@interface USBoolean : NSObject <NSCoding>
 
-@property (nonatomic) BOOL boolValue;
+@property(nonatomic) BOOL boolValue;
 
 - (id)initWithBool:(BOOL)aValue;
 - (NSString *)stringValue;
@@ -71,18 +70,13 @@
 
 @end
 
-@interface SOAPFault : NSObject {
-	NSString *faultcode;
-	NSString *faultstring;
-	NSString *faultactor;
-	NSString *detail;
-}
+@interface SOAPFault : NSObject
 
-@property (nonatomic, retain) NSString *faultcode;
-@property (nonatomic, retain) NSString *faultstring;
-@property (nonatomic, retain) NSString *faultactor;
-@property (nonatomic, retain) id detail;
-@property (readonly) NSString *simpleFaultString;
+@property(nonatomic, strong) NSString *faultcode;
+@property(nonatomic, strong) NSString *faultstring;
+@property(nonatomic, strong) NSString *faultactor;
+@property(nonatomic, strong) NSString *detail;
+@property(nonatomic, readonly) NSString *simpleFaultString;
 
 + (SOAPFault *)deserializeNode:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions;
 
@@ -94,18 +88,16 @@
 - (NSString *)base64Encode:(NSData *)rawData;
 @end
 
-@interface SOAPSigner : NSObject {
-    id<SOAPSignerDelegate> delegate;
-}
+@interface SOAPSigner : NSObject
 
-@property (nonatomic, assign) id<SOAPSignerDelegate> delegate;
+@property (nonatomic, assign) id <SOAPSignerDelegate> delegate;
 
-- (id) initWithDelegate:(id<SOAPSignerDelegate>)del;
+- (id)initWithDelegate:(id <SOAPSignerDelegate>)del;
 - (NSString *)signRequest:(NSString *)req;
 
 @end
 
-@protocol SSLCredentialsManaging
+@protocol SSLCredentialsManaging <NSObject>
 - (BOOL)canAuthenticateForAuthenticationMethod:(NSString *)authMethod;
 - (BOOL)authenticateForChallenge:(NSURLAuthenticationChallenge *)challenge;
 @end

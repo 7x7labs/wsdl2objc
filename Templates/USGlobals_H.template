@@ -1,10 +1,8 @@
 #import <Foundation/Foundation.h>
 
-@interface USGlobals : NSObject {
-	NSMutableDictionary *wsdlStandardNamespaces;
-}
+@interface USGlobals : NSObject
 
-@property (nonatomic, retain) NSMutableDictionary *wsdlStandardNamespaces;
+@property(nonatomic, strong) NSMutableDictionary *wsdlStandardNamespaces;
 
 + (USGlobals *)sharedInstance;
 

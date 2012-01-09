@@ -5,7 +5,7 @@
 #import <objc/runtime.h>
 
 %FOREACH type in types
-%IFEQ type.assignOrRetain retain
+%IFEQ type.assignOrRetain strong
 @class %«type.classNameWithoutPtr»;
 %ENDIF
 %ENDFOR

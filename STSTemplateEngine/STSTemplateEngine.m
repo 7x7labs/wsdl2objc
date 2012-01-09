@@ -116,7 +116,7 @@ BOOL classExists (NSString *className) {
 
 - (BOOL)isRegularFileAtPath:(NSString *)path
 {
-	return ([[[self fileAttributesAtPath:path traverseLink:YES] fileType]
+	return ([[[self attributesOfItemAtPath:path error:NULL] fileType]
 		isEqualToString:@"NSFileTypeRegular"]);
 } // end method
 
@@ -723,12 +723,12 @@ BOOL classExists (NSString *className) {
 	
 	while ((line = [list nextObject])) {
 		lineNumber++;
-		if([line length] == 0) {
-			//[result appendString:kLineFeed];
-			continue;
-		}
+//		if([line length] == 0) {
+//			[result appendString:kLineFeed];
+//			continue;
+//		}
 		// if the line begins with a % character but not the start tag ...
-		if (([line hasPrefix:startTag] == NO) && ([line characterAtIndex:0] == '%')) {
+		if (([line length] > 0) && ([line hasPrefix:startTag] == NO) && ([line characterAtIndex:0] == '%')) {
 			// then the first word is likely to be a keyword
 			keyword = [line firstWordUsingDelimitersFromSet:whitespaceSet];
 			// if keyword starts with "%IFN" or "%ELSIFN" set complement to 1, otherwise 0
@@ -1755,7 +1755,7 @@ BOOL classExists (NSString *className) {
 		// use alternative method before MacOS X 10.4
 		templateData = [NSData dataWithContentsOfFile:path]; // path must be absolute
 		templateString = [[[NSString alloc] initWithData:templateData encoding:enc] autorelease];
-		if (false) { // how the heck do we know there was no encoding error?
+		if (templateString == nil) { // there was no encoding error
 			// create error description - encoding error
 			error = [TEError error:TE_TEMPLATE_ENCODING_ERROR inLine:0 atToken:TE_PATH];
 			[error setLiteral:path];

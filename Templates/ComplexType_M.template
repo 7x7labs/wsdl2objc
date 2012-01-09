@@ -9,36 +9,43 @@
 %DEFINE IsAttributedString 1
 %ENDIF
 %ENDIF
-
-- (id)init
-{
-	if((self = [super init])) {
 %IFDEF IsAttributedString
-_content = nil;
+@synthesize _content;
 %ENDIF
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
+@synthesize %«element.name»;
+%ENDFOR
+%ENDIF
+%IFDEF attributes
+%FOREACH attribute in attributes
+@synthesize %«attribute.name»;
+%ENDFOR
+%ENDIF
 
+- (id)init
+{
+	if((self = [super init])){
+%IFDEF sequenceElements
+%FOREACH element in sequenceElements
 %IF element.useAnArray
 		%«element.name» = [[NSMutableArray alloc] init];
 %ELSE
 		%«element.name» = 0;
 %ENDIF
-
 %ENDFOR
 %ENDIF
-
 %IFDEF attributes
 %FOREACH attribute in attributes
 		%«attribute.name» = 0;
 %ENDFOR
 %ENDIF
-
 	}
-	
+
 	return self;
 }
 
+#if !__has_feature(objc_arc)
 - (void)dealloc
 {
 %IFNDEF superClass
@@ -47,22 +54,23 @@ _content = nil;
 
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
-%IFEQ element.type.assignOrRetain retain
+%IFEQ element.type.assignOrRetain strong
 	if(%«element.name» != nil) [%«element.name» release];
 %ENDIF
 %ENDFOR
-%ENDIF
 
+%ENDIF
 %IFDEF attributes
 %FOREACH attribute in attributes
-%IFEQ attribute.type.assignOrRetain retain
+%IFEQ attribute.type.assignOrRetain strong
 	if(%«attribute.name» != nil) [%«attribute.name» release];
 %ENDIF
 %ENDFOR
+
 %ENDIF
-	
 	[super dealloc];
 }
+#endif
 
 - (NSString *)nsPrefix
 {
@@ -71,34 +79,34 @@ _content = nil;
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
-	NSString *nodeName = nil;
-	if(elNSPrefix != nil && [elNSPrefix length] > 0)
-	{
+	NSString	*nodeName = nil;
+
+	if(elNSPrefix != nil && [elNSPrefix length] > 0){
 		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
 	}
-	else
-	{
-		nodeName = [NSString stringWithFormat:@"%@:%@", @"%«schema.prefix»", elName];
+	else{
+		nodeName = [NSString stringWithFormat:@"%@:%@", [self nsPrefix], elName];
 	}
 
-%IFDEF IsAttributedString	
+%IFDEF IsAttributedString
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [_content xmlString]);
 %ELSE
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], NULL);
 %ENDIF
-
 %IFDEF superClass
-	xmlNodePtr root = xmlDocGetRootElement(doc);
-	xmlNsPtr xsi = xmlSearchNs(doc, root, (const xmlChar*)"xsi");
-	xmlSetNsProp(node, xsi, (const xmlChar*)"type", (const xmlChar*)"%«schema.prefix»:%«typeName»");
+
+	xmlNodePtr	root = xmlDocGetRootElement(doc);
+	xmlNsPtr	xsi = xmlSearchNs(doc, root, (const xmlChar *)"xsi");
+
+	xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)[[[self nsPrefix] stringByAppendingString:@":%«typeName»"] UTF8String]);
 %ENDIF
-	
+
 	[self addAttributesToNode:node];
-	
 %IF hasSequenceElements
+
 	[self addElementsToNode:node];
 %ENDIF
-	
+
 	return node;
 }
 
@@ -109,32 +117,32 @@ _content = nil;
 	[super addAttributesToNode:node];
 %ENDIF
 %ENDIF
-	
+
 %IFDEF attributes
 %FOREACH attribute in attributes
-	if(self.%«attribute.name» != 0) {
-%IFEQ attribute.type.assignOrRetain retain
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", [[self.%«attribute.name» description] xmlString]);
+	if(self.%«attribute.name» != 0){
+%IFEQ attribute.type.assignOrRetain strong
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", [[self.%«attribute.name» description] xmlString]);
 %ELSIFEQ attribute.type.typeName boolean
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", (*self.%«attribute.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", (*self.%«attribute.name» ? (const xmlChar *)"true" : (const xmlChar *)"false"));
 %ELSIFEQ attribute.type.typeName long
 		char buf[20];
 		sprintf(buf, "%d", *self.%«attribute.name»);
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName short
 		char buf[20];
 		sprintf(buf, "%d", *self.%«attribute.name»);
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName int
 		char buf[20];
 		sprintf(buf, "%d", *self.%«attribute.name»);
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", buf);
 %ELSIFEQ attribute.type.typeName double
 		char buf[20];
 		sprintf(buf, "%f", *self.%«attribute.name»);
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", buf);
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", buf);
 %ELSIFNEQ attribute.type.enumCount 0
-		xmlSetProp(node, (const xmlChar*)"%«attribute.wsdlName»", [%«attribute.type.className»_stringFromEnum(self.%«attribute.name») xmlString]);
+		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", [%«attribute.type.className»_stringFromEnum(self.%«attribute.name») xmlString]);
 %ENDIF
 	}
 
@@ -149,115 +157,97 @@ _content = nil;
 	[super addElementsToNode:node];
 %ENDIF
 %ENDIF
-	
+
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
-	if(self.%«element.name» != 0) {
-%IFEQ element.type.assignOrRetain retain
-
+	if(self.%«element.name» != 0){
+%IFEQ element.type.assignOrRetain strong
 %IF element.useAnArray
-		for(%«element.type.classNameWithPtr» child in self.%«element.name») {
-			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"]);
+		for(%«element.type.classNameWithPtr» child in self.%«element.name»){
+			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
 		}
 %ELSE
-		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"]);
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar*)"true" : (const xmlChar*)"false"));
+		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar *)"true" : (const xmlChar *)"false"));
 %ELSIFEQ element.type.typeName long
 		char buf[20];
 		sprintf(buf, "%d", *self.%«element.name»);
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
+		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName short
 		char buf[20];
 		sprintf(buf, "%d", *self.%«element.name»);
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
+		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName int
 		char buf[20];
 		sprintf(buf, "%d", *self.%«element.name»);
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
+		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFEQ element.type.typeName double
 		char buf[20];
 		sprintf(buf, "%f", *self.%«element.name»);
-		xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", buf);
+		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
 
 %IF element.useAnArray
-		for(NSNumber *intRepresentation in self.%«element.name») {
-			%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
-			xmlNewChild(node, NULL, (const xmlChar*)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);
+		for(NSNumber *intRepresentation in self.%«element.name»){
+			%«element.type.className»	enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
+
+			xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);
 		}
 %ELSE
-		xmlNewChild(node, NULL, (const xmlChar*)"%«schema.prefix»:%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
+		xmlNewChild(node, NULL, (const xmlChar *)[[[self nsPrefix] stringByAppendingString:@":%«element.wsdlName»"] UTF8String], [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
 %ENDIF
-
 %ENDIF
 	}
 %ENDFOR
 %ENDIF
 }
-
-%IFDEF IsAttributedString
-/* content */
-@synthesize _content;
-%ENDIF
-
-/* elements */
 %IFDEF sequenceElements
+
+// MARK: elements
+
 %FOREACH element in sequenceElements
-
 %IF element.useAnArray
-
-@synthesize %«element.name»;
 
 - (void)add%«element.uname»:(%«element.type.classNameWithPtr»)toAdd
 {
-%IFEQ element.type.assignOrRetain assign
+%IFEQ element.type.assignOrRetain weak
 	[%«element.name» addObject:[NSNumber numberWithInt:(int)toAdd]];
 %ELSE
-	if(toAdd != nil) [%«element.name» addObject:toAdd];
+	if(toAdd != nil){
+		[%«element.name» addObject:toAdd];
+	}
 %ENDIF
 }
-
-%ELSE
-
-@synthesize %«element.name»;
-
 %ENDIF
 
 %ENDFOR
 %ENDIF
 
-
-/* attributes */
 %IFDEF attributes
+// MARK: attributes
 
 - (NSDictionary *)attributes
 {
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+	NSMutableDictionary	*attributes = [NSMutableDictionary dictionary];
+
 %FOREACH attribute in attributes
-%IFEQ attribute.type.assignOrRetain retain
+%IFEQ attribute.type.assignOrRetain strong
 	[attributes setObject:self.%«attribute.name» forKey:@"%«attribute.wsdlName»"];
 %ELSE
 	[attributes setObject:[NSNumber numberWithInt:(int)self.%«attribute.name»] forKey:@"%«attribute.wsdlName»"];
 %ENDIF
 %ENDFOR
-	
+
 	return attributes;
 }
 
-%FOREACH attribute in attributes
-
-@synthesize %«attribute.name»;
-
-%ENDFOR
 %ENDIF
-
-
 + (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur
 {
-	%«className» *newObject = [[%«className» new] autorelease];
+	%«className» *newObject = [self new];
 	
 %IFDEF IsAttributedString
 	// Set the string content
@@ -271,29 +261,35 @@ _content = nil;
 	[newObject deserializeAttributesFromNode:cur];
 	[newObject deserializeElementsFromNode:cur];
 	
+#if !__has_feature(objc_arc)
+	return [newObject autorelease];
+#else
 	return newObject;
+#endif
 }
 
 - (void)deserializeAttributesFromNode:(xmlNodePtr)cur
 {
-
 %IFDEF superClass
 %IF superClassIsComplex
 	[super deserializeAttributesFromNode:cur];
-%ENDIF
-%ENDIF
 
+%ENDIF
+%ENDIF
 %IF hasAttributes
-	xmlChar *attrValue = NULL;
-	NSString *attrString;
-	
+	xmlChar	*attrValue = NULL;
+
 %FOREACH attribute in attributes
 	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.wsdlName»");
-	if(attrValue != NULL) {
-		attrString = [NSString stringWithCString:(char*)attrValue encoding:NSUTF8StringEncoding];
+	if(attrValue != NULL){
+		NSString	*attrString = [NSString stringWithCString:(char *)attrValue encoding:NSUTF8StringEncoding];
 
 %IFEQ attribute.type.typeName boolean
+#if !__has_feature(objc_arc)
 		self.%«attribute.name» = [[[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)] autorelease];
+#else
+		self.%«attribute.name» = [[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)];
+#endif
 %ELSIFEQ attribute.type.typeName byte
 		self.%«attribute.name» = [NSNumber numberWithChar:[attrString intValue]];
 %ELSIFEQ attribute.type.typeName int
@@ -369,146 +365,161 @@ _content = nil;
 
 - (void)deserializeElementsFromNode:(xmlNodePtr)cur
 {
-	
 %IFDEF superClass
 %IF superClassIsComplex
 	[super deserializeElementsFromNode:cur];
+
 %ENDIF
 %ENDIF
-	
 %IF hasSequenceElements
-	for( cur = cur->children ; cur != NULL ; cur = cur->next ) {
-		if(cur->type == XML_ELEMENT_NODE) {
-			xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
-			NSString *elementString = nil;
-			
+	for(cur = cur->children; cur != NULL; cur = cur->next ){
+		if(cur->type == XML_ELEMENT_NODE){
+			xmlChar		*elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
+			NSString	*elementString = nil;
+
 			if(elementText != NULL) {
-				elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
+				elementString = [NSString stringWithCString:(char *)elementText encoding:NSUTF8StringEncoding];
 				[elementString self]; // avoid compiler warning for unused var
 				xmlFree(elementText);
 			}
 %FOREACH element in sequenceElements
-			if(xmlStrEqual(cur->name, (const xmlChar *) "%«element.wsdlName»")) {
-%IFEQ element.type.assignOrRetain retain
-				
-				Class elementClass = nil;
-				xmlChar *instanceType = xmlGetNsProp(cur, (const xmlChar *) "type", (const xmlChar *) "http://www.w3.org/2001/XMLSchema-instance");
-				if(instanceType == NULL) {
-					elementClass = [%«element.type.classNameWithoutPtr» class];
-				} else {
-					NSString *elementTypeString = [NSString stringWithCString:(char*)instanceType encoding:NSUTF8StringEncoding];
-					
-					NSArray *elementTypeArray = [elementTypeString componentsSeparatedByString:@":"];
-					
-					NSString *elementClassString = nil;
-					if([elementTypeArray count] > 1) {
-						NSString *prefix = [elementTypeArray objectAtIndex:0];
-						NSString *localName = [elementTypeArray objectAtIndex:1];
-						
-						xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
-						
-						NSString *standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char*)elementNamespace->href encoding:NSUTF8StringEncoding]];
-						
-						elementClassString = [NSString stringWithFormat:@"%@_%@", standardPrefix, localName];
-					} else {
-						elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_" options:0 range:NSMakeRange(0, [elementTypeString length])];
-					}
-					
-					elementClass = NSClassFromString(elementClassString);
-					xmlFree(instanceType);
+			if(xmlStrEqual(cur->name, (const xmlChar *) "%«element.wsdlName»")){
+%IFEQ element.type.assignOrRetain strong
+			Class	elementClass = nil;
+			xmlChar	*instanceType = xmlGetNsProp(cur, (const xmlChar *) "type", (const xmlChar *) "http://www.w3.org/2001/XMLSchema-instance");
+
+			if(instanceType == NULL){
+				elementClass = [%«element.type.classNameWithoutPtr» class];
+			}
+			else{
+				NSString	*elementTypeString = [NSString stringWithCString:(char *)instanceType encoding:NSUTF8StringEncoding];
+				NSArray		*elementTypeArray = [elementTypeString componentsSeparatedByString:@":"];
+				NSString	*elementClassString = nil;
+
+				if([elementTypeArray count] > 1){
+					NSString	*prefix = [elementTypeArray objectAtIndex:0];
+					NSString	*localName = [elementTypeArray objectAtIndex:1];
+					xmlNsPtr	elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
+					NSString	*standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char *)elementNamespace->href encoding:NSUTF8StringEncoding]];
+
+					elementClassString = [NSString stringWithFormat:@"%@_%@", standardPrefix, localName];
 				}
-				
-				id newChild = [elementClass deserializeNode:cur];
-				
+				else{
+					elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_" options:0 range:NSMakeRange(0, [elementTypeString length])];
+				}
+
+				elementClass = NSClassFromString(elementClassString);
+				xmlFree(instanceType);
+			}
+
+			id newChild = [elementClass deserializeNode:cur];
+
 %IF element.useAnArray
-				if(newChild != nil) [self.%«element.name» addObject:newChild];
+			if(newChild != nil){
+				[self.%«element.name» addObject:newChild];
+			}
 %ELSE
-				self.%«element.name» = newChild;
+			self.%«element.name» = newChild;
 %ENDIF
 
 %ELSIFEQ element.type.typeName boolean
-				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*self.%«element.name» = ([elementString boolValue] ? YES : NO);
 
+			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+			*self.%«element.name» = ([elementString boolValue] ? YES : NO);
 %ELSIFEQ element.type.typeName long
-				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*self.%«element.name» = (long)[elementString longLongValue];
 
+			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+			*self.%«element.name» = (long)[elementString longLongValue];
 %ELSIFEQ element.type.typeName short
-				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*self.%«element.name» = (short)[elementString longLongValue];
 
+			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+			*self.%«element.name» = (short)[elementString longLongValue];
 %ELSIFEQ element.type.typeName int
-				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*self.%«element.name» = [elementString intValue];
 
+			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+			*self.%«element.name» = [elementString intValue];
 %ELSIFEQ element.type.typeName double
-				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-				*self.%«element.name» = [elementString doubleValue];
 
+			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+			*self.%«element.name» = [elementString doubleValue];
 %ELSIFNEQ element.type.enumCount 0
-				
-				%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(elementString);
+			%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(elementString);
 %IF element.useAnArray
-				NSNumber *intRepresentation = [NSNumber numberWithInt:(int)enumRepresentation];
-				[self.%«element.name» addObject:intRepresentation];
+			NSNumber	*intRepresentation = [NSNumber numberWithInt:(int)enumRepresentation];
+
+			[self.%«element.name» addObject:intRepresentation];
 %ELSE
-				self.%«element.name» = enumRepresentation;
+
+			self.%«element.name» = enumRepresentation;
 %ENDIF
 
 %ELSE
-#warning Not handling element %«element.name» with type %«element.type.typeName»
 
+#warning Not handling element %«element.name» with type %«element.type.typeName»
 %ENDIF
 			}
 %ENDFOR
 		}
 	}
 %ENDIF
-
 }
 
-/* NSCoder functions taken from: 
- * http://davedelong.com/blog/2009/04/13/aspect-oriented-programming-objective-c
+/* 
+ * NSCoder functions taken from: 
+ * <http://davedelong.com/blog/2009/04/13/aspect-oriented-programming-objective-c>
  */
-- (id) initWithCoder:(NSCoder *)decoder {
-	if ([super respondsToSelector:@selector(initWithCoder:)] && ![self isKindOfClass:[super class]]) {
+- (id)initWithCoder:(NSCoder *)decoder
+{
+	if([super respondsToSelector:@selector(initWithCoder:)] && ![self isKindOfClass:[super class]]){
 		self = [super performSelector:@selector(initWithCoder:) withObject:decoder];
-	} else {
+	}
+	else{
 		self = [super init];
 	}
-	if (self == nil) { return nil; }
- 
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	unsigned int numIvars = 0;
-	Ivar * ivars = class_copyIvarList([self class], &numIvars);
-	for(int i = 0; i < numIvars; i++) {
-		Ivar thisIvar = ivars[i];
-		NSString * key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
-		id value = [decoder decodeObjectForKey:key];
-		if (value == nil) { value = [NSNumber numberWithFloat:0.0]; }
-		[self setValue:value forKey:key];
+	if(self != nil){ 
+		@autoreleasepool{
+			unsigned int		numIvars = 0;
+			Ivar				*ivars = class_copyIvarList([self class], &numIvars);
+
+			for(NSUInteger i = 0; i < numIvars; i++){
+				Ivar		thisIvar = ivars[i];
+				NSString	*key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
+				id			v = [decoder decodeObjectForKey:key];
+
+				if(v == nil){
+					v = [NSNumber numberWithFloat:0.0];
+				}
+				[self setValue:v forKey:key];
+			}
+			if(numIvars > 0){
+				free(ivars);
+			}
+		}
 	}
-	if (numIvars > 0) { free(ivars); }
-	[pool drain];
+
 	return self;
 }
 
-- (void) encodeWithCoder:(NSCoder *)encoder {
-	if ([super respondsToSelector:@selector(encodeWithCoder:)] && ![self isKindOfClass:[super class]]) {
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+	if([super respondsToSelector:@selector(encodeWithCoder:)] && ![self isKindOfClass:[super class]]){
 		[super performSelector:@selector(encodeWithCoder:) withObject:encoder];
 	}
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-	unsigned int numIvars = 0;
-	Ivar * ivars = class_copyIvarList([self class], &numIvars);
-	for (int i = 0; i < numIvars; i++) {
-		Ivar thisIvar = ivars[i];
-		NSString * key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
-		id value = [self valueForKey:key];
-		[encoder encodeObject:value forKey:key];
+	@autoreleasepool{
+		unsigned int		numIvars = 0;
+		Ivar				*ivars = class_copyIvarList([self class], &numIvars);
+
+		for(NSUInteger i = 0; i < numIvars; i++) {
+			Ivar		thisIvar = ivars[i];
+			NSString	*key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
+			id			v = [self valueForKey:key];
+
+			[encoder encodeObject:v forKey:key];
+		}
+		if(numIvars > 0){
+			free(ivars);
+		}
 	}
-	if (numIvars > 0) { free(ivars); }
-	[pool drain];
 }
 
 @end

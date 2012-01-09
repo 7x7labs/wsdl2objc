@@ -38,6 +38,7 @@
 @property (nonatomic, copy) NSString *soapVersion;
 @property (nonatomic, assign) USSchema *schema;
 @property (nonatomic, readonly) NSString *className;
+@property (nonatomic, readonly) NSString *cleanName;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;

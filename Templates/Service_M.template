@@ -8,9 +8,13 @@
 }
 
 %FOREACH port in ports
-+ (%«port.binding.className» *)%«port.binding.className»
++ (%«port.binding.className» *)%«port.binding.cleanName»
 {
+#if !__has_feature(objc_arc)
 	return [[[%«port.binding.className» alloc] initWithAddress:@"%«port.address»"] autorelease];
+#else
+	return [[%«port.binding.className» alloc] initWithAddress:@"%«port.address»"];
+#endif
 }
 %ENDFOR
 

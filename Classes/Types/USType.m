@@ -120,11 +120,11 @@
 {
 	if(self.behavior == TypeBehavior_simple) {
 		if([[self classNameWithPtr] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound) {
-			return @"assign";
+			return @"weak";
 		}
 	}
 	
-	return @"retain";
+	return @"strong";
 }
 
 - (NSString *)enumCount

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -167,8 +167,8 @@
 		62D266800E6371F900AD9FC9 /* Sunrise Telephone Systems.webloc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Sunrise Telephone Systems.webloc"; sourceTree = "<group>"; };
 		62E6332B0E676DF40072DBDD /* USElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USElement.h; sourceTree = "<group>"; };
 		62E6332C0E676DF40072DBDD /* USElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USElement.m; sourceTree = "<group>"; };
-		62FF1EF80E883B8A006D6377 /* USGlobals_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; name = USGlobals_H.template; path = ../USGlobals_H.template; sourceTree = "<group>"; usesTabs = 1; };
-		62FF1F010E883C22006D6377 /* USGlobals_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; name = USGlobals_M.template; path = ../USGlobals_M.template; sourceTree = "<group>"; usesTabs = 1; };
+		62FF1EF80E883B8A006D6377 /* USGlobals_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = USGlobals_H.template; sourceTree = "<group>"; usesTabs = 1; };
+		62FF1F010E883C22006D6377 /* USGlobals_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = USGlobals_M.template; sourceTree = "<group>"; usesTabs = 1; };
 		62FF20A80E8847FD006D6377 /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CHANGELOG; sourceTree = "<group>"; };
 		B93FECA60DF76C5A00145322 /* USAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USAttribute.h; sourceTree = "<group>"; };
 		B93FECA70DF76C5A00145322 /* USAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USAttribute.m; sourceTree = "<group>"; };
@@ -320,7 +320,7 @@
 				62BF42050E72073F00FA8190 /* NSDate+ISO8601Unparsing_H.template */,
 				62BF42060E72073F00FA8190 /* NSDate+ISO8601Unparsing_M.template */,
 			);
-			path = NSDate_ISO8601;
+			name = NSDate_ISO8601;
 			sourceTree = "<group>";
 		};
 		622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */ = {
@@ -331,7 +331,7 @@
 				62BF41B20E72004900FA8190 /* USAdditions_H.template */,
 				62BF41B30E72004900FA8190 /* USAdditions_M.template */,
 			);
-			path = "WSDL2ObjC Standard Additions";
+			name = "WSDL2ObjC Standard Additions";
 			sourceTree = "<group>";
 		};
 		6235ECF60E6386D200DABBD6 /* Templates */ = {
@@ -471,8 +471,11 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "WSDLParser" */;
-			compatibilityVersion = "Xcode 3.0";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
@@ -607,8 +610,8 @@
 			buildSettings = {
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "";
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Debug;
@@ -623,8 +626,8 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				PREBINDING = NO;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				SDKROOT = "";
 			};
 			name = Release;
 		};
@@ -634,12 +637,12 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
 				COPY_PHASE_STRIP = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "WSDL2ObjC-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
@@ -663,12 +666,12 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "WSDL2ObjC-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
@@ -689,7 +692,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -718,7 +720,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
 				DEPLOYMENT_POSTPROCESSING = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_GC = supported;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;

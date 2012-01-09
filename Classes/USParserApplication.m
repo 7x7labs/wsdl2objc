@@ -81,12 +81,17 @@
 	
 	if(pathString == nil) return nil;
 	if ([pathString length] == 0) return nil;
-
-	if([pathString characterAtIndex:0] == '/') {
-		return [NSURL fileURLWithPath:pathString];
-	}
-	
-	return [NSURL URLWithString:pathString];
+    if([pathString characterAtIndex:0] == '~'){
+        pathString = [pathString stringByExpandingTildeInPath];
+    }
+    
+    NSURL	*wsdlURL = [NSURL URLWithString:pathString];
+    
+    if([wsdlURL scheme] == nil){
+        wsdlURL = [NSURL fileURLWithPath:pathString];
+    }
+    
+    return wsdlURL;
 }
 
 - (NSURL *)outURL
@@ -187,7 +192,7 @@
 	
 	[parser release];
 	
-	self.statusString = @"Generating Objective C code into the output directory...";
+	self.statusString = @"Generating Objective-C code into the output directory...";
 	
 	USWriter *writer = [[USWriter alloc] initWithWSDL:wsdl outputDirectory:self.outURL];
 	[writer write];
