@@ -8,19 +8,19 @@ USGlobals *sharedInstance = nil;
 
 + (USGlobals *)sharedInstance
 {
-	if(sharedInstance == nil) {
+	if(sharedInstance == nil){
 		sharedInstance = [[USGlobals alloc] init];
 	}
-	
+
 	return sharedInstance;
 }
 
 - (id)init
 {
-	if((self = [super init])) {
+	if((self = [super init])){
 		wsdlStandardNamespaces = [[NSMutableDictionary alloc] init];
 	}
-	
+
 	return self;
 }
 

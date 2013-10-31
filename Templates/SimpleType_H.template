@@ -10,7 +10,7 @@ typedef enum {
 } %«className»;
 
 %«className» %«className»_enumFromString(NSString *string);
-NSString * %«className»_stringFromEnum(%«className» enumValue);
+NSString *%«className»_stringFromEnum(%«className» enumValue);
 
 %ELSE
 

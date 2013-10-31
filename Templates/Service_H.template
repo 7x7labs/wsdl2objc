@@ -11,12 +11,10 @@
 @class %«port.binding.className»;
 %ENDFOR
 
-@interface %«className» : NSObject {
-	
-}
+@interface %«className» : NSObject
 
 %FOREACH port in ports
-+ (%«port.binding.className» *)%«port.binding.className»;
++ (%«port.binding.className» *)%«port.binding.cleanName»;
 %ENDFOR
 
 @end

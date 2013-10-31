@@ -38,7 +38,9 @@ static BOOL is_leap_year(unsigned year) {
   [formatter setTimeZone:[NSTimeZone timeZoneWithName:@"UTC"]];
   
   NSString *str = [formatter stringForObjectValue:self];
+#if !__has_feature(objc_arc)
   [formatter release];
+#endif
   if(includeTime) {
     // NSDate - all values are UTC
     str = [str stringByAppendingString: @"Z"];
@@ -81,7 +83,9 @@ static BOOL is_leap_year(unsigned year) {
   
   unsigned weekday = ((dayOfYear + Jan1Weekday) - 1U) % 7U;
   
+#if !__has_feature(objc_arc)
   [gregorian release];
+#endif
   
   if((dayOfYear <= (7U - Jan1Weekday)) && (Jan1Weekday > thursday)) {
     week = 52U + ((Jan1Weekday == friday) || ((Jan1Weekday == saturday) && prevYearIsLeapYear));
@@ -102,7 +106,9 @@ static BOOL is_leap_year(unsigned year) {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat: [@"'T'HH:mm:ss'Z'" prepareDateFormatWithTimeSeparator: timeSep]];
     timeString = [formatter stringForObjectValue:self];
+#if !__has_feature(objc_arc)
     [formatter release];
+#endif
   } else
     timeString = @"";
   
@@ -116,13 +122,17 @@ static BOOL is_leap_year(unsigned year) {
   unsigned dayOfYear = [gregorian ordinalityOfUnit: NSDayCalendarUnit inUnit: NSYearCalendarUnit forDate: self];
   NSString *timeString;
 
+#if !__has_feature(objc_arc)
   [gregorian release];
+#endif
 
   if(includeTime) {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:[@"'T'HH:mm:ss'Z'" prepareDateFormatWithTimeSeparator:timeSep]];
     timeString = [formatter stringForObjectValue:self];
+#if !__has_feature(objc_arc)
     [formatter release];
+#endif
   } else
     timeString = @"";
   
@@ -173,12 +183,15 @@ static BOOL is_leap_year(unsigned year) {
 - (NSString *)prepareDateFormatWithTimeSeparator:(unichar)timeSep {
   NSString *dateFormat = self;
   if(timeSep != ':') {
-    NSMutableString *dateFormatMutable = [[dateFormat mutableCopy] autorelease];
+    NSMutableString *dateFormatMutable = [dateFormat mutableCopy];
     [dateFormatMutable replaceOccurrencesOfString:@":"
   withString:[NSString stringWithCharacters:&timeSep length:1U]
   options:NSBackwardsSearch | NSLiteralSearch
   range:(NSRange){ 0U, [dateFormat length] }];
     dateFormat = dateFormatMutable;
+#if !__has_feature(objc_arc)
+	[dateFormatMutable autorelease];
+#endif
   }
   return dateFormat;
 }
