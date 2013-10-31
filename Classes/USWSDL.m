@@ -128,6 +128,7 @@
 	[xsd addSimpleClassWithName:@"ID" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"ENTITY" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"IDREF" representationClass:@"NSString *"];
+	[xsd addSimpleClassWithName:@"NMTOKEN" representationClass:@"NSString *"];
 }
 
 @end
