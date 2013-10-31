@@ -68,19 +68,19 @@ const NSRange kZeroRange = { 0, 0 };
 // initialised with nil and it may be set using method setLiteral:
 
 + (TEError *)error:(enum TEErrorCode)code
-			inLine:(unsigned)line 
+			inLine:(unsigned)line
 		   atToken:(enum TEToken)token
 {
 	TEError *thisInstance = [[[TEError alloc] init] autorelease];
 	NSException *exception;
-	
+
 	// initialise instance variables
 	thisInstance->errorCode = code;
 	thisInstance->lineNumber = line;
 	thisInstance->token = token;
 	thisInstance->range = kZeroRange;
 	thisInstance->literal = nil; // this is optional info only
-	
+
 	// set remedy and severity according to error type and token
 	switch(code) {
 		case TE_GENERIC_ERROR :
@@ -231,7 +231,7 @@ const NSRange kZeroRange = { 0, 0 };
 			[exception raise];
 			break;
 	} // end switch
-	
+
 	return thisInstance;
 } // end method
 
@@ -365,104 +365,104 @@ const NSRange kZeroRange = { 0, 0 };
 {
 	NSString *tokenString = nil;
 	NSException *exception;
-			
+
 	// setting the token string
 	switch(self->token) {
 		case TE_TOKEN_NOT_AVAILABLE :
-			tokenString = [NSString stringWithString:@""];
+			tokenString = @"";
 			break;
 		case TE_LOG :
-			tokenString = [NSString stringWithString:@"%LOG"];
+			tokenString = @"%LOG";
 			break;
 		case TE_ECHO :
-			tokenString = [NSString stringWithString:@"%ECHO"];
+			tokenString = @"%ECHO";
 			break;
 		case TE_DEBUG :
-			tokenString = [NSString stringWithString:@"%DEBUG"];
+			tokenString = @"%DEBUG";
 			break;
 		case TE_FOREACH :
-			tokenString = [NSString stringWithString:@"%FOREACH"];
+			tokenString = @"%FOREACH";
 			break;
 		case TE_INCLUDE :
-			tokenString = [NSString stringWithString:@"%INCLUDE"];
+			tokenString = @"%INCLUDE";
 			break;
 		case TE_IF :
-			tokenString = [NSString stringWithString:@"%IF"];
+			tokenString = @"%IF";
 			break;
 		case TE_IFNOT :
-			tokenString = [NSString stringWithString:@"%IFNOT"];
+			tokenString = @"%IFNOT";
 			break;
 		case TE_IFEQ :
-			tokenString = [NSString stringWithString:@"%IFEQ"];
+			tokenString = @"%IFEQ";
 			break;
 		case TE_IFNEQ :
-			tokenString = [NSString stringWithString:@"%IFNEQ"];
+			tokenString = @"%IFNEQ";
 			break;
 		case TE_ELSIFEQ :
-			tokenString = [NSString stringWithString:@"%ELSIFEQ"];
+			tokenString = @"%ELSIFEQ";
 			break;
 		case TE_ELSIFNEQ :
-			tokenString = [NSString stringWithString:@"%ELSIFNEQ"];
+			tokenString = @"%ELSIFNEQ";
 			break;
 		case TE_IFDEF :
-			tokenString = [NSString stringWithString:@"%IFDEF"];
+			tokenString = @"%IFDEF";
 			break;
 		case TE_IFNDEF :
-			tokenString = [NSString stringWithString:@"%IFNDEF"];
+			tokenString = @"%IFNDEF";
 			break;
 		case TE_ELSIFDEF :
-			tokenString = [NSString stringWithString:@"%ELSIFDEF"];
+			tokenString = @"%ELSIFDEF";
 			break;
 		case TE_ELSIFNDEF :
-			tokenString = [NSString stringWithString:@"%ELSIFNDEF"];
+			tokenString = @"%ELSIFNDEF";
 			break;
 		case TE_ANY :
-			tokenString = [NSString stringWithString:@"%ANY"];
+			tokenString = @"%ANY";
 			break;
 		case TE_EVERY :
-			tokenString = [NSString stringWithString:@"%EVERY"];
+			tokenString = @"%EVERY";
 			break;
 		case TE_ELSE :
-			tokenString = [NSString stringWithString:@"%ELSE"];
+			tokenString = @"%ELSE";
 			break;
 		case TE_ENDIF :
-			tokenString = [NSString stringWithString:@"%ENDIF"];
+			tokenString = @"%ENDIF";
 			break;
 		case TE_DEFINE :
-			tokenString = [NSString stringWithString:@"%DEFINE"];
+			tokenString = @"%DEFINE";
 			break;
 		case TE_UNDEF :
-			tokenString = [NSString stringWithString:@"%UNDEF"];
+			tokenString = @"%UNDEF";
 			break;
 		case TE_KEY :
-			tokenString = [NSString stringWithString:@"%KEY"];
+			tokenString = @"%KEY";
 			break;
 		case TE_START_TAG :
-			tokenString = [NSString stringWithString:@"start tag"];
+			tokenString = @"start tag";
 			break;
 		case TE_END_TAG :
-			tokenString = [NSString stringWithString:@"end tag"];
+			tokenString = @"end tag";
 			break;
 		case TE_PLACEHOLDER :
 			tokenString = [NSString stringWithFormat:@"placeholder"];
 			break;
 		case TE_PATH :
-			tokenString = [NSString stringWithString:@"path name"];
+			tokenString = @"path name";
 			break;
 		case TE_TARGET :
-			tokenString = [NSString stringWithString:@"%TARGET"];
+			tokenString = @"%TARGET";
 			break;
 		case TE_APPEND :
-			tokenString = [NSString stringWithString:@"%APPEND"];
+			tokenString = @"%APPEND";
 			break;
 		case TE_INSERT :
-			tokenString = [NSString stringWithString:@"%INSERT"];
+			tokenString = @"%INSERT";
 			break;
 		case TE_EOL :
-			tokenString = [NSString stringWithString:@"EOL marker"];
+			tokenString = @"EOL marker";
 			break;
 		case TE_EOF :
-			tokenString = [NSString stringWithString:@"EOF marker"];
+			tokenString = @"EOF marker";
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
@@ -471,10 +471,10 @@ const NSRange kZeroRange = { 0, 0 };
 			[exception raise];
 			break;
 	} // end switch
-	
+
 	// return the token string
 	return [NSString stringWithString:tokenString];
-} // end method	
+} // end method
 
 // ---------------------------------------------------------------------------
 // Instance Method:  stringWithDescription
@@ -492,18 +492,18 @@ const NSRange kZeroRange = { 0, 0 };
 	switch(self->errorCode) {
 		case TE_GENERIC_ERROR :
 			if (self->literal == nil) {
-				description = [NSString stringWithString:@"Generic error: (no error description available)."];
+				description = @"Generic error: (no error description available).";
 			}
 			else {
 				description = [NSString stringWithFormat:@"'%@'", self->literal];
 			} // end if
 			break;
 		case TE_INVALID_PATH_ERROR :
-			description = [NSString stringWithString:@"Template file path is invalid."];
+			description = @"Template file path is invalid.";
 			break;
 		case TE_FILE_NOT_FOUND_ERROR :
 			if (self->literal == nil) {
-				description = [NSString stringWithString:@"Template file not found."];
+				description = @"Template file not found.";
 			}
 			else {
 				description = [NSString stringWithFormat:@"Template file at path '%@' not found.", self->literal];
@@ -511,24 +511,24 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		case TE_UNABLE_TO_READ_FILE_ERROR :
 			if (self->literal == nil) {
-				description = [NSString stringWithString:@"Unable to read template file."];
+				description = @"Unable to read template file.";
 			}
 			else {
 				description = [NSString stringWithFormat:@"Unable to read template file at path '%@'.",
-					self->literal];
+                               self->literal];
 			} // end if
 			break;
 		case TE_INVALID_FILE_FORMAT_ERROR :
-			description = [NSString stringWithString:@"Unable to recognize template file format."];
+			description = @"Unable to recognize template file format.";
 			break;
 		case TE_TEMPLATE_ENCODING_ERROR :
-			description = [NSString stringWithString:@"Unable to decode string encoding."];
+			description = @"Unable to decode string encoding.";
 			break;
 		case TE_TEMPLATE_EMPTY_ERROR :
-			description = [NSString stringWithString:@"Template is empty."];
+			description = @"Template is empty.";
 			break;
 		case TE_DICTIONARY_EMPTY_ERROR :
-			description = [NSString stringWithString:@"Dictionary is empty."];
+			description = @"Dictionary is empty.";
 			break;
 		case TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR :
 			tokenString = [self stringWithToken];
@@ -548,7 +548,7 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		case TE_UNDEFINED_PLACEHOLDER_FOUND_ERROR :
 			if (self->literal == nil) {
-				tokenString = [NSString stringWithString:@"(unspecified)"];
+				tokenString = @"(unspecified)";
 			}
 			else {
 				tokenString = [NSString stringWithFormat:@"'%@'", self->literal];
@@ -566,7 +566,7 @@ const NSRange kZeroRange = { 0, 0 };
 			[exception raise];
 			break;
 	} // end switch
-	
+
 	// return the description string
 	return [NSString stringWithString:description];
 } // end method
@@ -582,11 +582,11 @@ const NSRange kZeroRange = { 0, 0 };
 {
 	NSString *tokenString, *remedy = nil;
 	NSException *exception;
-	
+
 	// setting the remedy string
 	switch(self->remedyCode) {
 		case TE_REMEDY_NOT_AVAILABLE:
-			remedy = [NSString stringWithString:@""];
+			remedy = @"";
 			break;
 		case TE_ASSUMING_TRUE_TO_CONTINUE :
 			tokenString = [self stringWithToken];
@@ -597,11 +597,11 @@ const NSRange kZeroRange = { 0, 0 };
 			remedy = [NSString stringWithFormat:@"Assuming FALSE for this %@ block to continue.", tokenString];
 			break;
 		case TE_CONTINUING_WITH_EMPTY_DICTIONARY :
-			remedy = [NSString stringWithString:@"Continuing with empty dictionary."];
+			remedy = @"Continuing with empty dictionary.";
 			break;
 		case TE_SKIPPING_PLACEHOLDER_TO_CONTINUE :
 			if (self->literal == nil) {
-				tokenString = [NSString stringWithString:@"(unspecified)"];
+				tokenString = @"(unspecified)";
 			}
 			else {
 				tokenString = [NSString stringWithFormat:@"'%@'", self->literal];
@@ -609,10 +609,10 @@ const NSRange kZeroRange = { 0, 0 };
 			remedy = [NSString stringWithFormat:@"Skipping placeholder %@ to continue.", tokenString];
 			break;
 		case TE_CLOSING_IF_BLOCK_TO_CONTINUE :
-			remedy = [NSString stringWithString:@"Implicitly closing previous %IF block to continue."];
+			remedy = @"Implicitly closing previous %IF block to continue.";
 			break;
 		case TE_IMPLYING_ENDTAG_TO_CONTINUE :
-			remedy = [NSString stringWithString:@"Implying end tag to continue."];
+			remedy = @"Implying end tag to continue.";
 			break;
 		case TE_IGNORING_UNEXPECTED_TOKEN :
 			tokenString = [self stringWithToken];
@@ -623,7 +623,7 @@ const NSRange kZeroRange = { 0, 0 };
 			remedy = [NSString stringWithFormat:@"Ignoring unimplemented %@ to continue.", tokenString];
 			break;
 		case TE_ABORTING_TEMPLATE_EXPANSION :
-			remedy = [NSString stringWithString:@"Template expansion aborted."];
+			remedy = @"Template expansion aborted.";
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
@@ -632,10 +632,10 @@ const NSRange kZeroRange = { 0, 0 };
 			[exception raise];
 			break;
 	} // end switch
-	
+
 	// return the remedy string
 	return [NSString stringWithString:remedy];
-} // end method	
+} // end method
 
 // ---------------------------------------------------------------------------
 // Instance Method:  stringWithErrorMessageForTemplate:
@@ -653,20 +653,20 @@ const NSRange kZeroRange = { 0, 0 };
 {
 	NSString *prefix, *severity = nil, *description, *remedy;
 	NSException *exception;
-	
+
 	// setting the prefix text
-	prefix = [NSString stringWithString:@"STS TemplateEngine"];
-	
+	prefix = @"STS TemplateEngine";
+
 	// setting the severity string
 	switch(self->severityCode) {
 		case TE_WARNING :
-			severity = [NSString stringWithString:@"*WARNING*"];
+			severity = @"*WARNING*";
 			break;
 		case TE_ERROR :
-			severity = [NSString stringWithString:@"*ERROR*"];
+			severity = @"*ERROR*";
 			break;
 		case TE_FATAL :
-			severity = [NSString stringWithString:@"*FATAL ERROR*"];
+			severity = @"*FATAL ERROR*";
 			break;
 		default:
 			// we should never get here -- bail out by raising an exception
@@ -675,13 +675,13 @@ const NSRange kZeroRange = { 0, 0 };
 			[exception raise];
 			break;
 	} // end switch
-	
+
 	// get the description string
 	description = [self stringWithDescription];
-		
+
 	// get the remedy string
 	remedy = [self stringWithRemedy];
-	
+
 	// compose and return clear text message for message without template name
 	if ([nameOrPath length] == 0) {
 		if (self->lineNumber == 0) {
