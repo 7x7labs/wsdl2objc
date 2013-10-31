@@ -1,14 +1,5 @@
 @implementation %«className»
 
-@synthesize address;
-@synthesize timeout;
-@synthesize logXMLInOut;
-@synthesize ignoreEmptyResponse;
-@synthesize cookies;
-@synthesize customHeaders;
-@synthesize soapSigner;
-@synthesize sslManager;
-
 + (NSTimeInterval)defaultTimeout
 {
 	return 10;
@@ -17,10 +8,8 @@
 - (id)init
 {
 	if((self = [super init])) {
-		customHeaders = [NSMutableDictionary new];
-		timeout = [[self class] defaultTimeout];
-		logXMLInOut = NO;
-		synchronousOperationComplete = NO;
+		_customHeaders = [NSMutableDictionary new];
+		_timeout = [[self class] defaultTimeout];
 	}
 
 	return self;
@@ -46,9 +35,9 @@
 
 - (void)addCookie:(NSHTTPCookie *)toAdd
 {
-	if(toAdd != nil) {
-		if(cookies == nil) cookies = [[NSMutableArray alloc] init];
-		[cookies addObject:toAdd];
+	if (toAdd) {
+		if (!self.cookies) self.cookies = [NSMutableArray new];
+		[self.cookies addObject:toAdd];
 	}
 }
 
@@ -86,10 +75,6 @@
 																							%«header.name»:a%«header.uname»
 %ENDFOR
 																							];
-#if !__has_feature(objc_arc)
-
-	[op autorelease];
-#endif
 
 	return [self performSynchronousOperation:op];
 }
@@ -105,21 +90,14 @@
 %ENDFOR
 																							 ];
 	[self performAsynchronousOperation: op];
-#if !__has_feature(objc_arc)
-	return [op autorelease];
-#else
 	return op;
-#endif
 }
 %ENDFOR
 
 - (void)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation
 {
-    if(!outputBody){
-        NSError	*err = [NSError errorWithDomain:@"%«className»NULLRequestException"
-                                            code:0
-                                        userInfo:nil];
-        
+    if (!outputBody) {
+        NSError	*err = [NSError errorWithDomain:@"%«className»NULLRequestException" code:0 userInfo:nil];
         [operation connection:nil didFailWithError:err];
         return;
     }
@@ -129,17 +107,15 @@
 																										 timeoutInterval:self.timeout];
 	NSData *bodyData = [outputBody dataUsingEncoding:NSUTF8StringEncoding];
 
-	if(cookies != nil) {
-		[request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:cookies]];
-	}
+	if (self.cookies)
+		[request setAllHTTPHeaderFields:[NSHTTPCookie requestHeaderFieldsWithCookies:self.cookies]];
 	[request setValue:@"wsdl2objc" forHTTPHeaderField:@"User-Agent"];
 	[request setValue:soapAction forHTTPHeaderField:@"SOAPAction"];
 	[request setValue:[[self MIMEType] stringByAppendingString:@"; charset=utf-8"] forHTTPHeaderField:@"Content-Type"];
 	[request setValue:[NSString stringWithFormat:@"%u", [bodyData length]] forHTTPHeaderField:@"Content-Length"];
 	[request setValue:self.address.host forHTTPHeaderField:@"Host"];
-	for (NSString *eachHeaderField in [self.customHeaders allKeys]) {
+	for (NSString *eachHeaderField in self.customHeaders)
 		[request setValue:[self.customHeaders objectForKey:eachHeaderField] forHTTPHeaderField:eachHeaderField];
-	}
 	[request setHTTPMethod:@"POST"];
 	// set version 1.1 - how?
 	[request setHTTPBody: bodyData];
@@ -152,22 +128,7 @@
 	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:operation];
 
 	operation.urlConnection = connection;
-#if !__has_feature(objc_arc)
-	[connection release];
-#endif
 }
-
-#if !__has_feature(objc_arc)
-- (void) dealloc
-{
-	[soapSigner release];
-	[sslManager release];
-	[address release];
-	[cookies release];
-	[customHeaders release];
-	[super dealloc];
-}
-#endif
 
 @end
 
@@ -178,11 +139,6 @@
 
 @implementation %«className»Operation
 
-@synthesize binding;
-@synthesize response;
-@synthesize delegate;
-@synthesize responseData;
-@synthesize urlConnection;
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate
 {
@@ -205,47 +161,17 @@
 
 - (void)completedWithResponse:(%«className»Response *)aResponse
 {
-	BOOL		completed = NO;
-	NSString	*selectorName = nil;
-
-	NSAssert([self respondsToSelector:@selector(parameters)], @"Instances of class %@ must implement the -parameters method.", NSStringFromClass([self class]));
-	if(delegate != nil){
-		id			parameters = [(id)self parameters];
-		SEL			selector;
-		NSUInteger	prefixLength = [[parameters nsPrefix] length];
-
-		selectorName = NSStringFromClass([parameters class]);
-		if(prefixLength > 0){
-			prefixLength++;
-		}
-		selectorName = [selectorName substringFromIndex:prefixLength];
-		selectorName = [selectorName stringByAppendingString:@"Operation:completedWithResponse:"];
-		selector = NSSelectorFromString(selectorName);
-
-		if(selector != NULL && [delegate respondsToSelector:selector]){
-			[delegate performSelector:selector withObject:self withObject:aResponse];
-			completed = YES;
-		}
-	}
-
-	if(!completed){
-		if(delegate != nil){
-			if(![delegate respondsToSelector:@selector(operation:completedWithResponse:)]){
-				[NSException raise:NSInternalInconsistencyException format:@"Delegate of %@ must either implement %@ or operation:completedWithResponse:", self, selectorName];
-			}
-			[delegate operation:self completedWithResponse:aResponse];
-		}
-	}
+	[self.delegate operation:self completedWithResponse:aResponse];
 }
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
-    return [binding.sslManager canAuthenticateForAuthenticationMethod:protectionSpace.authenticationMethod];
+    return [self.binding.sslManager canAuthenticateForAuthenticationMethod:protectionSpace.authenticationMethod];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-	if (![binding.sslManager authenticateForChallenge:challenge]) {
+	if (![self.binding.sslManager authenticateForChallenge:challenge]) {
 		[[challenge sender] cancelAuthenticationChallenge:challenge];
 	}
 }
@@ -255,7 +181,7 @@
 	NSHTTPURLResponse *httpResponse;
 
 	if ([urlResponse isKindOfClass:[NSHTTPURLResponse class]]) {
-		httpResponse = (NSHTTPURLResponse *) urlResponse;
+		httpResponse = (NSHTTPURLResponse *)urlResponse;
 	} else {
 		httpResponse = nil;
 	}
@@ -265,79 +191,55 @@
 		NSLog(@"ResponseHeaders:\n%@", [httpResponse allHeaderFields]);
 	}
 
-	NSMutableArray *cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:[httpResponse allHeaderFields] forURL:binding.address] mutableCopy];
+	self.binding.cookies = [[NSHTTPCookie cookiesWithResponseHeaderFields:[httpResponse allHeaderFields] forURL:self.binding.address] mutableCopy];
 
-	binding.cookies = cookies;
-#if !__has_feature(objc_arc)
-	[cookies release];
-#endif
+	if ([urlResponse.MIMEType rangeOfString:[self.binding MIMEType]].length != 0)
+		return;
 
-	if ([urlResponse.MIMEType rangeOfString:[self.binding MIMEType]].length == 0) {
-		NSInteger contentLength = [[[httpResponse allHeaderFields] objectForKey:@"Content-Length"] integerValue];
+	NSInteger contentLength = [httpResponse.allHeaderFields[@"Content-Length"] integerValue];
 
-		if ((self.binding.ignoreEmptyResponse == NO) || (contentLength != 0)) {
-			NSError *error = nil;
-			[connection cancel];
-			if ([httpResponse statusCode] >= 400) {
-				NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]],NSLocalizedDescriptionKey,
-																			  httpResponse.URL, NSURLErrorKey,nil];
-				error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
-			} else {
-				NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-														[NSString stringWithFormat: @"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType],NSLocalizedDescriptionKey,
-																			  httpResponse.URL, NSURLErrorKey,nil];
-				error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
-			}
-				
-			[self connection:connection didFailWithError:error];
-		} else {
-            [delegate operation:self completedWithResponse:response];
-		}
+	if (contentLength == 0 && self.binding.ignoreEmptyResponse) {
+		[self.delegate operation:self completedWithResponse:self.response];
+		return;
 	}
+
+	NSError *error = nil;
+	[connection cancel];
+	if ([httpResponse statusCode] >= 400) {
+		NSDictionary *userInfo =  @{NSURLErrorKey: httpResponse.URL,
+									NSLocalizedDescriptionKey: [NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]]};
+		error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
+	} else {
+		NSDictionary *userInfo =  @{NSURLErrorKey: httpResponse.URL,
+									NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType]};
+		error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
+	}
+
+	[self connection:connection didFailWithError:error];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-	if (responseData == nil) {
-		responseData = [data mutableCopy];
+	if (!self.responseData) {
+		self.responseData = [data mutableCopy];
 	} else {
-		[responseData appendData:data];
+		[self.responseData appendData:data];
 	}
 }
 
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-	if (binding.logXMLInOut && (![[error domain] isEqualToString:(__bridge NSString *)kCFErrorDomainCFNetwork] || [error code] != kCFURLErrorCancelled)) {
+	if (self.binding.logXMLInOut && (![[error domain] isEqualToString:(__bridge NSString *)kCFErrorDomainCFNetwork] || [error code] != kCFURLErrorCancelled)) {
 		NSLog(@"ResponseError:\n%@", error);
 	}
-	response.error = error;
-	[self completedWithResponse:response];
+	self.response.error = error;
+	[self completedWithResponse:self.response];
 }
-
-#if !__has_feature(objc_arc)
-- (void)dealloc
-{
-	[binding release];
-	[response release];
-	delegate = nil;
-	[responseData release];
-	[urlConnection release];
-
-	[super dealloc];
-}
-#endif
 
 @end
 
 %FOREACH operation in operations
 @implementation %«className»_%«operation.className»
-
-%FOREACH part in operation.input.body.parts
-@synthesize %«part.name»;
-%ENDFOR
-%FOREACH header in operation.input.headers
-@synthesize %«header.name»;
-%ENDFOR
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)responseDelegate
 %FOREACH part in operation.input.body.parts
@@ -359,135 +261,95 @@
 	return self;
 }
 
-#if !__has_feature(objc_arc)
-- (void)dealloc
-{
-%FOREACH part in operation.input.body.parts
-%IFEQ part.element.type.assignOrRetain strong
-	if(%«part.name» != nil) [%«part.name» release];
-%ENDIF
-%ENDFOR
-%FOREACH header in operation.input.headers
-%IFEQ header.type.assignOrRetain strong
-	if(%«header.name» != nil) [%«header.name» release];
-%ENDIF
-%ENDFOR
-
-	[super dealloc];
-}
-#endif
-
 - (void)main
 {
-#if !__has_feature(objc_arc)
-//	[response autorelease];
-#endif
 	self.response = [%«className»Response new];
 
 	%«className»_envelope *envelope = [%«className»_envelope sharedInstance];
 
-	NSMutableDictionary *headerElements = nil;
 %IFDEF operation.input.headers
-	headerElements = [NSMutableDictionary dictionary];
+	NSMutableDictionary *headerElements = [NSMutableDictionary dictionary];
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain strong
-	if(%«header.name» != nil) [headerElements setObject:%«header.name» forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = %«header.name»;
 %ELSIFEQ header.type.typeName boolean
-	if(%«header.name» != nil) 
-#if !__has_feature(objc_arc)
-		[headerElements setObject:[[[USBoolean alloc] initWithBool:*%«header.name»] autorelease] forKey:@"%«header.wsdlName»"];
-#else
-		[headerElements setObject:[[USBoolean alloc] initWithBool:*%«header.name»] forKey:@"%«header.wsdlName»"];
-#endif
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = [[USBoolean alloc] initWithBool:*%«header.name»];
 %ELSIFEQ header.type.typeName byte
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithChar:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName int
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName integer
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName nonNegativeInteger
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName positiveInteger
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName unsignedByte
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedChar:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName unsignedInt
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedInt:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName long
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithLong:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName unsignedLong
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedLong:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName short
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithShort:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName unsignedShort
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithUnsignedShort:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName double
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName float
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithFloat:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFEQ header.type.typeName decimal
-	if(%«header.name» != nil) [headerElements setObject:[NSNumber numberWithDouble:*%«header.name»] forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
 %ELSIFNEQ header.type.enumCount 0
-	if(%«header.name» != nil) [headerElements setObject:%«header.type.className»_stringFromEnum(%«header.name») forKey:@"%«header.wsdlName»"];
+	if(%«header.name») headerElements[@"%«header.wsdlName»"] = %«header.type.className»_stringFromEnum(%«header.name»);
 %ENDIF
 %ENDFOR
 %ENDIF
 
-	NSMutableDictionary *bodyElements = nil;
-	NSMutableArray *bodyKeys = nil;
 %IFDEF operation.input.body.parts
-	bodyElements = [NSMutableDictionary dictionary];
-	bodyKeys = [NSMutableArray array];
-	id obj = nil;
+	NSMutableDictionary *bodyElements = [NSMutableDictionary dictionary];
 %FOREACH part in operation.input.body.parts
 %IFEQ part.element.type.assignOrRetain strong
-	if(%«part.name» != nil) obj = %«part.name»;
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = self.%«part.name»;
 %ELSIFEQ part.element.type.typeName boolean
-#if !__has_feature(objc_arc)
-	if(%«part.name» != nil) obj = [[[USBoolean alloc] initWithBool:*%«part.name»] autorelease];
-#else
-	if(%«part.name» != nil) obj = [[USBoolean alloc] initWithBool:*%«part.name»];
-#endif
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = [[USBoolean alloc] initWithBool:self.*%«part.name»];
 %ELSIFEQ part.element.type.typeName byte
-	if(%«part.name» != nil) obj = [NSNumber numberWithChar:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName int
-	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName integer
-	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName nonNegativeInteger
-	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName positiveInteger
-	if(%«part.name» != nil) obj = [NSNumber numberWithInt:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName unsignedChar
-	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedChar:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName unsignedInt
-	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedInt:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName long
-	if(%«part.name» != nil) obj = [NSNumber numberWithLong:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName unsignedLong
-	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedLong:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName short
-	if(%«part.name» != nil) obj = [NSNumber numberWithShort:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName unsignedShort
-	if(%«part.name» != nil) obj = [NSNumber numberWithUnsignedShort:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName double
-	if(%«part.name» != nil) obj = [NSNumber numberWithDouble:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName float
-	if(%«part.name» != nil) obj = [NSNumber numberWithFloat:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFEQ part.element.type.typeName decimal
-	if(%«part.name» != nil) obj = [NSNumber numberWithDouble:*%«part.name»];
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
 %ELSIFNEQ part.element.type.enumCount 0
-	if(%«part.name» != nil) obj = %«part.element.type.className»_stringFromEnum(%«part.name»);
+	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = %«part.element.type.className»_stringFromEnum(self.%«part.name»);
 %ENDIF
-
-	if(obj != nil) {
-		[bodyElements setObject:obj forKey:@"%«part.element.wsdlName»"];
-		[bodyKeys addObject:@"%«part.element.wsdlName»"];
-	}
 %ENDFOR
 %ENDIF
 
-	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:bodyKeys];
+	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:[bodyElements allKeys]];
 	operationXMLString = self.binding.soapSigner ? [self.binding.soapSigner signRequest:operationXMLString] : operationXMLString;
 	
 	[self.binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
@@ -495,110 +357,89 @@
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-	if(self.responseData != nil && self.delegate != nil){
-		xmlDocPtr doc;
-		xmlNodePtr cur;
+	if (!self.responseData || !self.delegate) return;
 
-		if (self.binding.logXMLInOut) {
-#if !__has_feature(objc_arc)
-			NSLog(@"ResponseBody:\n%@", [[[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding] autorelease]);
-#else
-			NSLog(@"ResponseBody:\n%@", [[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding]);
-#endif
-		}
+	if (self.binding.logXMLInOut) {
+		NSLog(@"ResponseBody:\n%@", [[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding]);
+	}
 
-#if !TARGET_OS_IPHONE && (!defined(MAC_OS_X_VERSION_10_6) || MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_6)
-		// Not yet defined in 10.5 libxml
-		#define XML_PARSE_COMPACT 0
-#endif
-		doc = xmlReadMemory([self.responseData bytes], [self.responseData length], NULL, NULL, XML_PARSE_COMPACT | XML_PARSE_NOBLANKS);
+	xmlDocPtr doc = xmlReadMemory([self.responseData bytes], (int)[self.responseData length], NULL, NULL, XML_PARSE_COMPACT | XML_PARSE_NOBLANKS);
+	if(doc == NULL) {
+		NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Errors while parsing returned XML"};
+		self.response.error = [NSError errorWithDomain:@"%«className»ResponseXML" code:1 userInfo:userInfo];
+		[self completedWithResponse:self.response];
+		goto done;
+	}
 
-		if(doc == NULL){
-			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Errors while parsing returned XML" forKey:NSLocalizedDescriptionKey];
-
-			self.response.error = [NSError errorWithDomain:@"%«className»ResponseXML" code:1 userInfo:userInfo];
-			[self completedWithResponse:self.response];
-		}
-		else{
-			cur = xmlDocGetRootElement(doc);
-			cur = cur->children;
-
-			for(; cur != NULL ; cur = cur->next){
-				if(cur->type == XML_ELEMENT_NODE){
+	for (xmlNodePtr cur = xmlDocGetRootElement(doc)->children; cur; cur = cur->next) {
+		if (cur->type != XML_ELEMENT_NODE) continue;
 %IF operation.output.hasHeaders
-					if(xmlStrEqual(cur->name, (const xmlChar *) "Header")){
-						NSMutableArray	*responseHeaders = [NSMutableArray array];
-						xmlNodePtr		headerNode;
 
-						for(headerNode=cur->children; headerNode != NULL; headerNode = headerNode->next){
-							if(cur->type == XML_ELEMENT_NODE){
+		if (xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
+			NSMutableArray	*responseHeaders = [NSMutableArray array];
+
+			for (xmlNodePtr headerNode = cur->children; headerNode; headerNode = headerNode->next) {
+				if(cur->type != XML_ELEMENT_NODE) continue;
+				if (false) ;
 %FOREACH header in operation.output.headers
-								if(xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.wsdlName»")){
-									%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
-									//NSAssert1(headerObject != nil, @"Errors while parsing header %s", headerNode->name);
-									if (headerObject != nil) [responseHeaders addObject:headerObject];
-								}
+				else if (xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.wsdlName»")) {
+					%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
+					if (headerObject != nil) [responseHeaders addObject:headerObject];
+				}
 %ENDFOR
-							}
-						}
+			}
 
-						self.response.headers = responseHeaders;
-					}
+			self.response.headers = responseHeaders;
+			continue;
+		}
 %ENDIF
 
-					if(xmlStrEqual(cur->name, (const xmlChar *) "Body")){
-						NSMutableArray	*responseBodyParts = [NSMutableArray array];
-						xmlNodePtr		bodyNode;
-
-						for(bodyNode=cur->children; bodyNode != NULL; bodyNode = bodyNode->next){
-							if(cur->type == XML_ELEMENT_NODE){
+		if (xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
+			NSMutableArray	*responseBodyParts = [NSMutableArray array];
+			for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next){
+				if(cur->type != XML_ELEMENT_NODE) continue;
+				if (false) ;
 %FOREACH part in operation.output.body.parts
-								if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.wsdlName»")){
-									%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
-									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
-									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
-								}
+				else if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.wsdlName»")){
+					%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
+					if (bodyObject) [responseBodyParts addObject:bodyObject];
+				}
 %ENDFOR
-								if ((bodyNode->ns != nil && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) && 
-									xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
-                                    NSDictionary *exceptions = [NSDictionary dictionaryWithObjectsAndKeys:
+				if ((bodyNode->ns != nil && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) && 
+					xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
+					NSDictionary *exceptions = @{
 %FOREACH fault in operation.faults
-                                                                @"%«schema.prefix»_%«fault.name»", @"%«fault.name»",
+												@"%«fault.name»": @"%«schema.prefix»_%«fault.name»",
 %ENDFOR
-                                                                nil];
-									SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode expectedExceptions:exceptions];
-									//NSAssert1(bodyObject != nil, @"Errors while parsing body %s", bodyNode->name);
-									if (bodyObject != nil) [responseBodyParts addObject:bodyObject];
-								}
-							}
-						}
-
-						self.response.bodyParts = responseBodyParts;
-					}
+												};
+					SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode expectedExceptions:exceptions];
+					if (bodyObject) [responseBodyParts addObject:bodyObject];
 				}
 			}
 
-			xmlFreeDoc(doc);
+			self.response.bodyParts = responseBodyParts;
 		}
-
-		xmlCleanupParser();
-		[self completedWithResponse:self.response];
 	}
+
+	xmlFreeDoc(doc);
+
+done:
+	xmlCleanupParser();
+	[self completedWithResponse:self.response];
 }
 
 @end
 %ENDFOR
 
-static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 @implementation %«className»_envelope
 
 + (%«className»_envelope *)sharedInstance
 {
-	if(%«className»SharedEnvelopeInstance == nil) {
-		%«className»SharedEnvelopeInstance = [%«className»_envelope new];
-	}
+	static %«className»_envelope *instance;
+	if (!instance)
+		instance = [self new];
 
-	return %«className»SharedEnvelopeInstance;
+	return instance;
 }
 
 - (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements bodyKeys:(NSArray *)bodyKeys
@@ -630,25 +471,23 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 	xmlNewNs(root, (const xmlChar *)"%«schema.fullName»", (const xmlChar *)"%«schema.prefix»");
 %ENDFOR
 
-	if((headerElements != nil) && ([headerElements count] > 0)){
+	if ([headerElements count] > 0) {
 		xmlNodePtr headerNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar *)"Header", NULL);
 		xmlAddChild(root, headerNode);
 
-		for(NSString *key in [headerElements allKeys]) {
-			id	header = [headerElements objectForKey:key];
-
+		for (NSString *key in headerElements) {
+			id header = headerElements[key];
 			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
 	}
 
-	if((bodyElements != nil) && ([bodyElements count] > 0)){
-		xmlNodePtr	bodyNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar *)"Body", NULL);
+	if ([bodyElements count] > 0) {
+		xmlNodePtr bodyNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar *)"Body", NULL);
 
 		xmlAddChild(root, bodyNode);
 
-		for(NSString *key in bodyKeys) {
-			id	body = [bodyElements objectForKey:key];
-
+		for (NSString *key in bodyKeys) {
+			id body = bodyElements[key];
 			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
 	}
@@ -667,18 +506,4 @@ static %«className»_envelope *%«className»SharedEnvelopeInstance = nil;
 @end
 
 @implementation %«className»Response
-
-@synthesize headers;
-@synthesize bodyParts;
-@synthesize error;
-
-#if !__has_feature(objc_arc)
-- (void)dealloc {
-	self.headers = nil;
-	self.bodyParts = nil;
-	self.error = nil;
-	[super dealloc];
-}
-#endif
-
 @end

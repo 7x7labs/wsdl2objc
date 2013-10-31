@@ -6,14 +6,13 @@
 %ENDIF
 %IFDEF superClass
 %IFDEF IsAttributedString
-@interface %«className» : NSObject <NSCoding> {
+@interface %«className» : NSObject <NSCoding>
 %ELSE
-@interface %«className» : %«superClass.classNameWithoutPtr» {
+@interface %«className» : %«superClass.classNameWithoutPtr»
 %ENDIF
 %ELSE
-@interface %«className» : NSObject <NSCoding> {
+@interface %«className» : NSObject <NSCoding>
 %ENDIF
-}
 
 - (NSString *)nsPrefix;
 
@@ -21,7 +20,7 @@
 - (void)addAttributesToNode:(xmlNodePtr)node;
 - (void)addElementsToNode:(xmlNodePtr)node;
 
-+ (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur;
++ (instancetype)deserializeNode:(xmlNodePtr)cur;
 - (void)deserializeAttributesFromNode:(xmlNodePtr)cur;
 - (void)deserializeElementsFromNode:(xmlNodePtr)cur;
 
@@ -31,7 +30,7 @@
 %IFDEF IsAttributedString
 
 /* content */
-@property(nonatomic, strong) NSString *_content;
+@property (nonatomic, strong) NSString *_content;
 %ENDIF
 %IFDEF sequenceElements
 
@@ -42,9 +41,9 @@
 @property(nonatomic, readonly) NSMutableArray *%«element.name»;
 %ELSE
 %IFEQ element.type.assignOrRetain strong
-@property(nonatomic, strong) %«element.type.classNameWithPtr»%«element.name»;
+@property (nonatomic, strong) %«element.type.classNameWithPtr»%«element.name»;
 %ELSE
-@property(nonatomic) %«element.type.classNameWithPtr»%«element.name»;
+@property (nonatomic) %«element.type.classNameWithPtr» %«element.name»;
 %ENDIF
 %ENDIF
 %ENDFOR
@@ -55,9 +54,9 @@
 - (NSDictionary *)attributes;
 %FOREACH attribute in attributes
 %IFEQ attribute.type.assignOrRetain strong
-@property(nonatomic, strong) %«attribute.type.classNameWithPtr»%«attribute.name»;
+@property (nonatomic, strong) %«attribute.type.classNameWithPtr»%«attribute.name»;
 %ELSE
-@property(nonatomic) %«attribute.type.classNameWithPtr»%«attribute.name»;
+@property (nonatomic) %«attribute.type.classNameWithPtr» %«attribute.name»;
 %ENDIF
 %ENDFOR
 %ENDIF

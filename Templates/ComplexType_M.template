@@ -1,76 +1,25 @@
 @implementation %«className»
 
-%IFNDEF superClass
-@synthesize soapSigner;
-%ENDIF
-
 %IFEQ superClass.className "NSString *"
 %IFDEF attributes
 %DEFINE IsAttributedString 1
 %ENDIF
 %ENDIF
-%IFDEF IsAttributedString
-@synthesize _content;
-%ENDIF
-%IFDEF sequenceElements
-%FOREACH element in sequenceElements
-@synthesize %«element.name»;
-%ENDFOR
-%ENDIF
-%IFDEF attributes
-%FOREACH attribute in attributes
-@synthesize %«attribute.name»;
-%ENDFOR
-%ENDIF
 
+%IFDEF sequenceElements
 - (id)init
 {
 	if((self = [super init])){
-%IFDEF sequenceElements
 %FOREACH element in sequenceElements
 %IF element.useAnArray
-		%«element.name» = [[NSMutableArray alloc] init];
-%ELSE
-		%«element.name» = 0;
+		_%«element.name» = [[NSMutableArray alloc] init];
 %ENDIF
 %ENDFOR
-%ENDIF
-%IFDEF attributes
-%FOREACH attribute in attributes
-		%«attribute.name» = 0;
-%ENDFOR
-%ENDIF
 	}
 
 	return self;
 }
-
-#if !__has_feature(objc_arc)
-- (void)dealloc
-{
-%IFNDEF superClass
-	[soapSigner release];
 %ENDIF
-
-%IFDEF sequenceElements
-%FOREACH element in sequenceElements
-%IFEQ element.type.assignOrRetain strong
-	if(%«element.name» != nil) [%«element.name» release];
-%ENDIF
-%ENDFOR
-
-%ENDIF
-%IFDEF attributes
-%FOREACH attribute in attributes
-%IFEQ attribute.type.assignOrRetain strong
-	if(%«attribute.name» != nil) [%«attribute.name» release];
-%ENDIF
-%ENDFOR
-
-%ENDIF
-	[super dealloc];
-}
-#endif
 
 - (NSString *)nsPrefix
 {
@@ -79,17 +28,12 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
-	NSString	*nodeName = nil;
-
-	if(elNSPrefix != nil && [elNSPrefix length] > 0){
+	NSString *nodeName = elName;
+	if ([elNSPrefix length])
 		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
-	}
-	else{
-		nodeName = [NSString stringWithFormat:@"%@:%@", [self nsPrefix], elName];
-	}
 
 %IFDEF IsAttributedString
-	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [_content xmlString]);
+	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], [self._content xmlString]);
 %ELSE
 	xmlNodePtr node = xmlNewDocNode(doc, NULL, [nodeName xmlString], NULL);
 %ENDIF
@@ -103,7 +47,6 @@
 
 	[self addAttributesToNode:node];
 %IF hasSequenceElements
-
 	[self addElementsToNode:node];
 %ENDIF
 
@@ -115,12 +58,12 @@
 %IFDEF superClass
 %IF superClassIsComplex
 	[super addAttributesToNode:node];
-%ENDIF
-%ENDIF
 
+%ENDIF
+%ENDIF
 %IFDEF attributes
 %FOREACH attribute in attributes
-	if(self.%«attribute.name» != 0){
+	if (self.%«attribute.name») {
 %IFEQ attribute.type.assignOrRetain strong
 		xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", [[self.%«attribute.name» description] xmlString]);
 %ELSIFEQ attribute.type.typeName boolean
@@ -155,21 +98,20 @@
 %IFDEF superClass
 %IF superClassIsComplex
 	[super addElementsToNode:node];
-%ENDIF
-%ENDIF
 
+%ENDIF
+%ENDIF
 %IFDEF sequenceElements
 %FOREACH element in sequenceElements
-	if(self.%«element.name» != 0){
+	if (self.%«element.name») {
 %IFEQ element.type.assignOrRetain strong
 %IF element.useAnArray
-		for(%«element.type.classNameWithPtr» child in self.%«element.name»){
+		for (%«element.type.classNameWithPtr» child in self.%«element.name») {
 			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
 		}
 %ELSE
 		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
 %ENDIF
-
 %ELSIFEQ element.type.typeName boolean
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar *)"true" : (const xmlChar *)"false"));
 %ELSIFEQ element.type.typeName long
@@ -214,11 +156,10 @@
 - (void)add%«element.uname»:(%«element.type.classNameWithPtr»)toAdd
 {
 %IFEQ element.type.assignOrRetain weak
-	[%«element.name» addObject:[NSNumber numberWithInt:(int)toAdd]];
+	[self.%«element.name» addObject:[NSNumber numberWithInt:(int)toAdd]];
 %ELSE
-	if(toAdd != nil){
-		[%«element.name» addObject:toAdd];
-	}
+	if (toAdd)
+		[self.%«element.name» addObject:toAdd];
 %ENDIF
 }
 %ENDIF
@@ -231,17 +172,15 @@
 
 - (NSDictionary *)attributes
 {
-	NSMutableDictionary	*attributes = [NSMutableDictionary dictionary];
-
+	return @{
 %FOREACH attribute in attributes
 %IFEQ attribute.type.assignOrRetain strong
-	[attributes setObject:self.%«attribute.name» forKey:@"%«attribute.wsdlName»"];
+		@"%«attribute.wsdlName»": self.%«attribute.name»,
 %ELSE
-	[attributes setObject:[NSNumber numberWithInt:(int)self.%«attribute.name»] forKey:@"%«attribute.wsdlName»"];
+		@"%«attribute.wsdlName»": @(self.%«attribute.name»),
 %ENDIF
 %ENDFOR
-
-	return attributes;
+	};
 }
 
 %ENDIF
@@ -261,11 +200,7 @@
 	[newObject deserializeAttributesFromNode:cur];
 	[newObject deserializeElementsFromNode:cur];
 	
-#if !__has_feature(objc_arc)
-	return [newObject autorelease];
-#else
 	return newObject;
-#endif
 }
 
 - (void)deserializeAttributesFromNode:(xmlNodePtr)cur
@@ -285,37 +220,33 @@
 		NSString	*attrString = [NSString stringWithCString:(char *)attrValue encoding:NSUTF8StringEncoding];
 
 %IFEQ attribute.type.typeName boolean
-#if !__has_feature(objc_arc)
-		self.%«attribute.name» = [[[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)] autorelease];
-#else
-		self.%«attribute.name» = [[USBoolean alloc] initWithBool:([attrString boolValue] ? YES : NO)];
-#endif
+		self.%«attribute.name» = [[USBoolean alloc] initWithBool:[attrString boolValue]];
 %ELSIFEQ attribute.type.typeName byte
-		self.%«attribute.name» = [NSNumber numberWithChar:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName int
-		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName integer
-		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName nonNegativeInteger
-		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName positiveInteger
-		self.%«attribute.name» = [NSNumber numberWithInt:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName unsignedByte
-		self.%«attribute.name» = [NSNumber numberWithUnsignedChar:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName unsignedInt
-		self.%«attribute.name» = [NSNumber numberWithUnsignedInt:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName double
-		self.%«attribute.name» = [NSNumber numberWithDouble:[attrString doubleValue]];
+		self.%«attribute.name» = @([attrString doubleValue]);
 %ELSIFEQ attribute.type.typeName long
-		self.%«attribute.name» = [NSNumber numberWithLong:[attrString longValue]];
+		self.%«attribute.name» = @([attrString longValue]);
 %ELSIFEQ attribute.type.typeName unsignedLong
-		self.%«attribute.name» = [NSNumber numberWithUnsignedLong:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName short
-		self.%«attribute.name» = [NSNumber numberWithShort:[attrString shortValue]];
+		self.%«attribute.name» = @([attrString shortValue]);
 %ELSIFEQ attribute.type.typeName unsignedShort
-		self.%«attribute.name» = [NSNumber numberWithUnsignedShort:[attrString intValue]];
+		self.%«attribute.name» = @([attrString intValue]);
 %ELSIFEQ attribute.type.typeName float
-		self.%«attribute.name» = [NSNumber numberWithFloat:[attrString doubleValue]];
+		self.%«attribute.name» = @([attrString doubleValue]);
 %ELSIFEQ attribute.type.typeName dateTime
 		self.%«attribute.name» = [NSDate dateWithISO8601String:attrString];
 %ELSIFEQ attribute.type.typeName date
@@ -327,7 +258,7 @@
 %ELSIFEQ attribute.type.typeName base64Binary
 		self.%«attribute.name» = [NSData dataWithBase64EncodedString:base64Binary];
 %ELSIFEQ attribute.type.typeName decimal
-		self.%«attribute.name» = [NSNumber numberWithDouble:[attrString doubleValue]];
+		self.%«attribute.name» = @([attrString doubleValue]);
 %ELSIFEQ attribute.type.typeName QName
 		self.%«attribute.name» = attrString;
 %ELSIFEQ attribute.type.typeName anyURI
@@ -397,15 +328,15 @@
 				NSString	*elementClassString = nil;
 
 				if([elementTypeArray count] > 1){
-					NSString	*prefix = [elementTypeArray objectAtIndex:0];
-					NSString	*localName = [elementTypeArray objectAtIndex:1];
+					NSString	*prefix = elementTypeArray[0];
+					NSString	*localName = elementTypeArray[1];
 					xmlNsPtr	elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
-					NSString	*standardPrefix = [[USGlobals sharedInstance].wsdlStandardNamespaces objectForKey:[NSString stringWithCString:(char *)elementNamespace->href encoding:NSUTF8StringEncoding]];
+					NSString	*standardPrefix = [USGlobals sharedInstance].wsdlStandardNamespaces[[NSString stringWithCString:(char *)elementNamespace->href encoding:NSUTF8StringEncoding]];
 
 					elementClassString = [NSString stringWithFormat:@"%@_%@", standardPrefix, localName];
 				}
 				else{
-					elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_" options:0 range:NSMakeRange(0, [elementTypeString length])];
+					elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_"];
 				}
 
 				elementClass = NSClassFromString(elementClassString);
@@ -415,9 +346,8 @@
 			id newChild = [elementClass deserializeNode:cur];
 
 %IF element.useAnArray
-			if(newChild != nil){
+			if (newChild)
 				[self.%«element.name» addObject:newChild];
-			}
 %ELSE
 			self.%«element.name» = newChild;
 %ENDIF
@@ -425,7 +355,7 @@
 %ELSIFEQ element.type.typeName boolean
 
 			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-			*self.%«element.name» = ([elementString boolValue] ? YES : NO);
+			*self.%«element.name» = [elementString boolValue];
 %ELSIFEQ element.type.typeName long
 
 			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
@@ -470,30 +400,24 @@
  */
 - (id)initWithCoder:(NSCoder *)decoder
 {
-	if([super respondsToSelector:@selector(initWithCoder:)] && ![self isKindOfClass:[super class]]){
-		self = [super performSelector:@selector(initWithCoder:) withObject:decoder];
-	}
-	else{
-		self = [super init];
-	}
-	if(self != nil){ 
-		@autoreleasepool{
-			unsigned int		numIvars = 0;
-			Ivar				*ivars = class_copyIvarList([self class], &numIvars);
+%IFDEF superClass
+%IFDEF IsAttributedString
+	self = [super init];
+%ELSE
+	self = [super initWithCoder:decoder];
+%ENDIF
+%ELSE
+	self = [super init];
+%ENDIF
 
-			for(NSUInteger i = 0; i < numIvars; i++){
-				Ivar		thisIvar = ivars[i];
-				NSString	*key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
-				id			v = [decoder decodeObjectForKey:key];
-
-				if(v == nil){
-					v = [NSNumber numberWithFloat:0.0];
-				}
-				[self setValue:v forKey:key];
+	if (self != nil) {
+		@autoreleasepool {
+			Ivar *ivars = class_copyIvarList([self class], NULL);
+			for (Ivar *ivar = ivars; ivar && *ivar; ++ivar) {
+				NSString *key = [NSString stringWithUTF8String:ivar_getName(*ivar)];
+				[self setValue:[decoder decodeObjectForKey:key] ?: @0.0f forKey:key];
 			}
-			if(numIvars > 0){
-				free(ivars);
-			}
+			free(ivars);
 		}
 	}
 
@@ -502,23 +426,19 @@
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-	if([super respondsToSelector:@selector(encodeWithCoder:)] && ![self isKindOfClass:[super class]]){
-		[super performSelector:@selector(encodeWithCoder:) withObject:encoder];
-	}
-	@autoreleasepool{
-		unsigned int		numIvars = 0;
-		Ivar				*ivars = class_copyIvarList([self class], &numIvars);
+%IFDEF superClass
+%IFNDEF IsAttributedString
+	[super encodeWithCoder:encoder];
 
-		for(NSUInteger i = 0; i < numIvars; i++) {
-			Ivar		thisIvar = ivars[i];
-			NSString	*key = [NSString stringWithUTF8String:ivar_getName(thisIvar)];
-			id			v = [self valueForKey:key];
-
-			[encoder encodeObject:v forKey:key];
+%ENDIF
+%ENDIF
+	@autoreleasepool {
+		Ivar *ivars = class_copyIvarList([self class], NULL);
+		for (Ivar *ivar = ivars; ivar && *ivar; ++ivar) {
+			NSString *key = [NSString stringWithUTF8String:ivar_getName(*ivar)];
+			[encoder encodeObject:[self valueForKey:key] forKey:key];
 		}
-		if(numIvars > 0){
-			free(ivars);
-		}
+		free(ivars);
 	}
 }
 

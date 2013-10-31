@@ -1,7 +1,5 @@
 % If this represents an enumeration
-
 %IFNEQ enumCount 0
-
 typedef enum {
 	%«className»_none = 0,
 %FOREACH value in enumerationValues
@@ -13,7 +11,6 @@ typedef enum {
 NSString *%«className»_stringFromEnum(%«className» enumValue);
 
 %ELSE
-
 typedef %«representationClass» %«className»;
 
 %ENDIF

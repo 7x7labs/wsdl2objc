@@ -52,18 +52,10 @@
 
 @end
 
-@interface %«className»Operation : NSOperation
-#ifdef __IPHONE_5_0
-<NSURLConnectionDelegate>
-#endif
-
+@interface %«className»Operation : NSOperation <NSURLConnectionDelegate>
 @property(nonatomic, strong) %«className» *binding;
 @property(nonatomic, strong, readonly) %«className»Response *response;
-#if ((TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR) && (!defined(__IPHONE_5_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_5_0)) || (TARGET_OS_MAC && (!defined(MAC_OS_X_VERSION_10_7) || MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_7))
-@property(nonatomic, unsafe_unretained) id <%«className»ResponseDelegate> delegate;
-#else
 @property(nonatomic, weak) id <%«className»ResponseDelegate> delegate;
-#endif
 @property(nonatomic, strong) NSMutableData *responseData;
 @property(nonatomic, strong) NSURLConnection *urlConnection;
 
