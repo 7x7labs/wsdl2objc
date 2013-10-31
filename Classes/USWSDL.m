@@ -23,10 +23,12 @@
  */
 
 #import "USWSDL.h"
-#import "USSchema.h"
-#import "USType.h"
+
+#import "USAttribute.h"
 #import "USMessage.h"
 #import "USPortType.h"
+#import "USSchema.h"
+#import "USType.h"
 
 @implementation USWSDL
 
@@ -38,7 +40,6 @@
 	if((self = [super init]))
 	{
 		self.schemas = [NSMutableArray array];
-		self.targetNamespace = nil;
 	}
 	return self;
 }
@@ -46,7 +47,7 @@
 - (void)dealloc
 {
 	[schemas release];
-    [targetNamespace release];
+	[targetNamespace release];
 	[super dealloc];
 }
 
@@ -61,7 +62,7 @@
 	USSchema *newSchema = [[USSchema alloc] initWithWSDL:self];
 	newSchema.fullName = aNamespace;
 	[self.schemas addObject:newSchema];
-    [newSchema release];
+	[newSchema release];
 	
 	return newSchema;
 }
@@ -81,14 +82,7 @@
 
 - (USType *)typeForNamespace:(NSString *)aNamespace name:(NSString *)aName
 {
-	USSchema *schema = [self schemaForNamespace:aNamespace];
-	
-	if(schema) {
-		USType *type = [schema typeForName:aName];
-		return type;
-	}
-	
-	return nil;
+	return [[self schemaForNamespace:aNamespace] typeForName:aName];
 }
 
 - (void)addXSDSchema
@@ -129,6 +123,11 @@
 	[xsd addSimpleClassWithName:@"ENTITY" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"IDREF" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"NMTOKEN" representationClass:@"NSString *"];
+
+	USSchema *xml = [self schemaForNamespace:@"http://www.w3.org/XML/1998/namespace"];
+	xml.prefix = @"xml";
+	USAttribute *attr = [xml attributeForName:@"lang"];
+	attr.type = [xsd typeForName:@"string"];
 }
 
 @end
