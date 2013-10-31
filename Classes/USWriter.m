@@ -198,25 +198,33 @@
 
 - (void)appendType:(USType *)type toHString:(NSMutableString *)hString mString:(NSMutableString *)mString
 {
-	if(!type || !type.hasBeenParsed) {
+	if (!type || !type.hasBeenParsed) {
 		NSLog(@"Type %@ was never parsed!", (type ? type.typeName : @"(null)"));
 		return;
 	}
 	
-	if(type.hasBeenWritten) return;
+	if (type.hasBeenWritten) return;
+
 	type.hasBeenWritten = YES;
-	if(type.behavior == TypeBehavior_simple && [type.className isEqualToString:type.representationClass]) return;
-	
-	if(type.superClass != nil) [self appendType:type.superClass toHString:hString mString:mString];
-	
-	for(USSequenceElement *seqElement in type.sequenceElements) {
-		[self appendType:seqElement.type toHString:hString mString:mString];
+	if(type.behavior == TypeBehavior_simple && [type.className isEqualToString:type.representationClass]) {
+		return;
 	}
 	
-	for(USAttribute *attribute in type.attributes) {
-		[self appendType:attribute.type toHString:hString mString:mString];
+	if (type.superClass != nil)
+		[self appendType:type.superClass toHString:hString mString:mString];
+
+	// Simple types need to be written first, since they aren't forward declared
+	// Complex types need to wait though, since they may be subclasses of this type
+	for (USSequenceElement *seqElement in type.sequenceElements) {
+		if (seqElement.type.behavior == TypeBehavior_simple)
+			[self appendType:seqElement.type toHString:hString mString:mString];
 	}
 	
+	for (USAttribute *attribute in type.attributes) {
+		if (attribute.type.behavior == TypeBehavior_simple)
+			[self appendType:attribute.type toHString:hString mString:mString];
+	}
+
 	NSArray *errors;
 	
 	NSString *typeHString = [[NSString stringByExpandingTemplateAtPath:[type templateFileHPath]
@@ -242,6 +250,14 @@
 	}
 	
 	[typeMString release];	
+
+	for (USSequenceElement *seqElement in type.sequenceElements) {
+		[self appendType:seqElement.type toHString:hString mString:mString];
+	}
+
+	for (USAttribute *attribute in type.attributes) {
+		[self appendType:attribute.type toHString:hString mString:mString];
+	}
 }
 
 - (void)appendBinding:(USBinding *)binding toHString:(NSMutableString *)hString mString:(NSMutableString *)mString
