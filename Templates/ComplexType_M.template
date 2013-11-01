@@ -394,10 +394,6 @@
 %ENDIF
 }
 
-/* 
- * NSCoder functions taken from: 
- * <http://davedelong.com/blog/2009/04/13/aspect-oriented-programming-objective-c>
- */
 - (id)initWithCoder:(NSCoder *)decoder
 {
 %IFDEF superClass
@@ -409,18 +405,7 @@
 %ELSE
 	self = [super init];
 %ENDIF
-
-	if (self != nil) {
-		@autoreleasepool {
-			Ivar *ivars = class_copyIvarList([self class], NULL);
-			for (Ivar *ivar = ivars; ivar && *ivar; ++ivar) {
-				NSString *key = [NSString stringWithUTF8String:ivar_getName(*ivar)];
-				[self setValue:[decoder decodeObjectForKey:key] ?: @0.0f forKey:key];
-			}
-			free(ivars);
-		}
-	}
-
+	decode_object(self, decoder);
 	return self;
 }
 
@@ -432,14 +417,7 @@
 
 %ENDIF
 %ENDIF
-	@autoreleasepool {
-		Ivar *ivars = class_copyIvarList([self class], NULL);
-		for (Ivar *ivar = ivars; ivar && *ivar; ++ivar) {
-			NSString *key = [NSString stringWithUTF8String:ivar_getName(*ivar)];
-			[encoder encodeObject:[self valueForKey:key] forKey:key];
-		}
-		free(ivars);
-	}
+	encode_object(self, encoder);
 }
 
 @end

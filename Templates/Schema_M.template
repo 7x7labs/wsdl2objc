@@ -15,3 +15,27 @@
 #if ADVANCED_AUTHENTICATION && TARGET_OS_IPHONE
 #import <Security/Security.h>
 #endif
+
+static void decode_object(id obj, NSCoder *decoder) {
+	if (!obj) return;
+
+	@autoreleasepool {
+		Ivar *ivars = class_copyIvarList([obj class], NULL);
+		for (Ivar *ivar = ivars; ivar && *ivar; ++ivar) {
+			NSString *key = [NSString stringWithUTF8String:ivar_getName(*ivar)];
+			[obj setValue:[decoder decodeObjectForKey:key] ?: @0.0f forKey:key];
+		}
+		free(ivars);
+	}
+}
+
+static void encode_object(id obj, NSCoder *encoder) {
+	@autoreleasepool {
+		Ivar *ivars = class_copyIvarList([obj class], NULL);
+		for (Ivar *ivar = ivars; ivar && *ivar; ++ivar) {
+			NSString *key = [NSString stringWithUTF8String:ivar_getName(*ivar)];
+			[encoder encodeObject:[obj valueForKey:key] forKey:key];
+		}
+		free(ivars);
+	}
+}
