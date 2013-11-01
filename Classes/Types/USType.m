@@ -22,10 +22,11 @@
 
 #import "USType.h"
 
+#import "NSBundle+USAdditions.h"
 #import "USObjCKeywords.h"
 #import "USSchema.h"
+#import "USSequenceElement.h"
 #import "USWSDL.h"
-#import "NSBundle+USAdditions.h"
 
 @implementation USType
 
@@ -157,27 +158,34 @@
 			break;
 
 		case TypeBehavior_complex: {
-			BOOL needsSuperElements = NO;
 			if (self.superClass) {
 				returning[@"superClass"] = self.superClass;
 				returning[@"superClassIsComplex"] = @([self.superClass isComplexType]);
 				for (USType *tempParent = self.superClass; tempParent; tempParent = tempParent.superClass) {
-					if ([tempParent.sequenceElements count] > 0) {
-						needsSuperElements = YES;
-						break;
-					}
+					if ([tempParent.sequenceElements count] > 0)
+						returning[@"hasSuperElements"] = @YES;
+					if ([tempParent.attributes count] > 0)
+						returning[@"hasSuperAttributes"] = @YES;
 				}
 			}
-			returning[@"sequenceElements"] = self.sequenceElements;
-			returning[@"hasSequenceElements"] = @([self.sequenceElements count] > 0 || needsSuperElements);
-			returning[@"attributes"] = self.attributes;
+			returning[@"sequenceElements"] = self.sequenceElements ?: @[];
+			returning[@"hasSequenceElements"] = @([self.sequenceElements count]);
+			returning[@"hasArraySequenceElements"] = @NO;
+			returning[@"attributes"] = self.attributes ?: @[];
 			returning[@"hasAttributes"] = @([self.attributes count] > 0);
 			returning[@"isInTargetNamespace"] = @([self.schema.fullName isEqualToString:self.schema.wsdl.targetNamespace.fullName]);
+
+			for (USSequenceElement *element in self.sequenceElements) {
+				if (element.maxOccurs < 0 || element.maxOccurs > 1) {
+					returning[@"hasArraySequenceElements"] = @YES;
+					break;
+				}
+			}
 			break;
+		}
 
 		default:
 			break;
-		}
 	}
 
 	return returning;

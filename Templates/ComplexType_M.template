@@ -6,10 +6,10 @@
 %ENDIF
 %ENDIF
 
-%IFDEF sequenceElements
+%IF hasArraySequenceElements
 - (id)init
 {
-	if((self = [super init])){
+	if ((self = [super init])) {
 %FOREACH element in sequenceElements
 %IF element.useAnArray
 		_%«element.name» = [[NSMutableArray alloc] init];
@@ -45,23 +45,27 @@
 	xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)[[[self nsPrefix] stringByAppendingString:@":%«typeName»"] UTF8String]);
 %ENDIF
 
+%IF hasAttributes
 	[self addAttributesToNode:node];
+%ELSIF hasSuperAttributes
+	[self addAttributesToNode:node];
+%ENDIF
 %IF hasSequenceElements
+	[self addElementsToNode:node];
+%ELSIF hasSuperElements
 	[self addElementsToNode:node];
 %ENDIF
 
 	return node;
 }
+%IF hasAttributes
 
 - (void)addAttributesToNode:(xmlNodePtr)node
 {
-%IFDEF superClass
-%IF superClassIsComplex
+%IF hasSuperAttributes
 	[super addAttributesToNode:node];
 
 %ENDIF
-%ENDIF
-%IFDEF attributes
 %FOREACH attribute in attributes
 	if (self.%«attribute.name») {
 %IFEQ attribute.type.assignOrRetain strong
@@ -90,18 +94,16 @@
 	}
 
 %ENDFOR
-%ENDIF
 }
+%ENDIF
+%IF hasSequenceElements
 
 - (void)addElementsToNode:(xmlNodePtr)node
 {
-%IFDEF superClass
-%IF superClassIsComplex
+%IF hasSuperElements
 	[super addElementsToNode:node];
 
 %ENDIF
-%ENDIF
-%IFDEF sequenceElements
 %FOREACH element in sequenceElements
 	if (self.%«element.name») {
 %IFEQ element.type.assignOrRetain strong
@@ -144,9 +146,9 @@
 %ENDIF
 	}
 %ENDFOR
-%ENDIF
 }
-%IFDEF sequenceElements
+%ENDIF
+%IF hasSequenceElements
 
 // MARK: elements
 
@@ -167,7 +169,7 @@
 %ENDFOR
 %ENDIF
 
-%IFDEF attributes
+%IF hasAttributes
 // MARK: attributes
 
 - (NSDictionary *)attributes
@@ -197,21 +199,27 @@
 	}
 %ENDIF
 
+%IF hasAttributes
 	[newObject deserializeAttributesFromNode:cur];
+%ELSIF hasSuperAttributes
+	[newObject deserializeAttributesFromNode:cur];
+%ENDIF
+%IF hasSequenceElements
 	[newObject deserializeElementsFromNode:cur];
-	
+%ELSIF hasSuperElements
+	[newObject deserializeElementsFromNode:cur];
+%ENDIF
+
 	return newObject;
 }
+%IF hasAttributes
 
 - (void)deserializeAttributesFromNode:(xmlNodePtr)cur
 {
-%IFDEF superClass
-%IF superClassIsComplex
+%IF hasSuperAttributes
 	[super deserializeAttributesFromNode:cur];
 
 %ENDIF
-%ENDIF
-%IF hasAttributes
 	xmlChar	*attrValue = NULL;
 
 %FOREACH attribute in attributes
@@ -292,19 +300,17 @@
 		xmlFree(attrValue);
 	}
 %ENDFOR
-%ENDIF
 }
+%ENDIF
+%IF hasSequenceElements
 
 - (void)deserializeElementsFromNode:(xmlNodePtr)cur
 {
-%IFDEF superClass
-%IF superClassIsComplex
+%IF hasSuperElements
 	[super deserializeElementsFromNode:cur];
 
 %ENDIF
-%ENDIF
-%IF hasSequenceElements
-	for(cur = cur->children; cur != NULL; cur = cur->next ){
+	for (cur = cur->children; cur; cur = cur->next) {
 		if(cur->type == XML_ELEMENT_NODE){
 			xmlChar		*elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
 			NSString	*elementString = nil;
@@ -363,8 +369,8 @@
 %ENDFOR
 		}
 	}
-%ENDIF
 }
+%ENDIF
 
 - (id)initWithCoder:(NSCoder *)decoder
 {
