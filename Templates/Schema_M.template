@@ -40,12 +40,18 @@ static void encode_object(id obj, NSCoder *encoder) {
 	}
 }
 
+static NSString *xmlStringToNSString(xmlChar *str) {
+	if (!str) return nil;
+	NSString *ret = [NSString stringWithCString:(char *)str encoding:NSUTF8StringEncoding];
+	xmlFree(str);
+	return ret;
+}
+
 static Class classForElement(xmlNodePtr cur) {
-	xmlChar	*instanceType = xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
+	NSString *instanceType = xmlStringToNSString(xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance"));
 	if (!instanceType) return nil;
 
-	NSString *elementTypeString = [NSString stringWithCString:(char *)instanceType encoding:NSUTF8StringEncoding];
-	NSArray *elementTypeArray = [elementTypeString componentsSeparatedByString:@":"];
+	NSArray *elementTypeArray = [instanceType componentsSeparatedByString:@":"];
 
 	Class elementClass;
 	if ([elementTypeArray count] > 1) {
@@ -57,8 +63,19 @@ static Class classForElement(xmlNodePtr cur) {
 		elementClass = NSClassFromString([NSString stringWithFormat:@"%@_%@", standardPrefix, localName]);
 	}
 	else
-		elementClass = NSClassFromString([elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_"]);
+		elementClass = NSClassFromString([instanceType stringByReplacingOccurrencesOfString:@":" withString:@"_"]);
 
-	xmlFree(instanceType);
 	return elementClass;
+}
+
+static NSString *NSStringFromNodeList(xmlNodePtr node) {
+	return xmlStringToNSString(xmlNodeListGetString(node->doc, node->children, 1));
+}
+
+static xmlNodePtr makeXmlNode(xmlDocPtr doc, NSString *elName, NSString* elNSPrefix, NSString *content) {
+	NSString *nodeName = elName;
+	if ([elNSPrefix length])
+		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
+
+	return xmlNewDocNode(doc, NULL, [nodeName xmlString], [content xmlString]);
 }
