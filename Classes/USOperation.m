@@ -104,7 +104,7 @@
 	}
 	
 	for(USElement *element in self.input.headers) {
-		[invokeString appendFormat:@"%@:(%@)a%@ ", (firstArgument ? [element uname] : element.name), [element.type classNameWithPtr], [element uname]];
+		[invokeString appendFormat:@"%@:(%@)a%@Header ", (firstArgument ? [element uname] : element.name), [element.type classNameWithPtr], [element uname]];
 		firstArgument = NO;
 	}
 	

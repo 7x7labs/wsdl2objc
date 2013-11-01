@@ -79,9 +79,9 @@
 %ENDFOR
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain strong
-@property(nonatomic, strong) %«header.type.classNameWithPtr» %«header.name»;
+@property(nonatomic, strong) %«header.type.classNameWithPtr» %«header.name»Header;
 %ELSE
-@property(nonatomic) %«header.type.classNameWithPtr» %«header.name»;
+@property(nonatomic) %«header.type.classNameWithPtr» %«header.name»Header;
 %ENDIF
 %ENDFOR
 

@@ -72,7 +72,7 @@
 																							%«part.name»:a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
-																							%«header.name»:a%«header.uname»
+																							%«header.name»:a%«header.uname»Header
 %ENDFOR
 																							];
 
@@ -86,7 +86,7 @@
 																							 %«part.name»:a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
-																							 %«header.name»:a%«header.uname»
+																							 %«header.name»:a%«header.uname»Header
 %ENDFOR
 																							 ];
 	[self performAsynchronousOperation: op];
@@ -246,7 +246,7 @@
 %«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
-%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»
+%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»Header
 %ENDFOR
 {
 	if((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
@@ -254,7 +254,7 @@
 		self.%«part.name» = a%«part.uname»;
 %ENDFOR
 %FOREACH header in operation.input.headers
-		self.%«header.name» = a%«header.uname»;
+		self.%«header.name»Header = a%«header.uname»Header;
 %ENDFOR
 	}
 
@@ -271,39 +271,39 @@
 	NSMutableDictionary *headerElements = [NSMutableDictionary dictionary];
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain strong
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = %«header.name»;
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = self.%«header.name»Header;
 %ELSIFEQ header.type.typeName boolean
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = [[USBoolean alloc] initWithBool:*%«header.name»];
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = [[USBoolean alloc] initWithBool:*%«header.name»Header];
 %ELSIFEQ header.type.typeName byte
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName int
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName integer
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName nonNegativeInteger
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName positiveInteger
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedByte
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedInt
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName long
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedLong
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName short
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedShort
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName double
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName float
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFEQ header.type.typeName decimal
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = @(*%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
 %ELSIFNEQ header.type.enumCount 0
-	if(%«header.name») headerElements[@"%«header.wsdlName»"] = %«header.type.className»_stringFromEnum(%«header.name»);
+	if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = %«header.type.className»_stringFromEnum(self.%«header.name»Header);
 %ENDIF
 %ENDFOR
 %ENDIF
