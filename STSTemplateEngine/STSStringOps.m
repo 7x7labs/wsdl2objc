@@ -938,3 +938,10 @@
 } // end method
 
 @end // STSAdditionsToNSString
+
+@implementation NSNumber (STSAdditionsToNSNumber)
+- (BOOL)representsTrue
+{
+    return [self boolValue];
+}
+@end

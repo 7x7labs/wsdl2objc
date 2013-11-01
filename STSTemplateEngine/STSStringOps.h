@@ -298,3 +298,7 @@
 - (NSArray *)arrayBySeparatingLinesUsingEOLmarkers;
 
 @end // STSAdditionsToNSString
+
+@interface NSNumber (STSAdditionsToNSNumber)
+- (BOOL)representsTrue;
+@end

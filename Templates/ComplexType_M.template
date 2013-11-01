@@ -215,10 +215,9 @@
 	xmlChar	*attrValue = NULL;
 
 %FOREACH attribute in attributes
-	attrValue = xmlGetProp(cur, (const xmlChar *) "%«attribute.wsdlName»");
-	if(attrValue != NULL){
+	attrValue = xmlGetProp(cur, (const xmlChar *)"%«attribute.wsdlName»");
+	if (attrValue) {
 		NSString	*attrString = [NSString stringWithCString:(char *)attrValue encoding:NSUTF8StringEncoding];
-
 %IFEQ attribute.type.typeName boolean
 		self.%«attribute.name» = [[USBoolean alloc] initWithBool:[attrString boolValue]];
 %ELSIFEQ attribute.type.typeName byte
@@ -285,6 +284,8 @@
 		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
+%ELSIF attribute.type.isSimpleType
+		self.%«attribute.name» = attrString;
 %ELSE
 #warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName»
 %ENDIF
