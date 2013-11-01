@@ -259,13 +259,17 @@
 
 - (BOOL)shouldNotWrite
 {
-	if([self.types count] == 0 &&
-	   [self.elements count] == 0 &&
-	   [self.imports count] == 0 &&
-	   [self.bindings count] == 0 &&
-	   [self.services count] == 0) return YES;
-	
-	return NO;
+    if ([self.elements count] ||
+        [self.imports count] ||
+        [self.bindings count] ||
+        [self.services count]) return NO;
+
+    for (USType *type in self.types) {
+        if (type.isComplexType) return NO;
+        if (![type.className isEqualToString:type.representationClass]) return NO;
+    }
+
+    return YES;
 }
 
 - (NSString *)shouldNotWriteString

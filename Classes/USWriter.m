@@ -65,9 +65,9 @@
 
 - (void) dealloc
 {
-    [wsdl release];
-    [outDir release];
-    [super dealloc];
+	[wsdl release];
+	[outDir release];
+	[super dealloc];
 }
 
 - (BOOL)write;
@@ -338,14 +338,14 @@
 - (void)writeResourceName:(NSString *)resourceName resourceType:(NSString *)resourceType toFilename:(NSString *)fileName
 {
 	NSString *resourceContents;
-    
-    if([resourceType isEqualToString:@"template"]){
-        resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForTemplateNamed:resourceName] usedEncoding:nil error:nil];
-    }
-    else{
-        resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType] usedEncoding:nil error:nil];
-    }
-	
+
+	if([resourceType isEqualToString:@"template"]){
+		resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForTemplateNamed:resourceName] usedEncoding:nil error:nil];
+	}
+	else{
+		resourceContents = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:resourceName ofType:resourceType] usedEncoding:nil error:nil];
+	}
+
 	[resourceContents writeToURL:[NSURL URLWithString:fileName relativeToURL:outDir]
 					  atomically:NO
 						encoding:NSUTF8StringEncoding
