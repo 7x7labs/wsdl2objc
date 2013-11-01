@@ -81,7 +81,7 @@
 
 - (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id <%«className»ResponseDelegate>)responseDelegate
 {
-    %«className»_%«operation.className»  *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
+	%«className»_%«operation.className»  *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
 %FOREACH part in operation.input.body.parts
 																							 %«part.name»:a%«part.uname»
 %ENDFOR
@@ -96,11 +96,11 @@
 
 - (void)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation
 {
-    if (!outputBody) {
-        NSError	*err = [NSError errorWithDomain:@"%«className»NULLRequestException" code:0 userInfo:nil];
-        [operation connection:nil didFailWithError:err];
-        return;
-    }
+	if (!outputBody) {
+		NSError	*err = [NSError errorWithDomain:@"%«className»NULLRequestException" code:0 userInfo:nil];
+		[operation connection:nil didFailWithError:err];
+		return;
+	}
 
 	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.address 
 																												 cachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData
@@ -152,11 +152,11 @@
 
 - (void)cancel
 {
-    NSError *cancelError = [NSError errorWithDomain:(__bridge NSString *)kCFErrorDomainCFNetwork code:kCFURLErrorCancelled userInfo:nil];
-    
-    [self.urlConnection cancel];
-    [super cancel];
-    [self connection:self.urlConnection didFailWithError:cancelError];
+	NSError *cancelError = [NSError errorWithDomain:(__bridge NSString *)kCFErrorDomainCFNetwork code:kCFURLErrorCancelled userInfo:nil];
+
+	[self.urlConnection cancel];
+	[super cancel];
+	[self connection:self.urlConnection didFailWithError:cancelError];
 }
 
 - (void)completedWithResponse:(%«className»Response *)aResponse
@@ -166,7 +166,7 @@
 
 - (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
 {
-    return [self.binding.sslManager canAuthenticateForAuthenticationMethod:protectionSpace.authenticationMethod];
+	return [self.binding.sslManager canAuthenticateForAuthenticationMethod:protectionSpace.authenticationMethod];
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
@@ -436,8 +436,8 @@ done:
 + (%«className»_envelope *)sharedInstance
 {
 	static %«className»_envelope *instance;
-	if (!instance)
-		instance = [self new];
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{ instance = [self new]; });
 
 	return instance;
 }
