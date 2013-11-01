@@ -3,9 +3,8 @@
 %«className» %«className»_enumFromString(NSString *string)
 {
 %FOREACH value in enumerationValues
-	if([string isEqualToString:@"%«value»"]) {
+	if ([string isEqualToString:@"%«value»"])
 		return %«className»_%«value»;
-	}
 %ENDFOR
 
 	return %«className»_none;

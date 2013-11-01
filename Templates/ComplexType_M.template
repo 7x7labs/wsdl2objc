@@ -309,79 +309,50 @@
 			xmlChar		*elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
 			NSString	*elementString = nil;
 
-			if(elementText != NULL) {
+			if (elementText) {
 				elementString = [NSString stringWithCString:(char *)elementText encoding:NSUTF8StringEncoding];
-				[elementString self]; // avoid compiler warning for unused var
+				(void)elementString; // avoid compiler warning for unused var
 				xmlFree(elementText);
 			}
+
 %FOREACH element in sequenceElements
-			if(xmlStrEqual(cur->name, (const xmlChar *) "%«element.wsdlName»")){
+			if (xmlStrEqual(cur->name, (const xmlChar *)"%«element.wsdlName»")) {
 %IFEQ element.type.assignOrRetain strong
-			Class	elementClass = nil;
-			xmlChar	*instanceType = xmlGetNsProp(cur, (const xmlChar *) "type", (const xmlChar *) "http://www.w3.org/2001/XMLSchema-instance");
-
-			if(instanceType == NULL){
-				elementClass = [%«element.type.classNameWithoutPtr» class];
-			}
-			else{
-				NSString	*elementTypeString = [NSString stringWithCString:(char *)instanceType encoding:NSUTF8StringEncoding];
-				NSArray		*elementTypeArray = [elementTypeString componentsSeparatedByString:@":"];
-				NSString	*elementClassString = nil;
-
-				if([elementTypeArray count] > 1){
-					NSString	*prefix = elementTypeArray[0];
-					NSString	*localName = elementTypeArray[1];
-					xmlNsPtr	elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
-					NSString	*standardPrefix = [USGlobals sharedInstance].wsdlStandardNamespaces[[NSString stringWithCString:(char *)elementNamespace->href encoding:NSUTF8StringEncoding]];
-
-					elementClassString = [NSString stringWithFormat:@"%@_%@", standardPrefix, localName];
-				}
-				else{
-					elementClassString = [elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_"];
-				}
-
-				elementClass = NSClassFromString(elementClassString);
-				xmlFree(instanceType);
-			}
-
-			id newChild = [elementClass deserializeNode:cur];
-
+				Class elementClass = classForElement(cur) ?: [%«element.type.classNameWithoutPtr» class];
+				id newChild = [elementClass deserializeNode:cur];
 %IF element.useAnArray
-			if (newChild)
-				[self.%«element.name» addObject:newChild];
+				if (newChild)
+					[self.%«element.name» addObject:newChild];
 %ELSE
-			self.%«element.name» = newChild;
+				self.%«element.name» = newChild;
 %ENDIF
-
 %ELSIFEQ element.type.typeName boolean
 
-			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-			*self.%«element.name» = [elementString boolValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = [elementString boolValue];
 %ELSIFEQ element.type.typeName long
 
-			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-			*self.%«element.name» = (long)[elementString longLongValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = (long)[elementString longLongValue];
 %ELSIFEQ element.type.typeName short
 
-			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-			*self.%«element.name» = (short)[elementString longLongValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = (short)[elementString longLongValue];
 %ELSIFEQ element.type.typeName int
 
-			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-			*self.%«element.name» = [elementString intValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = [elementString intValue];
 %ELSIFEQ element.type.typeName double
 
-			self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
-			*self.%«element.name» = [elementString doubleValue];
+				self.%«element.name» = malloc(sizeof(%«element.type.classNameWithoutPtr»));
+				*self.%«element.name» = [elementString doubleValue];
 %ELSIFNEQ element.type.enumCount 0
-			%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(elementString);
+				%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(elementString);
 %IF element.useAnArray
-			NSNumber	*intRepresentation = [NSNumber numberWithInt:(int)enumRepresentation];
-
-			[self.%«element.name» addObject:intRepresentation];
+				[self.%«element.name» addObject:@((int)enumRepresentation)];
 %ELSE
 
-			self.%«element.name» = enumRepresentation;
+				self.%«element.name» = enumRepresentation;
 %ENDIF
 
 %ELSE

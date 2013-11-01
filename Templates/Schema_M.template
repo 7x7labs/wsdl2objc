@@ -39,3 +39,26 @@ static void encode_object(id obj, NSCoder *encoder) {
 		free(ivars);
 	}
 }
+
+static Class classForElement(xmlNodePtr cur) {
+	xmlChar	*instanceType = xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance");
+	if (!instanceType) return nil;
+
+	NSString *elementTypeString = [NSString stringWithCString:(char *)instanceType encoding:NSUTF8StringEncoding];
+	NSArray *elementTypeArray = [elementTypeString componentsSeparatedByString:@":"];
+
+	Class elementClass;
+	if ([elementTypeArray count] > 1) {
+		NSString *prefix = elementTypeArray[0];
+		NSString *localName = elementTypeArray[1];
+		xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
+		NSString *standardPrefix = USGlobals.sharedInstance.wsdlStandardNamespaces[[NSString stringWithCString:(char *)elementNamespace->href encoding:NSUTF8StringEncoding]];
+
+		elementClass = NSClassFromString([NSString stringWithFormat:@"%@_%@", standardPrefix, localName]);
+	}
+	else
+		elementClass = NSClassFromString([elementTypeString stringByReplacingOccurrencesOfString:@":" withString:@"_"]);
+
+	xmlFree(instanceType);
+	return elementClass;
+}

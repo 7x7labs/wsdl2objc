@@ -206,11 +206,11 @@
 	NSError *error = nil;
 	[connection cancel];
 	if ([httpResponse statusCode] >= 400) {
-		NSDictionary *userInfo =  @{NSURLErrorKey: httpResponse.URL,
+		NSDictionary *userInfo =  @{NSURLErrorKey: httpResponse.URL ?: @"",
 									NSLocalizedDescriptionKey: [NSHTTPURLResponse localizedStringForStatusCode:[httpResponse statusCode]]};
 		error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:[httpResponse statusCode] userInfo:userInfo];
 	} else {
-		NSDictionary *userInfo =  @{NSURLErrorKey: httpResponse.URL,
+		NSDictionary *userInfo =  @{NSURLErrorKey: httpResponse.URL ?: @"",
 									NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Unexpected response MIME type to SOAP call:%@", urlResponse.MIMEType]};
 		error = [NSError errorWithDomain:@"%«className»ResponseHTTP" code:1 userInfo:userInfo];
 	}
