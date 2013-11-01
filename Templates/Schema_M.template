@@ -1,5 +1,8 @@
 #import "%«prefix».h"
 
+#import "NSDate+ISO8601Parsing.h"
+#import "NSDate+ISO8601Unparsing.h"
+
 #import <libxml/xmlstring.h>
 #if TARGET_OS_IPHONE
 #import <CFNetwork/CFNetwork.h>
