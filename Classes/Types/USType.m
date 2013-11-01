@@ -29,13 +29,6 @@
 
 @implementation USType
 
-#pragma mark Global type methods
-@synthesize typeName;
-@synthesize schema;
-@synthesize behavior;
-@synthesize hasBeenParsed;
-@synthesize hasBeenWritten;
-
 - (id)init
 {
 	if((self = [super init]))
@@ -58,43 +51,35 @@
 
 - (void) dealloc
 {
-    [typeName release];
-    [representationClass release];
-    [enumerationValues release];
-    [superClass release];
-    [sequenceElements release];
-    [attributes release];
-    [super dealloc];
+	[_typeName release];
+	[_representationClass release];
+	[_enumerationValues release];
+	[_superClass release];
+	[_sequenceElements release];
+	[_attributes release];
+	[super dealloc];
 }
 
 - (BOOL)isSimpleType
 {
-	return (self.behavior == TypeBehavior_simple);
+	return self.behavior == TypeBehavior_simple;
 }
 
 - (BOOL)isComplexType
 {
-	return (self.behavior == TypeBehavior_complex);
-}
-
-- (NSString *)isSimpleTypeString
-{
-	return [self isSimpleType] ? @"true" : @"false";
-}
-
-- (NSString *)isComplexTypeString
-{
-	return [self isComplexType] ? @"true" : @"false";
+	return self.behavior == TypeBehavior_complex;
 }
 
 - (NSString *)className
 {
-	
-	if([schema prefix] != nil) {
-		if(self.behavior == TypeBehavior_simple && [self.representationClass length] > 0 && [self.enumerationValues count] == 0) {
+	if([self.schema prefix]) {
+		if (self.isSimpleType && [self.representationClass length] && [self.enumerationValues count] == 0) {
 			return self.representationClass;
 		}
-		return [NSString stringWithFormat:@"%@_%@", [schema prefix], [[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""]];
+		return [NSString stringWithFormat:@"%@_%@",
+				[self.schema prefix],
+				[[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet]
+				 componentsJoinedByString:@""]];
 	}
 	
 	return [[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
@@ -102,12 +87,11 @@
 
 - (NSString *)classNameWithPtr
 {
-	if([self isSimpleType]) {
+	if (self.isSimpleType)
 		return [self className];
-	} else if([self isComplexType]) {
+	if (self.isComplexType)
 		return [NSString stringWithFormat:@"%@ *", [self className]];
-	}
-	
+
 	return self.typeName;
 }
 
@@ -118,8 +102,8 @@
 
 - (NSString *)assignOrRetain
 {
-	if(self.behavior == TypeBehavior_simple) {
-		if([[self classNameWithPtr] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound) {
+	if (self.isSimpleType) {
+		if ([[self className] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound) {
 			return @"weak";
 		}
 	}
@@ -137,11 +121,8 @@
 	switch (self.behavior) {
 		case TypeBehavior_simple:
 			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_H"];
-			break;
 		case TypeBehavior_complex:
 			return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_H"];
-			break;
-			
 		default:
 			return nil;
 	}
@@ -152,12 +133,8 @@
 	switch (self.behavior) {
 		case TypeBehavior_simple:
 			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_M"];
-			break;
-			
 		case TypeBehavior_complex:
 			return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_M"];
-			break;
-			
 		default:
 			return nil;
 	}
@@ -166,59 +143,44 @@
 - (NSDictionary *)templateKeyDictionary
 {
 	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
-	[returning setObject:[self className] forKey:@"className"];
-	[returning setObject:schema forKey:@"schema"];
-	[returning setObject:typeName forKey:@"typeName"];
-	[returning setObject:[self classNameWithPtr] forKey:@"classNameWithPtr"];
-	[returning setObject:[self classNameWithoutPtr] forKey:@"classNameWithoutPtr"];
-	BOOL needsSuperElements = NO;
-	
+	returning[@"className"] = [self className];
+	returning[@"schema"] = self.schema;
+	returning[@"typeName"] = self.typeName;
+	returning[@"classNameWithPtr"] = [self classNameWithPtr];
+	returning[@"classNameWithoutPtr"] = [self classNameWithoutPtr];
+
 	switch (self.behavior) {
 		case TypeBehavior_simple:
-			
-			if(representationClass != nil) [returning setObject:self.representationClass forKey:@"representationClass"];
-			[returning setObject:self.enumerationValues forKey:@"enumerationValues"];
-			[returning setObject:[self enumCount] forKey:@"enumCount"];			
-			
+			if (self.representationClass) returning[@"representationClass"] = self.representationClass;
+			returning[@"enumerationValues"] = self.enumerationValues;
+			returning[@"enumCount"] = [self enumCount];
 			break;
-			
-		case TypeBehavior_complex:
-			if(superClass != nil) {
-				[returning setObject:superClass forKey:@"superClass"];
-				[returning setObject:([superClass isComplexType] ? @"true" : @"false") forKey:@"superClassIsComplex"];
-				USType *tempParent = superClass;
-				while (tempParent != nil) {
+
+		case TypeBehavior_complex: {
+			BOOL needsSuperElements = NO;
+			if (self.superClass) {
+				returning[@"superClass"] = self.superClass;
+				returning[@"superClassIsComplex"] = @([self.superClass isComplexType]);
+				for (USType *tempParent = self.superClass; tempParent; tempParent = tempParent.superClass) {
 					if ([tempParent.sequenceElements count] > 0) {
 						needsSuperElements = YES;
+						break;
 					}
-					tempParent = tempParent.superClass;
 				}
 			}
-			[returning setObject:sequenceElements forKey:@"sequenceElements"];
-			[returning setObject:(([sequenceElements count] > 0 || needsSuperElements) ? @"true" : @"false") forKey:@"hasSequenceElements"];
-			[returning setObject:attributes forKey:@"attributes"];
-			[returning setObject:([attributes count] > 0 ? @"true" : @"false") forKey:@"hasAttributes"];
-			[returning setObject:([schema.fullName isEqualToString:schema.wsdl.targetNamespace.fullName] ? @"true" : @"false")
-						  forKey:@"isInTargetNamespace"];			
+			returning[@"sequenceElements"] = self.sequenceElements;
+			returning[@"hasSequenceElements"] = @([self.sequenceElements count] > 0 || needsSuperElements);
+			returning[@"attributes"] = self.attributes;
+			returning[@"hasAttributes"] = @([self.attributes count] > 0);
+			returning[@"isInTargetNamespace"] = @([self.schema.fullName isEqualToString:self.schema.wsdl.targetNamespace.fullName]);
 			break;
-			
+
 		default:
 			break;
+		}
 	}
-	
+
 	return returning;
 }
-
-
-
-#pragma mark Simple type methods
-@synthesize representationClass;
-@synthesize enumerationValues;
-
-
-#pragma mark Complex type methods
-@synthesize superClass;
-@synthesize sequenceElements;
-@synthesize attributes;
 
 @end

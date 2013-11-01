@@ -31,35 +31,10 @@ typedef enum {
 	TypeBehavior_complex
 } TypeBehavior;
 
-@interface USType : NSObject {
-	
-	
-#pragma mark Global type fields
-	NSString *typeName;
-	USSchema *schema;
-	TypeBehavior behavior;
-	BOOL hasBeenParsed;
-	BOOL hasBeenWritten;
-	
-	
-	
-#pragma mark Simple type fields
-	NSString *representationClass;
-	NSMutableArray *enumerationValues;
-	
-	
-	
-#pragma mark Complex type fields
-	USType *superClass;
-	NSMutableArray *sequenceElements;
-	NSMutableArray *attributes;
-}
-
+@interface USType : NSObject
 #pragma mark Global type methods
 - (BOOL)isSimpleType;
 - (BOOL)isComplexType;
-- (NSString *)isSimpleTypeString;
-- (NSString *)isComplexTypeString;
 
 - (NSString *)className;
 - (NSString *)classNameWithPtr;
@@ -76,15 +51,11 @@ typedef enum {
 - (NSString *)templateFileMPath;
 - (NSDictionary *)templateKeyDictionary;
 
-
-
 #pragma mark Simple type methods
 @property (nonatomic, copy) NSString *representationClass;
 @property (nonatomic, retain) NSMutableArray *enumerationValues;
 
 - (NSString *)enumCount;
-
-
 
 #pragma mark Complex type methods
 @property (nonatomic, retain) USType *superClass;
@@ -92,7 +63,3 @@ typedef enum {
 @property (nonatomic, retain) NSMutableArray *attributes;
 
 @end
-
-
-
-
