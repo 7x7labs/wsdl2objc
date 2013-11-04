@@ -67,11 +67,17 @@
 {
 	xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
 	if (elementText) {
-		NSString *elementString = [NSString stringWithCString:(char*)elementText encoding:NSUTF8StringEncoding];
-		xmlFree(elementText);
+		NSString *elementString = [NSString stringWithXmlString:elementText free:YES];
         return [elementString stringByUnescapingXML];
 	}
     return @"";
+}
+
++ (NSString *)stringWithXmlString:(xmlChar *)str free:(BOOL)freeOriginal {
+	NSString *string = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
+	if (freeOriginal)
+		xmlFree(str);
+	return string;
 }
 
 @end
@@ -260,6 +266,15 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 @end
 
+@implementation NSArray (USAdditions)
+- (void)addToNode:(xmlNodePtr)node elementName:(NSString *)name elementNSPrefix:(NSString *)nsPrefix
+{
+    for (id child in self) {
+        xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:name elementNSPrefix:nsPrefix]);
+    }
+}
+@end
+
 @interface USBoolean ()
 @property (nonatomic) BOOL value;
 @end
@@ -338,7 +353,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 + (SOAPFault *)deserializeNode:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions
 {
 	SOAPFault *soapFault = [SOAPFault new];
-	NSString *ns = [NSString stringWithCString:(char*)cur->ns->href encoding:NSUTF8StringEncoding];
+	NSString *ns = [NSString stringWithXmlString:(xmlChar *)cur->ns->href free:NO];
 	if (! ns) return soapFault;
 	if ([ns isEqualToString:@"http://schemas.xmlsoap.org/soap/envelope/"]) {
 		// soap 1.1
@@ -374,11 +389,8 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 				}
 				if (xmlStrEqual(cur->name, (const xmlChar *)"Reason")) {
 					xmlChar	*theReason = xmlNodeGetContent(cur);
-
-					if (theReason != NULL) {
-						soapFault.faultstring = [NSString stringWithCString:(char*)theReason encoding:NSUTF8StringEncoding];
-						xmlFree(theReason);
-					}
+					if (theReason)
+						soapFault.faultstring = [NSString stringWithXmlString:theReason free:YES];
 				}
 				if (xmlStrEqual(cur->name, (const xmlChar *)"Node")) {
 					soapFault.faultactor = [NSString deserializeNode:cur];
@@ -639,9 +651,8 @@ static xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* 
     xmlXPathFreeObject(xpathObj);
 
     xmlC14NDocDumpMemory(doc, NULL, 1, NULL, 1, &canonicalized);
-    NSString *serializedForm = [NSString stringWithCString:(const char*)canonicalized encoding:NSUTF8StringEncoding];
+    NSString *serializedForm = [NSString stringWithXmlString:canonicalized free:YES];
 
-    xmlFree(canonicalized);
     xmlFreeDoc(doc);
 
     return serializedForm;

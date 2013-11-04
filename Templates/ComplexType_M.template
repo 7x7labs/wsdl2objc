@@ -1,11 +1,10 @@
-@implementation %«className»
-
 %IFEQ superClass.className "NSString *"
 %IFDEF attributes
 %DEFINE IsAttributedString 1
 %ENDIF
 %ENDIF
 
+@implementation %«className»
 %IF hasArraySequenceElements
 - (id)init
 {
@@ -19,8 +18,8 @@
 
 	return self;
 }
-%ENDIF
 
+%ENDIF
 - (NSString *)nsPrefix
 {
 	return @"%«schema.prefix»";
@@ -29,9 +28,9 @@
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
 {
 %IFDEF IsAttributedString
-	xmlNodePtr node = makeXmlNode(doc, elName, elNSPrefix, self._content);
+	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:elNSPrefix];
 %ELSE
-	xmlNodePtr node = makeXmlNode(doc, elName, elNSPrefix, nil);
+	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:elNSPrefix];
 %ENDIF
 %IFDEF superClass
 
@@ -98,15 +97,19 @@
 
 %ENDIF
 %FOREACH element in sequenceElements
+%IF element.useAnArray
+%IFEQ element.type.enumCount 0
+	[self.%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]];
+%ELSE
+	for (NSNumber *intRepresentation in self.%«element.name») {
+		%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
+		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);
+	}
+%ENDIF
+%ELSE
 	if (self.%«element.name») {
 %IFEQ element.type.assignOrRetain strong
-%IF element.useAnArray
-		for (%«element.type.classNameWithPtr» child in self.%«element.name») {
-			xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
-		}
-%ELSE
 		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
-%ENDIF
 %ELSIFEQ element.type.typeName boolean
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar *)"true" : (const xmlChar *)"false"));
 %ELSIFEQ element.type.typeName long
@@ -126,18 +129,10 @@
 		sprintf(buf, "%f", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
-
-%IF element.useAnArray
-		for (NSNumber *intRepresentation in self.%«element.name») {
-			%«element.type.className»	enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
-
-			xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);
-		}
-%ELSE
 		xmlNewChild(node, NULL, (const xmlChar *)[[[self nsPrefix] stringByAppendingString:@":%«element.wsdlName»"] UTF8String], [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
 %ENDIF
-%ENDIF
 	}
+%ENDIF
 %ENDFOR
 }
 %ENDIF
@@ -185,7 +180,7 @@
 	
 %IFDEF IsAttributedString
 	// Set the string content
-	newObject._content = xmlStringToNSString(xmlNodeGetContent(cur));
+	newObject._content = [NSString stringWithXmlString:xmlNodeGetContent(cur) free:YES];
 %ENDIF
 
 %IF hasAttributes
@@ -212,7 +207,7 @@
 	NSString *attrString;
 
 %FOREACH attribute in attributes
-	attrString = xmlStringToNSString(xmlGetProp(cur, (const xmlChar *)"%«attribute.wsdlName»"));
+	attrString = [NSString stringWithXmlString:xmlGetProp(cur, (const xmlChar *)"%«attribute.wsdlName»") free:YES];
 	if (attrString) {
 %IFEQ attribute.type.typeName boolean
 		self.%«attribute.name» = [[USBoolean alloc] initWithBool:[attrString boolValue]];

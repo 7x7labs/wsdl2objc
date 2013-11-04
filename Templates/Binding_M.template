@@ -349,10 +349,21 @@
 %ENDFOR
 %ENDIF
 
-	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements bodyKeys:[bodyElements allKeys]];
+	NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
 	operationXMLString = self.binding.soapSigner ? [self.binding.soapSigner signRequest:operationXMLString] : operationXMLString;
 	
-	[self.binding sendHTTPCallUsingBody:operationXMLString soapAction:@"%«operation.soapAction»" forOperation:self];
+    [self.binding sendHTTPCallUsingBody:operationXMLString
+                             soapAction:@"%«operation.soapAction»"
+                           forOperation:self];
+}
+
+- (void)processResponseNode:(xmlNodePtr)node classes:(NSDictionary *)classes result:(NSMutableArray *)result
+{
+	if (node->type != XML_ELEMENT_NODE) return;
+	NSString *name = [NSString stringWithXmlString:(xmlChar *)node->name free:NO];
+	id object = [classes[name] deserializeNode:node];
+	if (object)
+		[result addObject:object];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -367,7 +378,6 @@
 	if (doc == NULL) {
 		NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Errors while parsing returned XML"};
 		self.response.error = [NSError errorWithDomain:@"%«className»ResponseXML" code:1 userInfo:userInfo];
-		[self completedWithResponse:self.response];
 		goto done;
 	}
 
@@ -376,18 +386,15 @@
 %IF operation.output.hasHeaders
 
 		if (xmlStrEqual(cur->name, (const xmlChar *) "Header")) {
-			NSMutableArray	*responseHeaders = [NSMutableArray array];
-
-			for (xmlNodePtr headerNode = cur->children; headerNode; headerNode = headerNode->next) {
-				if (cur->type != XML_ELEMENT_NODE) continue;
-				if (false) ;
+			NSMutableArray *responseHeaders = [NSMutableArray array];
+			NSDictionary *headers = @{
 %FOREACH header in operation.output.headers
-				else if (xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.wsdlName»")) {
-					%«header.type.classNameWithoutPtr» *headerObject = [%«header.type.classNameWithoutPtr» deserializeNode:headerNode];
-					if (headerObject != nil) [responseHeaders addObject:headerObject];
-				}
+				@"%«header.wsdlName»": [%«header.type.classNameWithoutPtr» class],
 %ENDFOR
-			}
+			};
+
+			for (xmlNodePtr headerNode = cur->children; headerNode; headerNode = headerNode->next)
+				[self processResponseNode:headerNode classes:headers result:responseHeaders];
 
 			self.response.headers = responseHeaders;
 			continue;
@@ -395,18 +402,18 @@
 %ENDIF
 
 		if (xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
-			NSMutableArray	*responseBodyParts = [NSMutableArray array];
-			for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next) {
-				if (cur->type != XML_ELEMENT_NODE) continue;
-				if (false) ;
+			NSMutableArray *responseBodyParts = [NSMutableArray array];
+			NSDictionary *bodyParts = @{
 %FOREACH part in operation.output.body.parts
-				else if (xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.wsdlName»")) {
-					%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
-					if (bodyObject) [responseBodyParts addObject:bodyObject];
-				}
+				@"%«part.element.wsdlName»": [%«part.element.type.classNameWithoutPtr» class],
 %ENDFOR
-				if ((bodyNode->ns != nil && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) && 
-					xmlStrEqual(bodyNode->name, (const xmlChar *) "Fault")) {
+			};
+			for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next) {
+				[self processResponseNode:bodyNode classes:bodyParts result:responseBodyParts];
+
+				if (cur->type != XML_ELEMENT_NODE) continue;
+				if ((bodyNode->ns && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) &&
+					xmlStrEqual(bodyNode->name, (const xmlChar *)"Fault")) {
 					NSDictionary *exceptions = @{
 %FOREACH fault in operation.faults
 												@"%«fault.name»": @"%«schema.prefix»_%«fault.name»",
@@ -442,7 +449,7 @@ done:
 	return instance;
 }
 
-- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements bodyKeys:(NSArray *)bodyKeys
+- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements
 {
 	xmlDocPtr doc = xmlNewDoc((const xmlChar *)XML_DEFAULT_VERSION);
 
@@ -486,7 +493,7 @@ done:
 
 		xmlAddChild(root, bodyNode);
 
-		for (NSString *key in bodyKeys) {
+		for (NSString *key in bodyElements) {
 			id body = bodyElements[key];
 			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
@@ -496,8 +503,7 @@ done:
 	int		size;
 	xmlDocDumpFormatMemory(doc, &buf, &size, 1);
 
-	NSString	*serializedForm = [NSString stringWithCString:(const char *)buf encoding:NSUTF8StringEncoding];
-	xmlFree(buf);
+	NSString *serializedForm = [NSString stringWithXmlString:buf free:YES];
 
 	xmlFreeDoc(doc);
 	return serializedForm;

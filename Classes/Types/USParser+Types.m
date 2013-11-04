@@ -273,7 +273,7 @@
 	if (minOccursNode != nil) {
 		seqElement.minOccurs = [[minOccursNode stringValue] intValue];
 	} else {
-		seqElement.minOccurs = 0;
+		seqElement.minOccurs = 1;
 	}
 
 	NSXMLNode *maxOccursNode = [el attributeForName:@"maxOccurs"];
@@ -286,7 +286,7 @@
 			seqElement.maxOccurs = [maxOccursValue intValue];
 		}
 	} else {
-		seqElement.maxOccurs = 0;
+		seqElement.maxOccurs = 1;
 	}
 
 	[type.sequenceElements addObject:seqElement];

@@ -57,7 +57,7 @@
 
 - (NSNumber *)useAnArray
 {
-    return @(self.maxOccurs == 0 || self.maxOccurs == 1);
+    return @(self.maxOccurs != 0 && self.maxOccurs != 1);
 }
 
 @end

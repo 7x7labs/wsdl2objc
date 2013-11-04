@@ -40,15 +40,9 @@ static void encode_object(id obj, NSCoder *encoder) {
 	}
 }
 
-static NSString *xmlStringToNSString(xmlChar *str) {
-	if (!str) return nil;
-	NSString *ret = [NSString stringWithCString:(char *)str encoding:NSUTF8StringEncoding];
-	xmlFree(str);
-	return ret;
-}
-
 static Class classForElement(xmlNodePtr cur) {
-	NSString *instanceType = xmlStringToNSString(xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance"));
+	NSString *instanceType = [NSString stringWithXmlString:xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance")
+													 free:YES];
 	if (!instanceType) return nil;
 
 	NSArray *elementTypeArray = [instanceType componentsSeparatedByString:@":"];
@@ -58,7 +52,7 @@ static Class classForElement(xmlNodePtr cur) {
 		NSString *prefix = elementTypeArray[0];
 		NSString *localName = elementTypeArray[1];
 		xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
-		NSString *standardPrefix = USGlobals.sharedInstance.wsdlStandardNamespaces[[NSString stringWithCString:(char *)elementNamespace->href encoding:NSUTF8StringEncoding]];
+		NSString *standardPrefix = USGlobals.sharedInstance.wsdlStandardNamespaces[[NSString stringWithXmlString:(xmlChar*)elementNamespace->href free:NO]];
 
 		elementClass = NSClassFromString([NSString stringWithFormat:@"%@_%@", standardPrefix, localName]);
 	}
@@ -69,13 +63,5 @@ static Class classForElement(xmlNodePtr cur) {
 }
 
 static NSString *NSStringFromNodeList(xmlNodePtr node) {
-	return xmlStringToNSString(xmlNodeListGetString(node->doc, node->children, 1));
-}
-
-static xmlNodePtr makeXmlNode(xmlDocPtr doc, NSString *elName, NSString* elNSPrefix, NSString *content) {
-	NSString *nodeName = elName;
-	if ([elNSPrefix length])
-		nodeName = [NSString stringWithFormat:@"%@:%@", elNSPrefix, elName];
-
-	return xmlNewDocNode(doc, NULL, [nodeName xmlString], [content xmlString]);
+	return [NSString stringWithXmlString:xmlNodeListGetString(node->doc, node->children, 1) free:YES];
 }

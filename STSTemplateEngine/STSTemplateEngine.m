@@ -1715,7 +1715,8 @@ BOOL classExists (NSString *className) {
 	id currentPlace = dictionary;
 	NSArray *path = [key componentsSeparatedByString:@"."];
 	for (id component in path) {
-		if (currentPlace != nil && [currentPlace respondsToSelector:@selector(valueForKey:)]) currentPlace = [currentPlace valueForKey:component];
+		if ([currentPlace respondsToSelector:@selector(valueForKey:)])
+            currentPlace = [currentPlace valueForKey:component];
 	}
 	return currentPlace;
 }

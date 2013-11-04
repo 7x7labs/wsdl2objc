@@ -19,6 +19,7 @@
 - (const xmlChar *)xmlString;
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
 + (NSString *)deserializeNode:(xmlNodePtr)cur;
++ (NSString *)stringWithXmlString:(xmlChar *)str free:(BOOL)free;
 
 @end
 
@@ -56,6 +57,10 @@
 + (id)dataWithBase64EncodedString:(NSString *)string; // Padding '=' characters are optional. Whitespace is ignored.
 - (NSString *)base64Encoding;
 
+@end
+
+@interface NSArray (USAdditions)
+- (void)addToNode:(xmlNodePtr)node elementName:(NSString *)name elementNSPrefix:(NSString *)nsPrefix;
 @end
 
 @interface USBoolean : NSObject <NSCoding>
