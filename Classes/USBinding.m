@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,47 +29,30 @@
 #import "NSBundle+USAdditions.h"
 
 @implementation USBinding
-
-@synthesize name;
-@synthesize portType;
-@synthesize soapVersion;
-@synthesize schema;
-@dynamic className;
-
 - (id)init
 {
-	if((self = [super init])) {
-		self.name = nil;
-		self.portType = [[USPortType new] autorelease];
+	if ((self = [super init])) {
+		self.portType = [USPortType new];
         self.soapVersion = @"1.1";
-		self.schema = nil;
 	}
-	
-	return self;
-}
 
-- (void) dealloc
-{
-    [name release];
-    [portType release];
-    [soapVersion release];
-    [super dealloc];
+	return self;
 }
 
 - (NSString *)cleanName
 {
 	NSString *result = [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
-	if(![result.lowercaseString hasSuffix:@"binding"])
+	if (![result.lowercaseString hasSuffix:@"binding"])
 		result = [result stringByAppendingString:@"Binding"];
 	return result;
 }
 
 - (NSString *)className
 {
-    NSString    *prefixedName = [NSString stringWithFormat:@"%@_%@", self.schema.wsdl.targetNamespace.prefix, self.name];
+    NSString *prefixedName = [NSString stringWithFormat:@"%@_%@", self.schema.wsdl.targetNamespace.prefix, self.name];
     ;
 	NSString *result = [[prefixedName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
-	if(![result.lowercaseString hasSuffix:@"binding"])
+	if (![result.lowercaseString hasSuffix:@"binding"])
 		result = [result stringByAppendingString:@"Binding"];
 	return result;
 }
@@ -91,16 +74,12 @@
 
 - (NSDictionary *)templateKeyDictionary
 {
-	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
-	
-	[returning setObject:self.name forKey:@"name"];
-	[returning setObject:self.className forKey:@"className"];
-	[returning setObject:self.portType forKey:@"portType"];
-	[returning setObject:self.soapVersion forKey:@"soapVersion"];
-	[returning setObject:[self operations] forKey:@"operations"];
-	[returning setObject:self.schema forKey:@"schema"];
-	
-	return returning;
+    return @{@"name": self.name,
+             @"className": self.className,
+             @"portType": self.portType,
+             @"soapVersion": self.soapVersion,
+             @"operations": [self operations],
+             @"schema": self.schema};
 }
 
 @end

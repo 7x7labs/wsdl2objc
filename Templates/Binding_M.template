@@ -7,7 +7,7 @@
 
 - (id)init
 {
-	if((self = [super init])) {
+	if ((self = [super init])) {
 		_customHeaders = [NSMutableDictionary new];
 		_timeout = [[self class] defaultTimeout];
 	}
@@ -17,7 +17,7 @@
 
 - (id)initWithAddress:(NSString *)anAddress
 {
-	if((self = [self init])) {
+	if ((self = [self init])) {
 		self.address = [NSURL URLWithString:anAddress];
 	}
 
@@ -120,7 +120,7 @@
 	// set version 1.1 - how?
 	[request setHTTPBody: bodyData];
 
-	if(self.logXMLInOut) {
+	if (self.logXMLInOut) {
 		NSLog(@"OutputHeaders:\n%@", [request allHTTPHeaderFields]);
 		NSLog(@"OutputBody:\n%@", outputBody);
 	}
@@ -186,7 +186,7 @@
 		httpResponse = nil;
 	}
 
-	if(self.binding.logXMLInOut) {
+	if (self.binding.logXMLInOut) {
 		NSLog(@"ResponseStatus: %ld\n", (long)[httpResponse statusCode]);
 		NSLog(@"ResponseHeaders:\n%@", [httpResponse allHeaderFields]);
 	}
@@ -249,7 +249,7 @@
 %«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»Header
 %ENDFOR
 {
-	if((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
+	if ((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
 %FOREACH part in operation.input.body.parts
 		self.%«part.name» = a%«part.uname»;
 %ENDFOR
@@ -364,7 +364,7 @@
 	}
 
 	xmlDocPtr doc = xmlReadMemory([self.responseData bytes], (int)[self.responseData length], NULL, NULL, XML_PARSE_COMPACT | XML_PARSE_NOBLANKS);
-	if(doc == NULL) {
+	if (doc == NULL) {
 		NSDictionary *userInfo = @{NSLocalizedDescriptionKey: @"Errors while parsing returned XML"};
 		self.response.error = [NSError errorWithDomain:@"%«className»ResponseXML" code:1 userInfo:userInfo];
 		[self completedWithResponse:self.response];
@@ -379,7 +379,7 @@
 			NSMutableArray	*responseHeaders = [NSMutableArray array];
 
 			for (xmlNodePtr headerNode = cur->children; headerNode; headerNode = headerNode->next) {
-				if(cur->type != XML_ELEMENT_NODE) continue;
+				if (cur->type != XML_ELEMENT_NODE) continue;
 				if (false) ;
 %FOREACH header in operation.output.headers
 				else if (xmlStrEqual(headerNode->name, (const xmlChar *) "%«header.wsdlName»")) {
@@ -396,11 +396,11 @@
 
 		if (xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
 			NSMutableArray	*responseBodyParts = [NSMutableArray array];
-			for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next){
-				if(cur->type != XML_ELEMENT_NODE) continue;
+			for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next) {
+				if (cur->type != XML_ELEMENT_NODE) continue;
 				if (false) ;
 %FOREACH part in operation.output.body.parts
-				else if(xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.wsdlName»")){
+				else if (xmlStrEqual(bodyNode->name, (const xmlChar *) "%«part.element.wsdlName»")) {
 					%«part.element.type.classNameWithoutPtr» *bodyObject = [%«part.element.type.classNameWithoutPtr» deserializeNode:bodyNode];
 					if (bodyObject) [responseBodyParts addObject:bodyObject];
 				}
@@ -446,7 +446,7 @@ done:
 {
 	xmlDocPtr doc = xmlNewDoc((const xmlChar *)XML_DEFAULT_VERSION);
 
-	if(doc == NULL){
+	if (doc == NULL) {
 		NSLog(@"Error creating the xml document tree");
 		return @"";
 	}

@@ -81,159 +81,6 @@
 } // end method
 
 // ---------------------------------------------------------------------------
-//	Instance Method:  representsTrue
-// ---------------------------------------------------------------------------
-//
-// returns YES if the receiver represents logical true, otherwise returns NO.
-// the receiver represents logical true if its all lowercase representation
-// is equal to "1", "yes" or "true". returns NO if the receiver is nil.
-
-- (BOOL)representsTrue
-{
-	NSString *lowercaseSelf;
-	
-	if (self == nil) {
-		return NO;
-	} // end if
-	lowercaseSelf = [self lowercaseString];
-	return (([lowercaseSelf isEqualToString:@"1"]) ||
-			([lowercaseSelf isEqualToString:@"yes"]) ||
-			([lowercaseSelf isEqualToString:@"true"]));
-} // end method
-
-// ---------------------------------------------------------------------------
-//	Instance Method:  rangeOfWhitespace
-// ---------------------------------------------------------------------------
-//
-// convenience method invoking characterSetWithCharactersInString: using only
-// the whitespace character in the character set.
-
-- (NSRange)rangeOfWhitespace
-{
-	return [self rangeOfCharacterFromSet:
-		[NSCharacterSet characterSetWithCharactersInString:kWhitespace]];
-} // end method
-
-// ---------------------------------------------------------------------------
-//	Instance Method:  stringByTrimmingWhitespace
-// ---------------------------------------------------------------------------
-//
-// pre-conditions:
-//  the receiver is an NSString, it may be an empty string.
-//
-// post-conditions:
-//  a modified copy of the receiver is returned, trimmed as follows ...
-//  any leading whitespace and tab characters in the receiver are removed.
-//  any trailing whitespcae and tab characters in the receiver are removed.
-//  if the receiver is empty, an empty string is returned
-//
-// error-condtions:
-//  if the receiver is nil, nil is returned
-
-- (NSString *)stringByTrimmingWhitespace
-{
-	if (self == nil) {
-		return nil;
-	} // end if
-	
-	return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-} // end method
-
-// ---------------------------------------------------------------------------
-//	Instance Method:  stringByCollapsingWhitespace
-// ---------------------------------------------------------------------------
-//
-// pre-conditions:
-//  the receiver is an NSString, it may be an empty string.
-//
-// post-conditions:
-//  a modified copy of the receiver is returned, collapsed as follows ...
-//  any group of multiple whitespace characters is replaced by a single
-//  whitespace; any group of multiple tab characters is replaced by a single
-//  tab; any mixed group of whitespace and tab characters is replaced by a
-//  single tab; if the receiver is empty, an empty string is returned
-//
-// error-condtions:
-//  if the receiver is nil, nil is returned
-
-- (NSString *)stringByCollapsingWhitespace
-{
-	NSMutableString *remainder_ = [NSMutableString stringWithCapacity:[self length]];
-	NSMutableString *result = [NSMutableString stringWithCapacity:[self length]];
-	NSCharacterSet *whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
-	NSCharacterSet *invertedWhitespaceSet = [whitespaceSet invertedSet];
-	NSCharacterSet *tabulatorSet = [NSCharacterSet characterSetWithCharactersInString:kTabulator];
-	NSRange token, range;
-	
-	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
-	if ([self length] == 0) {
-		return self;
-	} // end if
-	
-	// initialise the source string
-	[remainder_ setString:self];
-	// set the start value of the search range which always stays 0
-	range.location = 0;
-	// if the source string is empty or contains only one character ...
-	if ([remainder_ length] < 2) {
-		// return it as it is and we're done
-		return remainder_;
-	}
-	// if the source string contains more than one character ...
-	else {
-		// for as long as we have characters in the remaining source string ...
-		while ([remainder_ length] > 0) {
-			// find the first whitespace or tab in the remainder_
-			token = [remainder_ rangeOfCharacterFromSet:whitespaceSet];
-			// if we find a whitespace or tab ...
-			if found(token) {
-				// append substring preceeding whitespace/tab to the result string
-				[result appendString:[remainder_ substringToIndex:token.location]];
-				// remove substring preceeding whitespace/tab from the remainder_
-				range.length = token.location;
-				[remainder_ deleteCharactersInRange:range];
-				// find first non-whitespace and non-tab in the remainder_
-				range.length = [remainder_ length];
-				token = [remainder_ rangeOfCharacterFromSet:invertedWhitespaceSet options:0 range:range];
-				// if we find any non-whitespace or non-tab ...
-				if found(token) {
-					// define search range as the area containing the preceeding characters
-					range.length = token.location;
-				} // end if
-				  // if we don't find any non-whitespace/non-tab in the search range ...
-				  // ... then the search range remains the same as for the previous search
-				  // find tab in this search range
-				token = [remainder_ rangeOfCharacterFromSet:tabulatorSet options:0 range:range];
-				// if we find a tab ...
-				if found(token) {
-					// append a tab to the result string
-					[result appendString:kTabulator];
-				}
-				// if we don't find a tab ...
-				else {
-					// append a whitespace to the result string
-					[result appendString:kWhitespace];
-				} // end if
-				// remove substring preceeding whitespace/tab from the remainder_
-				[remainder_ deleteCharactersInRange:range];
-			}
-			// if we don't find any whitespace nor tab ...
-			else {
-				// append the entire remainder_ to the result string
-				[result appendString:remainder_];
-				// remove remaining characters in remainder_
-				[remainder_ setString:kEmptyString];
-			} // end if
-		} // end while
-		// return the result string and we're done
-		return result;
-	} // end if
-} // end method
-
-// ---------------------------------------------------------------------------
 //	Private Instance Method:  substringWithStringBetweenDelimiters:
 // ---------------------------------------------------------------------------
 //
@@ -253,11 +100,6 @@
 {
 	NSString *delimStr = [NSString stringWithFormat:@"%C", delimChar];
 	NSRange range, delimiter;
-	
-	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
 	
 	// find the first delimiter character
 	delimiter = [self rangeOfString:delimStr];
@@ -341,20 +183,6 @@
 } // end method
 
 // ---------------------------------------------------------------------------
-//	Instance Method:  numberOfWordsUsingDelimitersFromString:
-// ---------------------------------------------------------------------------
-//
-// Invokes numberOfWordsUsingDelimitersFromSet: with a character set made from
-// characters in string delimiters.
-
-- (int)numberOfWordsUsingDelimitersFromString:(NSString *)delimiters
-{
-	NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:delimiters];
-	// return first word using given delimiters
-	return [self numberOfWordsUsingDelimitersFromSet:delimiterSet];
-} // end method
-
-// ---------------------------------------------------------------------------
 //	Instance Method:  numberOfWordsUsingDelimitersFromSet:
 // ---------------------------------------------------------------------------
 //
@@ -377,9 +205,6 @@
 	unsigned len, wordCount = 0;
 
 	// first check pre-conditions
-	if (self == nil) {
-		return 0;
-	} // end if
 	if ([self length] == 0) {
 		return 0;
 	} // end if
@@ -465,20 +290,6 @@
 } // end method
 
 // ---------------------------------------------------------------------------
-//	Instance Method:  firstWordUsingDelimitersFromString:
-// ---------------------------------------------------------------------------
-//
-// Invokes firstWordUsingDelimitersFromSet: with a character set made from
-// characters in string delimiters.
-
-- (NSString *)firstWordUsingDelimitersFromString:(NSString *)delimiters
-{
-	NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:delimiters];
-	// return first word using given delimiters
-	return [self firstWordUsingDelimitersFromSet:delimiterSet];
-} // end method
-
-// ---------------------------------------------------------------------------
 //	Instance Method:  firstWordUsingDelimitersFromSet:
 // ---------------------------------------------------------------------------
 //
@@ -499,9 +310,6 @@
 	NSRange delimiter;
 
 	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
 	if ([self length] == 0) {
 		return self;
 	} // end if
@@ -543,20 +351,6 @@
 } // end method
 
 // ---------------------------------------------------------------------------
-//	Instance Method:  restOfWordsUsingDelimitersFromString:
-// ---------------------------------------------------------------------------
-//
-// Invokes restOfWordsUsingDelimitersFromSet: with a character set made from
-// characters in string delimiters.
-
-- (NSString *)restOfWordsUsingDelimitersFromString:(NSString *)delimiters
-{
-	NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:delimiters];
-	// return remaining words after first word using given delimiters
-	return [self restOfWordsUsingDelimitersFromSet:delimiterSet];
-} // end method
-
-// ---------------------------------------------------------------------------
 //	Instance Method:  restOfWordsUsingDelimitersFromSet:
 // ---------------------------------------------------------------------------
 //
@@ -577,9 +371,6 @@
 	NSRange delimiter;
 
 	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
 	if ([self length] == 0) {
 		return self;
 	} // end if
@@ -661,9 +452,6 @@
 	unsigned nextWord = 1;
 	
 	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
 	if ([self length] == 0) {
 		return self;
 	} // end if
@@ -739,20 +527,6 @@
 } // end method
 
 // ---------------------------------------------------------------------------
-//	Instance Method:  arrayBySeparatingWordsUsingDelimitersFromString:
-// ---------------------------------------------------------------------------
-//
-// Invokes arrayBySeparatingWordsUsingDelimitersFromSet: with a character set
-// made from characters in string delimiters.
-
-- (NSArray *)arrayBySeparatingWordsUsingDelimitersFromString:(NSString *)delimiters;
-{
-	NSCharacterSet *delimiterSet = [NSCharacterSet characterSetWithCharactersInString:delimiters];
-	// return remaining words after first word using given delimiters
-	return [self arrayBySeparatingWordsUsingDelimitersFromSet:delimiterSet];
-} // end method
-
-// ---------------------------------------------------------------------------
 //	Instance Method:  arrayBySeparatingWordsUsingDelimitersFromSet:
 // ---------------------------------------------------------------------------
 //
@@ -779,14 +553,11 @@
 	unsigned len;
 	
 	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
 	if ([self length] == 0) {
-		return [NSArray array];
+		return @[];
 	} // end if
 	if (delimiterSet == nil) {
-		return [NSArray arrayWithObject:self];
+		return @[self];
 	} // end if
 	
 	// remember the length of the receiver
@@ -806,7 +577,7 @@
 		// then the receiver is composed entirely of delimiters
 		// which means there are no words in the receiver
 		// return an empty array and we're done
-		return [NSArray array];
+		return @[];
 	} // end if
 	
 	// at this point
@@ -879,21 +650,16 @@
 	NSMutableArray *result = [NSMutableArray arrayWithCapacity:([self length] / AVG_LINE_LENGTH)];
 	NSCharacterSet *EOLmarkerSet = [NSCharacterSet characterSetWithCharactersInString:kEOLmarkers];
 	NSRange EOLmarker, line, range;
-	int previousMarkerWasCR;
-	unsigned len;
-	
+
 	// first check pre-conditions
-	if (self == nil) {
-		return nil;
-	} // end if
 	if ([self length] == 0) {
-		return [NSArray array];
+		return @[];
 	} // end if
 	
 	// remember the length of the receiver
-	len = [self length];
+	unsigned len = [self length];
 	// initialise previous marker flag
-	previousMarkerWasCR = 0;
+	int previousMarkerWasCR = 0;
 	// initialise the search range
 	range.location = 0; range.length = len;
 	

@@ -128,7 +128,7 @@
 %ELSIFNEQ element.type.enumCount 0
 
 %IF element.useAnArray
-		for(NSNumber *intRepresentation in self.%«element.name»){
+		for (NSNumber *intRepresentation in self.%«element.name») {
 			%«element.type.className»	enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
 
 			xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", [%«element.type.className»_stringFromEnum(enumRepresentation) xmlString]);

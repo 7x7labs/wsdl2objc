@@ -43,11 +43,7 @@
 // Class definition:  LIFO
 // ---------------------------------------------------------------------------
 
-@interface LIFO : NSObject {
-	// instance variable declaration
-	@private
-	NSMutableArray *_stack;		// the stack
-} // end var
+@interface LIFO : NSObject
 
 // ---------------------------------------------------------------------------
 // Class Method:  stackWithCapacity:

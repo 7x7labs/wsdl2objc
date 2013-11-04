@@ -49,12 +49,6 @@ const NSRange kZeroRange = { 0, 0 };
 	return self;
 } // end method
 
-// private method: deallocate instance
-- (void)dealloc {
-    [self->literal release];
-	[super dealloc];
-} // end method
-
 // ---------------------------------------------------------------------------
 // Class Method:  error:inLine:atToken:
 // ---------------------------------------------------------------------------
@@ -71,7 +65,7 @@ const NSRange kZeroRange = { 0, 0 };
 			inLine:(unsigned)line
 		   atToken:(enum TEToken)token
 {
-	TEError *thisInstance = [[[TEError alloc] init] autorelease];
+	TEError *thisInstance = [[TEError alloc] init];
 	NSException *exception;
 
 	// initialise instance variables
@@ -82,7 +76,7 @@ const NSRange kZeroRange = { 0, 0 };
 	thisInstance->literal = nil; // this is optional info only
 
 	// set remedy and severity according to error type and token
-	switch(code) {
+	switch (code) {
 		case TE_GENERIC_ERROR :
 			thisInstance->remedyCode = TE_ABORTING_TEMPLATE_EXPANSION;
 			thisInstance->severityCode = TE_FATAL;
@@ -116,7 +110,7 @@ const NSRange kZeroRange = { 0, 0 };
 			thisInstance->severityCode = TE_WARNING;
 			break;
 		case TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR :
-			switch(token) {
+			switch (token) {
 				case TE_LOG : // %LOG requires an argument
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
@@ -261,9 +255,7 @@ const NSRange kZeroRange = { 0, 0 };
 
 - (void)setLiteral:(NSString *)literalString
 {
-    literalString = [literalString copy];
-    [self->literal release];
-	self->literal = literalString;
+	self->literal = [literalString copy];
 } // end method
 
 
@@ -367,7 +359,7 @@ const NSRange kZeroRange = { 0, 0 };
 	NSException *exception;
 
 	// setting the token string
-	switch(self->token) {
+	switch (self->token) {
 		case TE_TOKEN_NOT_AVAILABLE :
 			tokenString = @"";
 			break;
@@ -489,7 +481,7 @@ const NSRange kZeroRange = { 0, 0 };
 	NSException *exception;
 
 	// setting the description string
-	switch(self->errorCode) {
+	switch (self->errorCode) {
 		case TE_GENERIC_ERROR :
 			if (self->literal == nil) {
 				description = @"Generic error: (no error description available).";
@@ -584,7 +576,7 @@ const NSRange kZeroRange = { 0, 0 };
 	NSException *exception;
 
 	// setting the remedy string
-	switch(self->remedyCode) {
+	switch (self->remedyCode) {
 		case TE_REMEDY_NOT_AVAILABLE:
 			remedy = @"";
 			break;
@@ -658,7 +650,7 @@ const NSRange kZeroRange = { 0, 0 };
 	prefix = @"STS TemplateEngine";
 
 	// setting the severity string
-	switch(self->severityCode) {
+	switch (self->severityCode) {
 		case TE_WARNING :
 			severity = @"*WARNING*";
 			break;

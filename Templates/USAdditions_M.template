@@ -26,11 +26,11 @@
 {
 	NSMutableString *escapedString = [self mutableCopy];
 
+	[escapedString replaceOccurrencesOfString:@"&"  withString:@"&amp;"  options:0 range:NSMakeRange(0, [escapedString length])];
 	[escapedString replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:0 range:NSMakeRange(0, [escapedString length])];
 	[escapedString replaceOccurrencesOfString:@"'"  withString:@"&apos;" options:0 range:NSMakeRange(0, [escapedString length])];
 	[escapedString replaceOccurrencesOfString:@"<"  withString:@"&lt;"   options:0 range:NSMakeRange(0, [escapedString length])];
 	[escapedString replaceOccurrencesOfString:@">"  withString:@"&gt;"   options:0 range:NSMakeRange(0, [escapedString length])];
-	[escapedString replaceOccurrencesOfString:@"&"  withString:@"&amp;"  options:0 range:NSMakeRange(0, [escapedString length])];
 
 	return escapedString;
 }
@@ -509,7 +509,7 @@ static xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* 
     xmlAddChild(n0, n1);
 
     n0 = n1;
-    n1 = xmlNewNode(ds, (const xmlChar*)"Trans(ms");
+    n1 = xmlNewNode(ds, (const xmlChar*)"Transforms");
     xmlAddChild(n0, n1);
 
     n0 = n1;
@@ -520,7 +520,7 @@ static xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* 
     n1 = xmlNewNode(ds, (const xmlChar*)"DigestValue");
     xmlAddSibling(n0, n1);
 
-    n1 = xmlNewNode(ds, (const xmlChar*)"Trans(m");
+    n1 = xmlNewNode(ds, (const xmlChar*)"Transform");
     xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2002/06/xmldsig-filter2");
     xmlAddChild(n0, n1);
 
@@ -533,7 +533,7 @@ static xmlXPathObjectPtr execute_xpath_expression(xmlDocPtr doc, const xmlChar* 
     xmlSetNs(n1, ds);
     xmlAddChild(n0, n1);
 
-    n1 = xmlNewNode(ds, (const xmlChar*)"Trans(m");
+    n1 = xmlNewNode(ds, (const xmlChar*)"Transform");
     xmlNewProp(n1, (const xmlChar*)"Algorithm", (const xmlChar*)"http://www.w3.org/2001/10/xml-exc-c14n#");
     xmlAddSibling(n0, n1);
 

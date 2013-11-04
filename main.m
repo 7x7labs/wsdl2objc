@@ -25,52 +25,45 @@
 
 int main(int argc, char *argv[])
 {
-    NSAutoreleasePool   *localAP = [NSAutoreleasePool new];
-    USParserApplication *parserApp = [USParserApplication new];
-    
-    if(parserApp.wsdlURL == nil){
-        NSString    *help = [NSString stringWithFormat:
-                             @"%@ %@, %@\n"
-                             "Usage: %s -wsdlPath <url or path> [-outPath <path>] [-addTagToServiceName <YES or NO>] [-templateDirectory <path>] [-writeDebug <YES or NO>]\n"
-                             "Generates ObjC classes able to perform SOAP requests defined by a WSDL file.\n"
-                             "    -wsdlPath <url or path>\t\tURL or path to a WSDL file\n"
-                             "    -outPath <path>\t\t\tDirectory output path. Defaults to current working directory\n"
-                             "    -addTagToServiceName <YES or NO>\tSuffixes service name with 'Svc' (avoid name conflicts). Defaults to NO\n"
-                             "    -templateDirectory <path>\t\tPath of folder containing wsdl2objc templates. By default will look in */Application Support/wsdl2objc directories\n"
-                             "    -writeDebug <YES or NO>\t\tWrite Write debug info for WSDL. Defaults to NO.",
-                             [[[NSBundle mainBundle] executablePath] lastPathComponent],
-                             [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey],
-                             [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleGetInfoString"],
-                             argv[0]];
-        
-        fprintf(stderr, "%s\n", [help UTF8String]);
-        [parserApp release];
-        [localAP drain];
-        
-        exit(1);
-    }
-    if(parserApp.outURL == nil){
-        [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObject:[[NSFileManager defaultManager] currentDirectoryPath] forKey:@"outPath"]];
-    }
-    
-	NSLog(@"Parsing WSDL from %@", parserApp.wsdlURL);
-    
-	USParser    *parser = [[USParser alloc] initWithURL:parserApp.wsdlURL];
-	USWSDL      *wsdl = [parser parse];
-    
-	[parserApp writeDebugInfoForWSDL:wsdl];
+    @autoreleasepool {
+        USParserApplication *parserApp = [USParserApplication new];
 
-	[parser release];
-    
-	NSLog(@"Generating Objective-C code into %@", parserApp.outURL);
-	USWriter *writer = [[USWriter alloc] initWithWSDL:wsdl outputDirectory:parserApp.outURL];
-	[writer write];
-	
-	NSLog(@"Finished!");
-    
-	[writer release];
-    [parserApp release];
-    [localAP drain];
+        if (parserApp.wsdlURL == nil) {
+            NSString    *help = [NSString stringWithFormat:
+                                 @"%@ %@, %@\n"
+                                 "Usage: %s -wsdlPath <url or path> [-outPath <path>] [-addTagToServiceName <YES or NO>] [-templateDirectory <path>] [-writeDebug <YES or NO>]\n"
+                                 "Generates ObjC classes able to perform SOAP requests defined by a WSDL file.\n"
+                                 "    -wsdlPath <url or path>\t\tURL or path to a WSDL file\n"
+                                 "    -outPath <path>\t\t\tDirectory output path. Defaults to current working directory\n"
+                                 "    -addTagToServiceName <YES or NO>\tSuffixes service name with 'Svc' (avoid name conflicts). Defaults to NO\n"
+                                 "    -templateDirectory <path>\t\tPath of folder containing wsdl2objc templates. By default will look in */Application Support/wsdl2objc directories\n"
+                                 "    -writeDebug <YES or NO>\t\tWrite Write debug info for WSDL. Defaults to NO.",
+                                 [[[NSBundle mainBundle] executablePath] lastPathComponent],
+                                 [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString *)kCFBundleVersionKey],
+                                 [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleGetInfoString"],
+                                 argv[0]];
+
+            fprintf(stderr, "%s\n", [help UTF8String]);
+
+            exit(1);
+        }
+        if (parserApp.outURL == nil) {
+            [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObject:[[NSFileManager defaultManager] currentDirectoryPath] forKey:@"outPath"]];
+        }
+
+        NSLog(@"Parsing WSDL from %@", parserApp.wsdlURL);
+
+        USParser    *parser = [[USParser alloc] initWithURL:parserApp.wsdlURL];
+        USWSDL      *wsdl = [parser parse];
+
+        [parserApp writeDebugInfoForWSDL:wsdl];
+
+        NSLog(@"Generating Objective-C code into %@", parserApp.outURL);
+        USWriter *writer = [[USWriter alloc] initWithWSDL:wsdl outputDirectory:parserApp.outURL];
+        [writer write];
+        
+        NSLog(@"Finished!");
+    }
     
     return 0;
 }

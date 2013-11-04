@@ -110,7 +110,7 @@ static BOOL is_leap_year(NSInteger year) {
   unsigned dayOfYear = [gregorian ordinalityOfUnit: NSDayCalendarUnit inUnit: NSYearCalendarUnit forDate: self];
   NSString *timeString;
 
-  if(includeTime) {
+  if (includeTime) {
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:[@"'T'HH:mm:ss'Z'" prepareDateFormatWithTimeSeparator:timeSep]];
     timeString = [formatter stringForObjectValue:self];

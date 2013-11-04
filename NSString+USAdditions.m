@@ -27,7 +27,7 @@
 
 - (NSString *)stringWithCapitalizedFirstCharacter
 {
-	if([self length] > 0) {
+	if ([self length] > 0) {
 		NSString *firstChar = [self substringToIndex:1];
 		firstChar = [firstChar uppercaseString];
 		

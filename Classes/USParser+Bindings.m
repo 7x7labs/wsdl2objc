@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -38,18 +38,18 @@
 {
 	NSString *name = [[el attributeForName:@"name"] stringValue];
 	USBinding *binding = [schema bindingForName:name];
-	
+
 	NSString *type = [[el attributeForName:@"type"] stringValue];
-	
+
 	NSString *uri = [[el resolveNamespaceForName:type] stringValue];
 	USSchema *typeSchema = [schema.wsdl schemaForNamespace:uri];
-	
+
 	NSString *typeLocalName = [NSXMLNode localNameForName:type];
 	USPortType *portType = [typeSchema portTypeForName:typeLocalName];
 	binding.portType = portType;
-	
-	for(NSXMLNode *child in [el children]) {
-		if([child kind] == NSXMLElementKind) {
+
+	for (NSXMLNode *child in [el children]) {
+		if ([child kind] == NSXMLElementKind) {
 			[self processBindingChildElement:(NSXMLElement*)child binding:binding];
 		}
 	}
@@ -58,14 +58,14 @@
 - (void)processBindingChildElement:(NSXMLElement *)el binding:(USBinding *)binding
 {
 	NSString *localName = [el localName];
-	
-	if([localName isEqualToString:@"binding"]) {
+
+	if ([localName isEqualToString:@"binding"]) {
 		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
 		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapBindingElement:el binding:binding];
 		}
-	} else if([localName isEqualToString:@"operation"]) {
+	} else if ([localName isEqualToString:@"operation"]) {
 		[self processBindingOperationElement:el binding:binding];
 	}
 }
@@ -80,9 +80,9 @@
 {
 	NSString *name = [[el attributeForName:@"name"] stringValue];
 	USOperation *operation = [binding.portType operationForName:name];
-	
-	for(NSXMLNode *child in [el children]) {
-		if([child kind] == NSXMLElementKind) {
+
+	for (NSXMLNode *child in [el children]) {
+		if ([child kind] == NSXMLElementKind) {
 			[self processBindingOperationChildElement:(NSXMLElement*)child operation:operation];
 		}
 	}
@@ -91,18 +91,18 @@
 - (void)processBindingOperationChildElement:(NSXMLElement *)el operation:(USOperation *)operation
 {
 	NSString *localName = [el localName];
-	
-	if([localName isEqualToString:@"operation"]) {
+
+	if ([localName isEqualToString:@"operation"]) {
 		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
 		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapOperationElement:el operation:operation];
 		}
-	} else if([localName isEqualToString:@"input"]) {
+	} else if ([localName isEqualToString:@"input"]) {
 		[self processBindingOperationInputElement:el operation:operation];
-	} else if([localName isEqualToString:@"output"]) {
+	} else if ([localName isEqualToString:@"output"]) {
 		[self processBindingOperationOutputElement:el operation:operation];
-	} else if([localName isEqualToString:@"fault"]) {
+	} else if ([localName isEqualToString:@"fault"]) {
 		[self processBindingOperationFaultElement:el operation:operation];
 	}
 }
@@ -122,11 +122,11 @@
 {
 	[self processBindingOperationInterfaceElement:el operationInterface:operation.output];
 }
-	
+
 - (void)processBindingOperationInterfaceElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface
 {
-	for(NSXMLNode *child in [el children]) {
-		if([child kind] == NSXMLElementKind) {
+	for (NSXMLNode *child in [el children]) {
+		if ([child kind] == NSXMLElementKind) {
 			[self processBindingOperationInterfaceChildElement:(NSXMLElement*)child operationInterface:interface];
 		}
 	}
@@ -135,16 +135,16 @@
 - (void)processBindingOperationInterfaceChildElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface
 {
 	NSString *localName = [el localName];
-	
-	if([localName isEqualToString:@"header"]) {
+
+	if ([localName isEqualToString:@"header"]) {
 		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
 		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapHeaderElement:el operationInterface:interface];
 		}
-	} else if([localName isEqualToString:@"body"]) {
+	} else if ([localName isEqualToString:@"body"]) {
 		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
 		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapBodyElement:el operationInterface:interface];
 		}
@@ -158,10 +158,10 @@
 	USSchema *messageSchema = [interface.operation.portType.schema.wsdl schemaForNamespace:uri];
 	NSString *messageLocalName = [NSXMLNode localNameForName:messageQName];
 	USMessage *message = [messageSchema messageForName:messageLocalName];
-	
+
 	NSString *partName = [[el attributeForName:@"part"] stringValue];
 	USPart *part = [message partForName:partName];
-	
+
 	if (part.element) {
 		[interface.headers addObject:part.element];
 	} else {
@@ -180,9 +180,9 @@
 {
 	NSString *faultName = [[el attributeForName:@"name"] stringValue];
 	USOperationFault *fault = [operation faultForName:faultName];
-	
-	for(NSXMLNode *child in [el children]) {
-		if([child kind] == NSXMLElementKind) {
+
+	for (NSXMLNode *child in [el children]) {
+		if ([child kind] == NSXMLElementKind) {
 			[self processBindingOperationFaultChildElement:(NSXMLElement*)child fault:fault];
 		}
 	}
@@ -191,10 +191,10 @@
 - (void)processBindingOperationFaultChildElement:(NSXMLElement *)el fault:(USOperationFault *)fault
 {
 	NSString *localName = [el localName];
-	
-	if([localName isEqualToString:@"fault"]) {
+
+	if ([localName isEqualToString:@"fault"]) {
 		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-		if([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+		if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
 		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
 			[self processSoapFaultElement:el fault:fault];
 		}

@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -23,23 +23,12 @@
 #import <Foundation/Foundation.h>
 #import "USType.h"
 
-@interface USAttribute : NSObject {
-	NSString *name;
-	NSString *wsdlName;
-	NSString *attributeDefault;
-	USSchema *schema;
-	USType   *type;
-}
-
+@interface USAttribute : NSObject
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, retain) NSString *wsdlName;
+@property (nonatomic, strong) NSString *wsdlName;
 @property (nonatomic, copy) NSString *attributeDefault;
-@property (nonatomic, assign) USSchema * schema;
-@property (nonatomic, assign) USType * type;
-
-- (id)init;
-- (void)dealloc;
+@property (nonatomic, strong) USSchema * schema;
+@property (nonatomic, strong) USType * type;
 
 - (NSDictionary *)templateKeyDictionary;
-
 @end

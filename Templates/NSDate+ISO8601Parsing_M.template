@@ -291,7 +291,7 @@ static BOOL is_leap_year(NSInteger year) {
 
           default:
             goto invalidDate;
-        } //switch(num_leading_hyphens) (4 digits)
+        } //switch (num_leading_hyphens) (4 digits)
         break;
 
       case 1:
@@ -414,7 +414,7 @@ static BOOL is_leap_year(NSInteger year) {
 
           default:
             goto invalidDate;
-        } //switch(num_leading_hyphens) (2 digits)
+        } //switch (num_leading_hyphens) (2 digits)
         break;
 
       case 7: //YYYY DDD (ordinal date)
@@ -474,7 +474,7 @@ static BOOL is_leap_year(NSInteger year) {
       }
     }
 
-    switch(*ch) {
+    switch (*ch) {
       case 'Z':
         timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
         break;
@@ -512,7 +512,7 @@ static BOOL is_leap_year(NSInteger year) {
   if (timeZone)
     gregorian.timeZone = timeZone;
 
-  switch(dateSpecification) {
+  switch (dateSpecification) {
     case monthAndDate:
       dateComps.year = year;
       dateComps.month = month_or_week;

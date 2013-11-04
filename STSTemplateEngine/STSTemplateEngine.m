@@ -34,15 +34,8 @@
 
 #import "STSTemplateEngine.h"
 
-BOOL classExists (NSString *className);
+BOOL classExists(NSString *className);
 
-#define TODO {}; /* dummy statement for future sections */
-
-// ---------------------------------------------------------------------------
-//	String literals
-// ---------------------------------------------------------------------------
-
-#define kEmptyString @""
 #define kLineFeed @"\n"
 
 // ---------------------------------------------------------------------------
@@ -70,8 +63,7 @@ BOOL classExists (NSString *className);
 // Returns YES if class className exists, otherwise NO.
 
 BOOL classExists (NSString *className) {
-	Class classPtr = NSClassFromString(className);
-	return (classPtr != nil);
+	return NSClassFromString(className) != nil;
 } // end function
 
 
@@ -92,7 +84,7 @@ BOOL classExists (NSString *className) {
 
 @end
 
-@implementation NSFileManager (STSTemplateEnginePrivateCategory1);
+@implementation NSFileManager (STSTemplateEnginePrivateCategory1)
 
 // ---------------------------------------------------------------------------
 // Instance Method:  isRegularFileAtPath:
@@ -187,7 +179,7 @@ BOOL classExists (NSString *className) {
 											 lineNumber:(unsigned)lineNumber;
 @end
 
-@implementation NSString (STSTemplateEnginePrivateCategory2);
+@implementation NSString (STSTemplateEnginePrivateCategory2)
 
 // ---------------------------------------------------------------------------
 // Class Method:  defaultStartTag
@@ -199,12 +191,7 @@ BOOL classExists (NSString *className) {
 
 + (NSString *)defaultStartTag
 {
-	NSData *data;
-	// avoid the use of string literals to be source file encoding-safe
-	// use MacOS Roman hex codes for percent and opening chevrons "%«"
-	char octets[2] = { 0x25, 0xc7 };
-	data = [NSData dataWithBytes:&octets length:2];
-	return [[[NSString alloc] initWithData:data encoding:NSMacOSRomanStringEncoding] autorelease];
+    return [[NSString alloc] initWithUTF8String:"%\xC2\xAB"];
 } // end method
 
 // ---------------------------------------------------------------------------
@@ -216,12 +203,7 @@ BOOL classExists (NSString *className) {
 
 + (NSString *)defaultEndTag
 {
-	NSData *data;
-	// avoid the use of string literals to be source file encoding-safe
-	// use MacOS Roman hex code for closing chevrons "»"
-	char octet = 0xc8;
-	data = [NSData dataWithBytes:&octet length:1];
-	return [[[NSString alloc] initWithData:data encoding:NSMacOSRomanStringEncoding] autorelease];
+    return [[NSString alloc] initWithUTF8String:"\xC2\xBB"];
 } // end method
 
 // ---------------------------------------------------------------------------
@@ -323,7 +305,7 @@ BOOL classExists (NSString *className) {
 					// and add this error to the error log
 					[_errorLog addObject:error];
 					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
+					[error logErrorMessageForTemplate:@""];
 				}
 				// if the lookup returns a value for the key ...
 				else {
@@ -339,14 +321,14 @@ BOOL classExists (NSString *className) {
 				// append the start tag and an error message to the result string
 				[result appendFormat:@"%@ *** ERROR: end tag missing *** ", startTag];
 				// remove all remaining text from the source string to force exit of while loop
-				[remainder_ setString:kEmptyString];
+				[remainder_ setString:@""];
 				// this is an error - create a new error description
 				error = [TEError error:TE_EXPECTED_ENDTAG_BUT_FOUND_TOKEN_ERROR
 								inLine:lineNumber atToken:TE_EOL];
 				// and add this error to the error log
 				[_errorLog addObject:error];
 				// log this error to the console
-				[error logErrorMessageForTemplate:kEmptyString];
+				[error logErrorMessageForTemplate:@""];
 			} // end if
 			  // look for follow-on start tag to prepare for another parsing cycle
 			tag = [remainder_ rangeOfString:startTag];
@@ -403,15 +385,10 @@ BOOL classExists (NSString *className) {
 	return self;
 } // end method
 
-// private method: deallocate instance
-- (void)dealloc {
-	[super dealloc];
-} // end method
-
 // public method: return new flags, allocated, initialised and autoreleased.
 // initial values: consumed is false, expand is true, condex is false.
 + (TEFlags *)flags {
-	TEFlags *thisInstance = [[[TEFlags alloc] init] autorelease];
+	TEFlags *thisInstance = [[TEFlags alloc] init];
 	// initialise flags
 	thisInstance->consumed = false;
 	thisInstance->expand = true;
@@ -427,7 +404,7 @@ BOOL classExists (NSString *className) {
 //  P u b l i c   C a t e g o r y   I m p l e m e n t a t i o n
 // ---------------------------------------------------------------------------
 
-@implementation NSString (STSTemplateEngine);
+@implementation NSString (STSTemplateEngine)
 
 // ---------------------------------------------------------------------------
 // Class Method:  stringByExpandingTemplate:usingDictionary:errorsReturned:
@@ -647,7 +624,7 @@ BOOL classExists (NSString *className) {
 	TEError *error;
 
 	// Temporary string variables and line counter
-	NSString *line = nil, *remainder_ = nil, *keyword = nil, *key = nil, *value = nil, *operand = nil, *varName = nil;
+	NSString *line = nil, *remainder_ = nil, *keyword = nil, *key = nil, *operand = nil, *varName = nil;
 	NSMutableString *innerString = nil;
 	unsigned len, lineNumber = 0, unexpandIf = 0, unexpandFor = 0;
 	
@@ -676,9 +653,9 @@ BOOL classExists (NSString *className) {
 	// -----------------------------------------------------------------------
 	
 	// Entering automatic placeholder variables into the dictionary:
-	[_dictionary setObject:[[NSDate date] description] forKey:@"_timestamp"];
-	[_dictionary setObject:[processInfo globallyUniqueString] forKey:@"_uniqueID"];
-	[_dictionary setObject:[processInfo hostName] forKey:@"_hostname"];
+	_dictionary[@"_timestamp"] = [[NSDate date] description];
+	_dictionary[@"_uniqueID"] = [processInfo globallyUniqueString];
+	_dictionary[@"_hostname"] = [processInfo hostName];
 	
 	// -----------------------------------------------------------------------
 	//  L o c a l e   i n f o r m a t i o n
@@ -691,29 +668,29 @@ BOOL classExists (NSString *className) {
 		NSLocale *locale;
 		// user's locale settings
 		locale = [NSLocale currentLocale];
-		[_dictionary setObject:[locale objectForKey:NSLocaleCountryCode] forKey:@"_userCountryCode"];
-		[_dictionary setObject:[locale objectForKey:NSLocaleLanguageCode] forKey:@"_userLanguage"];
+		_dictionary[@"_userCountryCode"] = [locale objectForKey:NSLocaleCountryCode];
+		_dictionary[@"_userLanguage"] = [locale objectForKey:NSLocaleLanguageCode];
 		// system locale settings
 		locale = [NSLocale systemLocale];
 		key = [locale objectForKey:NSLocaleCountryCode];
 		// if NSLocaleCountryCode is undefined for the system locale ...
 		if (key == nil) {
 			// set the variable to empty string
-			[_dictionary setObject:kEmptyString forKey:@"_systemCountryCode"];
+			_dictionary[@"_systemCountryCode"] = @"";
 		}
 		else {
 			// set the variable to the value of NSLocaleCountryCode
-			[_dictionary setObject:key forKey:@"_systemCountryCode"];
+			_dictionary[@"_systemCountryCode"] = key;
 		} // end if
 		key = [locale objectForKey:NSLocaleLanguageCode];
 		// if NSLocaleLanguageCode is undefined for the system locale ...
 		if (key == nil) {
 			// set the variable to empty string
-			[_dictionary setObject:kEmptyString forKey:@"_systemLanguage"];
+			_dictionary[@"_systemLanguage"] = @"";
 		}
 		else {
 			// set the variable to the value of NSLocaleLanguageCode
-			[_dictionary setObject:key forKey:@"_systemLanguage"];
+			_dictionary[@"_systemLanguage"] = key;
 		} // end if
 	} // end if
 
@@ -723,10 +700,6 @@ BOOL classExists (NSString *className) {
 	
 	while ((line = [list nextObject])) {
 		lineNumber++;
-//		if([line length] == 0) {
-//			[result appendString:kLineFeed];
-//			continue;
-//		}
 		// if the line begins with a % character but not the start tag ...
 		if (([line length] > 0) && ([line hasPrefix:startTag] == NO) && ([line characterAtIndex:0] == '%')) {
 			// then the first word is likely to be a keyword
@@ -751,7 +724,7 @@ BOOL classExists (NSString *className) {
 						// and add this error to the error log
 						[_errorLog addObject:error];
 						// log this error to the console
-						[error logErrorMessageForTemplate:kEmptyString];
+						[error logErrorMessageForTemplate:@""];
 						// *** we are going to ignore this entire if-elsif-else-endif block ***
 						// if this is a nested if-else block ...
 						if (flags->condex) {
@@ -770,7 +743,7 @@ BOOL classExists (NSString *className) {
 					// if there is an identifier following %IF/%IFNOT ...
 					else {
 						// look up the value of the key in the dictionary
-						value = [self valueForDictionary:_dictionary key:key];
+						id value = [self valueForDictionary:_dictionary key:key];
 						// *** this is the surviving branch - others are error branches ***
 						// if this is a nested if-else block ...
 						if (flags->condex) {
@@ -814,12 +787,12 @@ BOOL classExists (NSString *className) {
 							// and add this error to the error log
 							[_errorLog addObject:error];
 							// log this error to the console
-							[error logErrorMessageForTemplate:kEmptyString];
+							[error logErrorMessageForTemplate:@""];
 							// clear the expand flag to ignore this elsif-branch
 							flags->expand = false;
 						}
 						else {
-							value = [self valueForDictionary:dictionary key:key];
+							id value = [self valueForDictionary:dictionary key:key];
 							// evaluate if the value of the key represents 'true'
 							flags->expand = ([value representsTrue]) ^ complement;
 						} // end if			
@@ -827,7 +800,7 @@ BOOL classExists (NSString *className) {
 					  // remember evaluation
 					flags->consumed = (flags->consumed || flags->expand);
 				}
-				else if(unexpandIf == 0) {
+				else if (unexpandIf == 0) {
 					// found %ELSIF/%ELSIFNOT without prior %IF block having been opened
 					// this is an error - create a new error description
 					error = [TEError error:TE_UNEXPECTED_TOKEN_ERROR
@@ -835,7 +808,7 @@ BOOL classExists (NSString *className) {
 					// and add this error to the error log
 					[_errorLog addObject:error];
 					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
+					[error logErrorMessageForTemplate:@""];
 					// clear the expand flag to ignore this elsif-branch
 					flags->expand = false;
 				} // end if
@@ -858,7 +831,7 @@ BOOL classExists (NSString *className) {
 						// and add this error to the error log
 						[_errorLog addObject:error];
 						// log this error to the console
-						[error logErrorMessageForTemplate:kEmptyString];
+						[error logErrorMessageForTemplate:@""];
 						// *** we are going to ignore this entire if-elsif-else-endif block ***
 						// if this is a nested if-else block ...
 						if (flags->condex) {
@@ -877,7 +850,7 @@ BOOL classExists (NSString *className) {
 					// if there is an identifier following %IFEQ/%IFNEQ ...
 					else {
 						// look up the value of the key in the dictionary
-						value = [NSString valueForDictionary:_dictionary key:key];
+						id value = [NSString valueForDictionary:_dictionary key:key];
 						// get the remaining characters following the key
 						remainder_ = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
 									restOfWordsUsingDelimitersFromSet:whitespaceSet];
@@ -891,7 +864,7 @@ BOOL classExists (NSString *className) {
 							// and add this error to the error log
 							[_errorLog addObject:error];
 							// log this error to the console
-							[error logErrorMessageForTemplate:kEmptyString];
+							[error logErrorMessageForTemplate:@""];
 							// *** we are going to ignore this entire if-elsif-else-endif block ***
 							// if this is a nested if-else block ...
 							if (flags->condex) {
@@ -985,13 +958,13 @@ BOOL classExists (NSString *className) {
 							// and add this error to the error log
 							[_errorLog addObject:error];
 							// log this error to the console
-							[error logErrorMessageForTemplate:kEmptyString];
+							[error logErrorMessageForTemplate:@""];
 							// clear the expand flag to ignore this elsif-branch
 							flags->expand = false;
 						}
 						else {
 							// look up the value of the key in the dictionary
-							value = [NSString valueForDictionary:_dictionary key:key];
+							id value = [NSString valueForDictionary:_dictionary key:key];
 							// get the remaining characters following the key
 							remainder_ = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
 									restOfWordsUsingDelimitersFromSet:whitespaceSet];
@@ -1005,7 +978,7 @@ BOOL classExists (NSString *className) {
 								// and add this error to the error log
 								[_errorLog addObject:error];
 								// log this error to the console
-								[error logErrorMessageForTemplate:kEmptyString];
+								[error logErrorMessageForTemplate:@""];
 								// clear the expand flag to ignore this elsif-branch
 								flags->expand = false;
 							}
@@ -1052,7 +1025,7 @@ BOOL classExists (NSString *className) {
 					} // end if
 				}
 				// if this block is not part of an open %IF ...
-				else if(unexpandIf == 0) {
+				else if (unexpandIf == 0) {
 					// found %ELSIFEQ/%ELSIFNEQ without prior %IF block having been opened
 					// this is an error - create a new error description
 					error = [TEError error:TE_UNEXPECTED_TOKEN_ERROR
@@ -1060,7 +1033,7 @@ BOOL classExists (NSString *className) {
 					// and add this error to the error log
 					[_errorLog addObject:error];
 					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
+					[error logErrorMessageForTemplate:@""];
 					// clear the expand flag to ignore this elsif-branch
 					flags->expand = false;
 				} // end if
@@ -1071,7 +1044,7 @@ BOOL classExists (NSString *className) {
 			// ---------------------------------------------------------------
 			
 			else if (!flags->forBranch && (([keyword isEqualToString:@"%IFDEF"]) || ([keyword isEqualToString:@"%IFNDEF"]))) {
-				if(flags->expand) {
+				if (flags->expand) {
 					// get the identifier following %IFDEF/%IFNDEF
 					key = [line wordAtIndex:2 usingDelimitersFromSet:whitespaceSet];
 					// if there is no identifier following %IFDEF/%IFNDEF ...
@@ -1082,7 +1055,7 @@ BOOL classExists (NSString *className) {
 						// and add this error to the error log
 						[_errorLog addObject:error];
 						// log this error to the console
-						[error logErrorMessageForTemplate:kEmptyString];
+						[error logErrorMessageForTemplate:@""];
 						// *** we are going to ignore this entire if-elsif-else-endif block ***
 						// if this is a nested if-else block ...
 						if (flags->condex) {
@@ -1142,7 +1115,7 @@ BOOL classExists (NSString *className) {
 							// and add this error to the error log
 							[_errorLog addObject:error];
 							// log this error to the console
-							[error logErrorMessageForTemplate:kEmptyString];
+							[error logErrorMessageForTemplate:@""];
 							// clear the expand flag to ignore this elsif-branch
 							flags->expand = false;
 						}
@@ -1154,7 +1127,7 @@ BOOL classExists (NSString *className) {
 				// remember evaluation
 				flags->consumed = (flags->consumed || flags->expand);
 				}
-				else if(unexpandIf == 0) {
+				else if (unexpandIf == 0) {
 					// found %ELSIFDEF/%ELSIFNDEF without prior %IF block having been opened
 					// this is an error - create a new error description
 					error = [TEError error:TE_UNEXPECTED_TOKEN_ERROR
@@ -1162,7 +1135,7 @@ BOOL classExists (NSString *className) {
 					// and add this error to the error log
 					[_errorLog addObject:error];
 					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
+					[error logErrorMessageForTemplate:@""];
 					// clear the expand flag to ignore this elsif-branch
 					flags->expand = false;
 				} // end if
@@ -1178,7 +1151,7 @@ BOOL classExists (NSString *className) {
 					flags->expand = !(flags->consumed);
 					flags->consumed = true;
 				}
-				else if(unexpandIf == 0) {
+				else if (unexpandIf == 0) {
 					// found %ELSE without any prior %IF block having been opened
 					// this is an error - create a new error description
 					error = [TEError error:TE_UNEXPECTED_TOKEN_ERROR
@@ -1186,7 +1159,7 @@ BOOL classExists (NSString *className) {
 					// and add this error to the error log
 					[_errorLog addObject:error];
 					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
+					[error logErrorMessageForTemplate:@""];
 					// clear the expand flag to ignore this else-branch
 					flags->expand = false;
 				} // end if
@@ -1214,9 +1187,9 @@ BOOL classExists (NSString *className) {
 						flags->forBranch = false;
 					} // end if
 				}
-				else if(unexpandIf > 0) {
+				else if (unexpandIf > 0) {
 					--unexpandIf;
-					if(unexpandIf == 0) flags->condex = true;
+					if (unexpandIf == 0) flags->condex = true;
 				} else {
 					// found %ENDIF without prior %IF block having been opened
 					// this is an error - create a new error description
@@ -1225,7 +1198,7 @@ BOOL classExists (NSString *className) {
 					// and add this error to the error log
 					[_errorLog addObject:error];
 					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
+					[error logErrorMessageForTemplate:@""];
 				} // end if
 			}
 
@@ -1246,14 +1219,14 @@ BOOL classExists (NSString *className) {
 						// and add this error to the error log
 						[_errorLog addObject:error];
 						// log this error to the console
-						[error logErrorMessageForTemplate:kEmptyString];
+						[error logErrorMessageForTemplate:@""];
 					}
 					else {
 						// obtain the value for this key
-						value = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
+						id value = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
 									restOfWordsUsingDelimitersFromSet:whitespaceSet];
 						// add the new key to the dictionary
-						[_dictionary setObject:[value copy] forKey:key];
+						_dictionary[key] = [value copy];
 					} // end if
 				} // end if
 			}
@@ -1274,7 +1247,7 @@ BOOL classExists (NSString *className) {
 						// and add this error to the error log
 						[_errorLog addObject:error];
 						// log this error to the console
-						[error logErrorMessageForTemplate:kEmptyString];
+						[error logErrorMessageForTemplate:@""];
 					}
 					else {
 						// remove this key from the dictionary
@@ -1301,59 +1274,21 @@ BOOL classExists (NSString *className) {
 						// and add this error to the error log
 						[_errorLog addObject:error];
 						// log this error to the console
-						[error logErrorMessageForTemplate:kEmptyString];
+						[error logErrorMessageForTemplate:@""];
 					}
 					else {
-						// lookup the value for this key in the dictionary
-						value = [NSString valueForDictionary:_dictionary key:key];
-						// and log it to the console
+						id value = [NSString valueForDictionary:_dictionary key:key];
 						NSLog(@"value for key '%@' is '%@'", key, value);
 					} // end if
 				} // end if
 			}
-			
-			// ---------------------------------------------------------------
-			//  % E C H O   b r a n c h
-			// ---------------------------------------------------------------
-			
-			else if (!flags->forBranch && [keyword isEqualToString:@"%ECHO"]) {
-				if (flags->expand) {
-					// we are to log text/keys to stdout ...
-					TODO
-					// this is not implemented yet
-					error = [TEError error:TE_UNIMPLEMENTED_TOKEN_ERROR
-									inLine:lineNumber atToken:TE_ECHO];
-					// and add this error to the error log
-					[_errorLog addObject:error];
-					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
-				} // end if
-			}
-			
-			// ---------------------------------------------------------------
-			//  % D E B U G   b r a n c h
-			// ---------------------------------------------------------------
-			
-			else if (!flags->forBranch && [keyword isEqualToString:@"%DEBUG"]) {
-				if (flags->expand) {
-					// we are to enable/disable debug mode ...
-					TODO
-					// this is not implemented yet
-					error = [TEError error:TE_UNIMPLEMENTED_TOKEN_ERROR
-									inLine:lineNumber atToken:TE_DEBUG];
-					// and add this error to the error log
-					[_errorLog addObject:error];
-					// log this error to the console
-					[error logErrorMessageForTemplate:kEmptyString];
-				} // end if
-			}
-			
+
 			// ---------------------------------------------------------------
 			//  % F O R E A C H   b r a n c h
 			// ---------------------------------------------------------------
 			
-			else if([keyword isEqualToString:@"%FOREACH"]) {
-				if(!flags->forBranch && flags->expand) {
+			else if ([keyword isEqualToString:@"%FOREACH"]) {
+				if (!flags->forBranch && flags->expand) {
 					varName = [line wordAtIndex:2 usingDelimitersFromSet:whitespaceSet];
 					key = [line wordAtIndex:4 usingDelimitersFromSet:whitespaceSet];
 					
@@ -1366,7 +1301,7 @@ BOOL classExists (NSString *className) {
 							// and add this error to the error log
 							[_errorLog addObject:error];
 							// log this error to the console
-							[error logErrorMessageForTemplate:kEmptyString];
+							[error logErrorMessageForTemplate:@""];
 							// *** we are going to ignore this entire if-elsif-else-endif block ***
 							// if this is a nested if-else block ...
 							if (flags->condex) {
@@ -1385,8 +1320,8 @@ BOOL classExists (NSString *className) {
 						// if there is an identifier following %FOREACH ...
 						else {
 							// look up the value of the key in the dictionary
-							value = [NSString valueForDictionary:_dictionary key:key];
-							if(value == nil || ![value isKindOfClass:[NSArray class]])
+							id value = [NSString valueForDictionary:_dictionary key:key];
+							if (value == nil || ![value isKindOfClass:[NSArray class]])
 							{
 								error = [TEError error:TE_UNDEFINED_PLACEHOLDER_FOUND_ERROR
 												inLine:lineNumber atToken:TE_FOREACH];
@@ -1394,7 +1329,7 @@ BOOL classExists (NSString *className) {
 								// and add this error to the error log
 								[_errorLog addObject:error];
 								// log this error to the console
-								[error logErrorMessageForTemplate:kEmptyString];
+								[error logErrorMessageForTemplate:@""];
 							}
 							
 							// *** this is the surviving branch - others are error branches ***
@@ -1431,8 +1366,8 @@ BOOL classExists (NSString *className) {
 			//  % E N D F O R   b r a n c h
 			// ---------------------------------------------------------------
 			
-			else if([keyword isEqualToString:@"%ENDFOR"]) {
-				if(unexpandFor > 0) {
+			else if ([keyword isEqualToString:@"%ENDFOR"]) {
+				if (unexpandFor > 0) {
 					--unexpandFor;
 				} else {
 					if (flags->forBranch && flags->condex) {
@@ -1453,8 +1388,8 @@ BOOL classExists (NSString *className) {
 						} // end if
 						
 						NSArray *array = [NSString valueForDictionary:_dictionary key:key];
-						for(id varValue in array) {
-							[_dictionary setObject:varValue forKey:varName];
+						for (id varValue in array) {
+							_dictionary[varName] = varValue;
 							[result appendString:[NSString stringByExpandingTemplate:innerString
 																		withStartTag:startTag
 																		   andEndTag:endTag
@@ -1463,7 +1398,6 @@ BOOL classExists (NSString *className) {
 						}
 						[_dictionary removeObjectForKey:varName];
 						
-						[innerString release];
 						innerString = nil;
 					}
 					else {
@@ -1479,7 +1413,7 @@ BOOL classExists (NSString *className) {
 							// and add this error to the error log
 							[_errorLog addObject:error];
 							// log this error to the console
-							[error logErrorMessageForTemplate:kEmptyString];
+							[error logErrorMessageForTemplate:@""];
 						}
 					} // end if
 				}
@@ -1514,7 +1448,7 @@ BOOL classExists (NSString *className) {
 			} // end if
 		} // end if
 		if (flags->forBranch) {
-			if(innerString == nil) {
+			if (innerString == nil) {
 				innerString = [[NSMutableString alloc] init];
 			} else {
 				[innerString appendString:line];
@@ -1530,7 +1464,7 @@ BOOL classExists (NSString *className) {
 		// and add this error to the error log
 		[_errorLog addObject:error];
 		// log this error to the console
-		[error logErrorMessageForTemplate:kEmptyString];
+		[error logErrorMessageForTemplate:@""];
 	} // end if
 	// if there were any errors ...
 	if (errorsHaveOcurred) {
@@ -1543,7 +1477,7 @@ BOOL classExists (NSString *className) {
 	// if there were no errors ...
 	else {
 		// pass nil in the errorLog back to the caller
-		if(errorLog != nil) *errorLog = nil;
+		if (errorLog != nil) *errorLog = nil;
 	} // end if
 	// return the result string
 	return [NSString stringWithString:result];
@@ -1638,7 +1572,7 @@ BOOL classExists (NSString *className) {
 		// log this error to the console
 		[error logErrorMessageForTemplate:path];
 		// and add this error to the error log
-		*errorLog = [NSArray arrayWithObject:error];
+		*errorLog = @[error];
 		// this error is not recoverable - abort
 		return nil;
 	} // end if
@@ -1652,7 +1586,7 @@ BOOL classExists (NSString *className) {
 		// log this error to the console
 		[error logErrorMessageForTemplate:path];
 		// and add this error to the error log
-		*errorLog = [NSArray arrayWithObject:error];
+		*errorLog = @[error];
 		// this error is not recoverable - abort
 		return nil;
 	} // end if
@@ -1665,7 +1599,7 @@ BOOL classExists (NSString *className) {
 		// log this error to the console
 		[error logErrorMessageForTemplate:path];
 		// and add this error to the error log
-		*errorLog = [NSArray arrayWithObject:error];
+		*errorLog = @[error];
 		// this error is not recoverable - abort
 		return nil;
 	}
@@ -1677,7 +1611,7 @@ BOOL classExists (NSString *className) {
 		// log this error to the console
 		[error logErrorMessageForTemplate:path];
 		// and add this error to the error log
-		*errorLog = [NSArray arrayWithObject:error];
+		*errorLog = @[error];
 		// this error is not recoverable - abort
 		return nil;
 	}
@@ -1689,7 +1623,7 @@ BOOL classExists (NSString *className) {
 		// log this error to the console
 		[error logErrorMessageForTemplate:path];
 		// and add this error to the error log
-		*errorLog = [NSArray arrayWithObject:error];
+		*errorLog = @[error];
 		// this error is not recoverable - abort
 		return nil;
 	} // end if
@@ -1702,9 +1636,9 @@ BOOL classExists (NSString *className) {
 			desc = [fileError localizedDescription];
 			reason = [fileError localizedFailureReason];
 			// if an error in the Cocoa Error Domain ocurred ...
-            if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]){
+            if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]) {
 				// get the error code and match it to a corresponding TEError
-				switch([fileError code]) {
+				switch ([fileError code]) {
 					case NSFileNoSuchFileError :
 					case NSFileReadNoSuchFileError :
 					case NSFileReadInvalidFileNameError :
@@ -1746,7 +1680,7 @@ BOOL classExists (NSString *className) {
 			// log this error to the console
 			[error logErrorMessageForTemplate:path];
 			// and add this error to the error log
-			*errorLog = [NSArray arrayWithObject:error];
+			*errorLog = @[error];
 			// this error is not recoverable - abort
 			return nil;			
 		} // end if
@@ -1754,7 +1688,7 @@ BOOL classExists (NSString *className) {
 	else {
 		// use alternative method before MacOS X 10.4
 		templateData = [NSData dataWithContentsOfFile:path]; // path must be absolute
-		templateString = [[[NSString alloc] initWithData:templateData encoding:enc] autorelease];
+		templateString = [[NSString alloc] initWithData:templateData encoding:enc];
 		if (templateString == nil) { // there was no encoding error
 			// create error description - encoding error
 			error = [TEError error:TE_TEMPLATE_ENCODING_ERROR inLine:0 atToken:TE_PATH];
@@ -1762,7 +1696,7 @@ BOOL classExists (NSString *className) {
 			// log this error to the console
 			[error logErrorMessageForTemplate:path];
 			// and add this error to the error log
-			*errorLog = [NSArray arrayWithObject:error];
+			*errorLog = @[error];
 			// this error is not recoverable - abort
 			return nil;
 		} // end if
@@ -1780,8 +1714,8 @@ BOOL classExists (NSString *className) {
 	// use placeholder as key for dictionary lookup
 	id currentPlace = dictionary;
 	NSArray *path = [key componentsSeparatedByString:@"."];
-	for(id component in path) {
-		if(currentPlace != nil && [currentPlace respondsToSelector:@selector(valueForKey:)]) currentPlace = [currentPlace valueForKey:component];
+	for (id component in path) {
+		if (currentPlace != nil && [currentPlace respondsToSelector:@selector(valueForKey:)]) currentPlace = [currentPlace valueForKey:component];
 	}
 	return currentPlace;
 }

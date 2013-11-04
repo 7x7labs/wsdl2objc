@@ -12,7 +12,7 @@
 %ENDFOR
 
 %FOREACH schema in imports
-%IFNOT schema.shouldNotWriteString
+%IFNOT schema.shouldNotWrite
 #import "%«schema.prefix».h"
 %ENDIF
 %ENDFOR

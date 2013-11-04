@@ -2,7 +2,7 @@
 
 #import <libxml/parser.h>
 %FOREACH schema in schema.wsdl.schemas
-%IFNOT schema.shouldNotWriteString
+%IFNOT schema.shouldNotWrite
 #import "%«schema.prefix».h"
 %ENDIF
 %ENDFOR

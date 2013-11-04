@@ -9,10 +9,10 @@
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,52 +31,40 @@
 #import "USType.h"
 
 @implementation USWSDL
-
-@synthesize schemas;
-@synthesize targetNamespace;
-
 - (id)init
 {
-	if((self = [super init]))
+	if ((self = [super init]))
 	{
 		self.schemas = [NSMutableArray array];
 	}
 	return self;
 }
 
-- (void)dealloc
-{
-	[schemas release];
-	[targetNamespace release];
-	[super dealloc];
-}
-
 - (USSchema *)schemaForNamespace:(NSString *)aNamespace
 {
-	for(USSchema *schema in self.schemas) {
-		if([schema.fullName isEqualToString:aNamespace]) {
+	for (USSchema *schema in self.schemas) {
+		if ([schema.fullName isEqualToString:aNamespace]) {
 			return schema;
 		}
 	}
-	
+
 	USSchema *newSchema = [[USSchema alloc] initWithWSDL:self];
 	newSchema.fullName = aNamespace;
 	[self.schemas addObject:newSchema];
-	[newSchema release];
-	
+
 	return newSchema;
 }
 
 - (USSchema *)existingSchemaForPrefix:(NSString *)aPrefix
 {
-	if(aPrefix == nil) return nil;
-	
-	for(USSchema *schema in self.schemas) {
-		if([schema.prefix isEqualToString:aPrefix]) {
+	if (aPrefix == nil) return nil;
+
+	for (USSchema *schema in self.schemas) {
+		if ([schema.prefix isEqualToString:aPrefix]) {
 			return schema;
 		}
 	}
-	
+
 	return nil;
 }
 
@@ -89,7 +77,7 @@
 {
 	USSchema *xsd = [self schemaForNamespace:@"http://www.w3.org/2001/XMLSchema"];
 	xsd.prefix = @"xsd";
-	
+
 	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
 	[xsd addSimpleClassWithName:@"byte" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];

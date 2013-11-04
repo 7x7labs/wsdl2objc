@@ -1,16 +1,16 @@
 /*
  Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ typedef enum {
 - (NSString *)assignOrRetain;
 
 @property (nonatomic, copy) NSString *typeName;
-@property (nonatomic, assign) USSchema *schema;
+@property (nonatomic, strong) USSchema *schema;
 @property (nonatomic) TypeBehavior behavior;
 @property (nonatomic) BOOL hasBeenParsed;
 @property (nonatomic) BOOL hasBeenWritten;
@@ -53,13 +53,13 @@ typedef enum {
 
 #pragma mark Simple type methods
 @property (nonatomic, copy) NSString *representationClass;
-@property (nonatomic, retain) NSMutableArray *enumerationValues;
+@property (nonatomic, strong) NSMutableArray *enumerationValues;
 
 - (NSString *)enumCount;
 
 #pragma mark Complex type methods
-@property (nonatomic, retain) USType *superClass;
-@property (nonatomic, retain) NSMutableArray *sequenceElements;
-@property (nonatomic, retain) NSMutableArray *attributes;
+@property (nonatomic, strong) USType *superClass;
+@property (nonatomic, strong) NSMutableArray *sequenceElements;
+@property (nonatomic, strong) NSMutableArray *attributes;
 
 @end

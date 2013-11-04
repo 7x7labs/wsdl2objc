@@ -22,16 +22,14 @@
 
 #import "USObjCKeywords.h"
 
-static USObjCKeywords *sharedInstance = nil;
 
 @implementation USObjCKeywords
 
 + (USObjCKeywords *)sharedInstance
 {
-	if(sharedInstance == nil) {
+    static USObjCKeywords *sharedInstance = nil;
+	if (sharedInstance == nil)
 		sharedInstance = [USObjCKeywords new];
-	}
-	
 	return sharedInstance;
 }
 
@@ -41,9 +39,8 @@ static USObjCKeywords *sharedInstance = nil;
 	// be likely names of attributes as these cause the compiler to
 	// complain as well.
 
-	if((self = [super init])) {
-		keywords = [NSArray arrayWithObjects:
-					@"id",
+	if ((self = [super init])) {
+		keywords = @[@"id",
 					@"for",
 					@"self",
 					@"super",
@@ -100,8 +97,7 @@ static USObjCKeywords *sharedInstance = nil;
 					
 					// more:
 					@"method",
-					@"category",
-					nil];
+					@"category"];
 	}
 	
 	return self;
@@ -112,11 +108,7 @@ static USObjCKeywords *sharedInstance = nil;
   // Compiler objects to things with the same name as keywords even if the
   // case differs, so convert to lower case for the test.
   
-	if([keywords containsObject:[testString lowercaseString]]) {
-		return YES;
-	}
-	
-	return NO;
+	return [keywords containsObject:[testString lowercaseString]];
 }
 
 @end
