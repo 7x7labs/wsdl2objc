@@ -24,8 +24,6 @@
 
 #define kLineFeed @"\n"
 
-#define found(x) (x.location != NSNotFound)
-
 #define keyDefined(x,y) ([NSString valueForDictionary:x key:y] != nil)
 #define keyNotDefined(x,y) ([NSString valueForDictionary:x key:y] == nil)
 
@@ -37,7 +35,7 @@
 - (BOOL)isRegularFileAtPath:(NSString *)path
 {
 	return ([[[self attributesOfItemAtPath:path error:NULL] fileType]
-		isEqualToString:@"NSFileTypeRegular"]);
+             isEqualToString:@"NSFileTypeRegular"]);
 }
 
 @end
@@ -56,12 +54,12 @@
 
 + (NSString *)defaultStartTag
 {
-    return [[NSString alloc] initWithUTF8String:"%\xC2\xAB"];
+	return [[NSString alloc] initWithUTF8String:"%\xC2\xAB"];
 }
 
 + (NSString *)defaultEndTag
 {
-    return [[NSString alloc] initWithUTF8String:"\xC2\xBB"];
+	return [[NSString alloc] initWithUTF8String:"\xC2\xBB"];
 }
 
 - (NSString *)stringByExpandingPlaceholdersWithStartTag:(NSString *)startTag
@@ -75,7 +73,6 @@
 	NSMutableString *placeholder = [NSMutableString stringWithCapacity:20];
 	NSMutableString *value;
 	NSMutableArray *_errorLog = [NSMutableArray arrayWithCapacity:5];
-	#define errorsHaveOcurred ([_errorLog count] > 0)
 	NSException* exception = nil;
 	NSRange tag, range;
 	TEError *error;
@@ -94,13 +91,13 @@
 
 	[remainder_ setString:self];
 	tag = [remainder_ rangeOfString:startTag];
-	if found(tag) {
-		while found(tag) {
+	if (tag.location != NSNotFound) {
+		while (tag.location != NSNotFound) {
 			[result appendString:[remainder_ substringToIndex:tag.location]];
 			range.location = 0; range.length = tag.location+tag.length;
 			[remainder_ deleteCharactersInRange:range];
 			tag = [remainder_ rangeOfString:endTag];
-			if found(tag) {
+			if (tag.location != NSNotFound) {
 				[placeholder setString:[remainder_ substringToIndex:tag.location]];
 				value = [NSString valueForDictionary:dictionary key:placeholder];
 				if (value == nil) {
@@ -137,7 +134,7 @@
 	else {
 		result = remainder_;
 	}
-	if (errorsHaveOcurred) {
+	if ([_errorLog count] > 0) {
 		*errorLog = _errorLog;
 		NSLog(@"errors have ocurred while expanding placeholders in string");
 	}
@@ -145,23 +142,17 @@
 		*errorLog = nil;
 	}
 	return result;
-	#undef errorsHaveOcurred
 }
 
 @end
 
 @interface TEFlags : NSObject {
-	@public unsigned consumed, expand, condex, forBranch;
+@public bool consumed, expand, condex, forBranch;
 }
 + (TEFlags *)flags;
 @end
 
 @implementation TEFlags
-- (id)init {
-	self = [super init];
-	return self;
-}
-
 + (TEFlags *)flags {
 	TEFlags *thisInstance = [[TEFlags alloc] init];
 	thisInstance->consumed = false;
@@ -174,7 +165,6 @@
 @end
 
 @implementation NSString (STSTemplateEngine)
-
 + (id)stringByExpandingTemplate:(NSString *)templateString
 				usingDictionary:(NSDictionary *)dictionary
 				 errorsReturned:(NSArray **)errorLog
@@ -206,9 +196,7 @@
 	LIFO *stack = [LIFO stackWithCapacity:8];
 
 	NSMutableArray *_errorLog = [NSMutableArray arrayWithCapacity:5];
-	#define errorsHaveOcurred ([_errorLog count] > 0)
 	NSMutableArray *lineErrors = [NSMutableArray arrayWithCapacity:2];
-	#define lineErrorsHaveOcurred ([lineErrors count] > 0)
 	TEError *error;
 
 	NSString *line = nil, *remainder_ = nil, *keyword = nil, *key = nil, *operand = nil, *varName = nil;
@@ -232,13 +220,13 @@
 	_dictionary[@"_uniqueID"] = [processInfo globallyUniqueString];
 	_dictionary[@"_hostname"] = [processInfo hostName];
 
-    NSLocale *locale = [NSLocale currentLocale];
-    _dictionary[@"_userCountryCode"] = [locale objectForKey:NSLocaleCountryCode];
-    _dictionary[@"_userLanguage"] = [locale objectForKey:NSLocaleLanguageCode];
+	NSLocale *locale = [NSLocale currentLocale];
+	_dictionary[@"_userCountryCode"] = [locale objectForKey:NSLocaleCountryCode];
+	_dictionary[@"_userLanguage"] = [locale objectForKey:NSLocaleLanguageCode];
 
-    locale = [NSLocale systemLocale];
-    _dictionary[@"_systemCountryCode"] = [locale objectForKey:NSLocaleCountryCode] ?: @"";
-    _dictionary[@"_systemLanguage"] = [locale objectForKey:NSLocaleLanguageCode] ?: @"";
+	locale = [NSLocale systemLocale];
+	_dictionary[@"_systemCountryCode"] = [locale objectForKey:NSLocaleCountryCode] ?: @"";
+	_dictionary[@"_systemLanguage"] = [locale objectForKey:NSLocaleLanguageCode] ?: @"";
 
 	while ((line = [list nextObject])) {
 		lineNumber++;
@@ -330,7 +318,7 @@
 					else {
 						id value = [NSString valueForDictionary:_dictionary key:key];
 						remainder_ = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
-									restOfWordsUsingDelimitersFromSet:whitespaceSet];
+                                      restOfWordsUsingDelimitersFromSet:whitespaceSet];
 						len = [remainder_ length];
 						if (len == 0) {
 							error = [TEError error:TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR
@@ -400,7 +388,7 @@
 						else {
 							id value = [NSString valueForDictionary:_dictionary key:key];
 							remainder_ = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
-									restOfWordsUsingDelimitersFromSet:whitespaceSet];
+                                          restOfWordsUsingDelimitersFromSet:whitespaceSet];
 							len = [remainder_ length];
 							if (len == 0) {
 								error = [TEError error:TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR
@@ -495,7 +483,7 @@
 							flags->expand = (keyDefined(_dictionary, key)) ^ complement;
 						}
 					}
-				flags->consumed = (flags->consumed || flags->expand);
+                    flags->consumed = (flags->consumed || flags->expand);
 				}
 				else if (unexpandIf == 0) {
 					error = [TEError error:TE_UNEXPECTED_TOKEN_ERROR
@@ -699,7 +687,7 @@
 																	  lineNumber:lineNumber]];
 			[result appendString:kLineFeed];
 
-			if (lineErrorsHaveOcurred) {
+			if ([lineErrors count] > 0) {
 				[_errorLog addObjectsFromArray:lineErrors];
 			}
 		}
@@ -718,7 +706,7 @@
 		[_errorLog addObject:error];
 		[error logErrorMessageForTemplate:@""];
 	}
-	if (errorsHaveOcurred) {
+	if ([_errorLog count] > 0) {
 		*errorLog = _errorLog;
 		NSLog(@"errors have occurred while expanding placeholders in string using dictionary:\n%@", dictionary);
 		NSLog(@"using template:\n%@", template);
@@ -727,8 +715,6 @@
 		if (errorLog != nil) *errorLog = nil;
 	}
 	return [NSString stringWithString:result];
-	#undef errorsHaveOcurred
-	#undef lineErrorsHaveOcurred
 }
 
 + (id)stringByExpandingTemplateAtPath:(NSString *)path
@@ -802,7 +788,7 @@
 		if (fileError != nil) {
 			desc = [fileError localizedDescription];
 			reason = [fileError localizedFailureReason];
-            if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]) {
+			if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]) {
 				switch ([fileError code]) {
 					case NSFileNoSuchFileError :
 					case NSFileReadNoSuchFileError :
@@ -821,14 +807,14 @@
 					default :
 						error = [TEError error:TE_GENERIC_ERROR inLine:0 atToken:TE_PATH];
 						[error setLiteral:[NSString stringWithFormat:
-							@"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
+                                           @"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
 						break;
 				}
 			}
 			else {
 				error = [TEError error:TE_GENERIC_ERROR inLine:0 atToken:TE_PATH];
 				[error setLiteral:[NSString stringWithFormat:
-					@"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
+                                   @"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
 			}
 			if ([[error literal] length] == 0) {
 				[error setLiteral:path];
@@ -863,7 +849,7 @@
 	NSArray *path = [key componentsSeparatedByString:@"."];
 	for (id component in path) {
 		if ([currentPlace respondsToSelector:@selector(valueForKey:)])
-            currentPlace = [currentPlace valueForKey:component];
+			currentPlace = [currentPlace valueForKey:component];
 	}
 	return currentPlace;
 }
