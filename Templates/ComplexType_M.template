@@ -274,6 +274,8 @@
 		self.%«attribute.name» = attrString;
 %ELSIFNEQ attribute.type.enumCount 0
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
+%ELSIFEQ attribute.type.classNameWithoutPtr NSNumber
+		self.%«attribute.name» = @([attrString doubleValue]);
 %ELSIF attribute.type.isSimpleType
 		self.%«attribute.name» = attrString;
 %ELSE

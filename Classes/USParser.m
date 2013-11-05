@@ -21,16 +21,18 @@
  */
 
 #import "USParser.h"
-#import "USParser+Types.h"
+#import "USParser+Bindings.h"
 #import "USParser+Messages.h"
 #import "USParser+PortTypes.h"
-#import "USParser+Bindings.h"
 #import "USParser+Services.h"
+#import "USParser+Types.h"
 
-#import "USWSDL.h"
+#import "USAttribute.h"
+#import "USElement.h"
 #import "USSchema.h"
-#import "USType.h"
 #import "USSequenceElement.h"
+#import "USType.h"
+#import "USWSDL.h"
 
 @interface USParser ()
 @property (nonatomic, strong) NSURL *baseURL;
@@ -224,7 +226,7 @@
     NSLog(@"Dumping schema: %@", schema.fullName);
     NSLog(@"TYPES:");
     for (USType *aT in [schema types]) {
-        NSLog(@"    + %@ (%@, %d, %d, %@", aT.typeName, aT, aT.hasBeenParsed, [aT.enumerationValues count], [aT assignOrRetain]);
+        NSLog(@"    + %@ (%@, %d, %d, %@", aT.typeName, aT.representationClass, aT.hasBeenParsed, [aT.enumerationValues count], [aT assignOrRetain]);
         NSLog(@"        Attributes:");
         for (USAttribute *aTA in [aT attributes]) {
             NSLog(@"        - %@ (%@)", [aTA name], [[aTA type] typeName]);
