@@ -117,23 +117,18 @@
 		}
 	}
 
+    NSMutableOrderedSet *enumerationValues = [NSMutableOrderedSet new];
 	for (NSXMLNode *child in [el children]) {
-		if ([child kind] == NSXMLElementKind) {
-			[self processRestrictionChildElement:(NSXMLElement*)child type:type];
-		}
-	}
+		if ([child kind] != NSXMLElementKind) continue;
+
+        if ([[el localName] isEqualToString:@"enumeration"])
+            [enumerationValues addObject:[self processEnumerationElement:el type:type]];
+    }
+
+    type.enumerationValues = [enumerationValues array];
 }
 
-- (void)processRestrictionChildElement:(NSXMLElement *)el type:(USType *)type
-{
-	NSString *localName = [el localName];
-
-	if ([localName isEqualToString:@"enumeration"]) {
-		[self processEnumerationElement:el type:type];
-	}
-}
-
-- (void)processEnumerationElement:(NSXMLElement *)el type:(USType *)type
+- (NSString *)processEnumerationElement:(NSXMLElement *)el type:(USType *)type
 {
 	NSString *enumerationValue = [[el attributeForName:@"value"] stringValue];
 	// Get rid of the useless current local prefix if it exists
@@ -143,7 +138,7 @@
 	}
 	enumerationValue = [enumerationValue stringByReplacingOccurrencesOfString:@" " withString:@"_"];
 	enumerationValue = [enumerationValue stringByReplacingOccurrencesOfString:@":" withString:@"_"];
-	[type.enumerationValues addObject:[[enumerationValue componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""]];
+	return [[enumerationValue componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
 }
 
 #pragma mark Types:Schema:ComplexType

@@ -53,7 +53,7 @@ typedef enum {
 
 #pragma mark Simple type methods
 @property (nonatomic, copy) NSString *representationClass;
-@property (nonatomic, strong) NSMutableArray *enumerationValues;
+@property (nonatomic, strong) NSArray *enumerationValues;
 
 - (NSString *)enumCount;
 
