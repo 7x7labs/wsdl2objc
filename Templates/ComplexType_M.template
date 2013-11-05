@@ -20,22 +20,17 @@
 }
 
 %ENDIF
-- (NSString *)nsPrefix
-{
-	return @"%«schema.prefix»";
-}
-
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
 %IFDEF IsAttributedString
-	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:[self nsPrefix]];
+	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:@"%«schema.prefix»"];
 %ELSE
-	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:[self nsPrefix]];
+	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:@"%«schema.prefix»"];
 %ENDIF
 %IFDEF superClass
 
 	xmlNsPtr xsi = xmlSearchNs(doc, xmlDocGetRootElement(doc), (const xmlChar *)"xsi");
-	xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)[[[self nsPrefix] stringByAppendingString:@":%«typeName»"] UTF8String]);
+	xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)[[@"%«schema.prefix»" stringByAppendingString:@":%«typeName»"] UTF8String]);
 
 %ENDIF
 %IF hasAttributes
@@ -99,7 +94,7 @@
 %FOREACH element in sequenceElements
 %IF element.useAnArray
 %IFEQ element.type.enumCount 0
-	[self.%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]];
+	[self.%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"];
 %ELSE
 	for (NSNumber *intRepresentation in self.%«element.name») {
 		%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
@@ -109,7 +104,11 @@
 %ELSE
 	if (self.%«element.name») {
 %IFEQ element.type.assignOrRetain strong
-		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:[self nsPrefix]]);
+%IF element.type.isComplexType
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
+%ELSE
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"]);
+%ENDIF
 %ELSIFEQ element.type.typeName boolean
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar *)"true" : (const xmlChar *)"false"));
 %ELSIFEQ element.type.typeName long
@@ -129,7 +128,7 @@
 		sprintf(buf, "%f", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
-		xmlNewChild(node, NULL, (const xmlChar *)[[[self nsPrefix] stringByAppendingString:@":%«element.wsdlName»"] UTF8String], [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
+		xmlNewChild(node, NULL, (const xmlChar *)"%«schema.prefix»:%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
 %ENDIF
 	}
 %ENDIF
