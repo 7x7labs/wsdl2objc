@@ -232,14 +232,14 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F4FAC31A1227F0F9006B61BC /* NSBundle+USAdditions.h */,
+				F4FAC31B1227F0F9006B61BC /* NSBundle+USAdditions.m */,
 				623346310E759A5A0094F6F1 /* NSString+USAdditions.h */,
 				623346320E759A5A0094F6F1 /* NSString+USAdditions.m */,
 				621D44F00E6E119B00CEF901 /* USObjCKeywords.h */,
 				621D44F10E6E119B00CEF901 /* USObjCKeywords.m */,
-				32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* WSDLParser.m */,
-				F4FAC31A1227F0F9006B61BC /* NSBundle+USAdditions.h */,
-				F4FAC31B1227F0F9006B61BC /* NSBundle+USAdditions.m */,
+				32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -256,8 +256,8 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6235ED0C0E63887A00DABBD6 /* WSDLParser.app */,
 				F4FAC2931227E364006B61BC /* wsdl2objc */,
+				6235ED0C0E63887A00DABBD6 /* WSDLParser.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -265,10 +265,10 @@
 		621D458A0E6E18A900CEF901 /* Messages */ = {
 			isa = PBXGroup;
 			children = (
-				624062F90E706800006BEB94 /* USParser+Messages.h */,
-				624062FA0E706800006BEB94 /* USParser+Messages.m */,
 				624063010E70692E006BEB94 /* USMessage.h */,
 				624063020E70692E006BEB94 /* USMessage.m */,
+				624062F90E706800006BEB94 /* USParser+Messages.h */,
+				624062FA0E706800006BEB94 /* USParser+Messages.m */,
 				624062FC0E70687B006BEB94 /* USPart.h */,
 				624062FD0E70687B006BEB94 /* USPart.m */,
 			);
@@ -278,16 +278,16 @@
 		621D458B0E6E18C500CEF901 /* PortTypes */ = {
 			isa = PBXGroup;
 			children = (
+				6240636F0E7082C9006BEB94 /* USOperation.h */,
+				624063700E7082C9006BEB94 /* USOperation.m */,
+				6240637C0E70877F006BEB94 /* USOperationFault.h */,
+				6240637D0E70877F006BEB94 /* USOperationFault.m */,
+				624063750E708572006BEB94 /* USOperationInterface.h */,
+				624063760E708572006BEB94 /* USOperationInterface.m */,
 				624063630E70816C006BEB94 /* USParser+PortTypes.h */,
 				624063640E70816C006BEB94 /* USParser+PortTypes.m */,
 				624063670E70827A006BEB94 /* USPortType.h */,
 				624063680E70827A006BEB94 /* USPortType.m */,
-				6240636F0E7082C9006BEB94 /* USOperation.h */,
-				624063700E7082C9006BEB94 /* USOperation.m */,
-				624063750E708572006BEB94 /* USOperationInterface.h */,
-				624063760E708572006BEB94 /* USOperationInterface.m */,
-				6240637C0E70877F006BEB94 /* USOperationFault.h */,
-				6240637D0E70877F006BEB94 /* USOperationFault.m */,
 			);
 			name = PortTypes;
 			sourceTree = "<group>";
@@ -295,10 +295,10 @@
 		621D458D0E6E195C00CEF901 /* Bindings */ = {
 			isa = PBXGroup;
 			children = (
-				624064710E709558006BEB94 /* USParser+Bindings.h */,
-				624064720E709558006BEB94 /* USParser+Bindings.m */,
 				624064750E709575006BEB94 /* USBinding.h */,
 				624064760E709575006BEB94 /* USBinding.m */,
+				624064710E709558006BEB94 /* USParser+Bindings.h */,
+				624064720E709558006BEB94 /* USParser+Bindings.m */,
 			);
 			name = Bindings;
 			sourceTree = "<group>";
@@ -308,10 +308,10 @@
 			children = (
 				624064940E70A0D1006BEB94 /* USParser+Services.h */,
 				624064950E70A0D1006BEB94 /* USParser+Services.m */,
-				6240648B0E709F6B006BEB94 /* USService.h */,
-				6240648C0E709F6B006BEB94 /* USService.m */,
 				6240648E0E709FAC006BEB94 /* USPort.h */,
 				6240648F0E709FAC006BEB94 /* USPort.m */,
+				6240648B0E709F6B006BEB94 /* USService.h */,
+				6240648C0E709F6B006BEB94 /* USService.m */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -330,10 +330,10 @@
 		622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */ = {
 			isa = PBXGroup;
 			children = (
-				62FF1EF80E883B8A006D6377 /* USGlobals_H.template */,
-				62FF1F010E883C22006D6377 /* USGlobals_M.template */,
 				62BF41B20E72004900FA8190 /* USAdditions_H.template */,
 				62BF41B30E72004900FA8190 /* USAdditions_M.template */,
+				62FF1EF80E883B8A006D6377 /* USGlobals_H.template */,
+				62FF1F010E883C22006D6377 /* USGlobals_M.template */,
 			);
 			name = "WSDL2ObjC Standard Additions";
 			sourceTree = "<group>";
@@ -341,18 +341,18 @@
 		6235ECF60E6386D200DABBD6 /* Templates */ = {
 			isa = PBXGroup;
 			children = (
-				622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */,
 				6222413F0E7722A7005D3D36 /* NSDate_ISO8601 */,
-				62BFB2240E648CE100E19E18 /* Schema_H.template */,
-				62BFB2250E648CE900E19E18 /* Schema_M.template */,
-				6235F00A0E63954100DABBD6 /* ComplexType_H.template */,
-				6235F00D0E63958E00DABBD6 /* ComplexType_M.template */,
-				6235F0090E63953500DABBD6 /* SimpleType_H.template */,
-				6235F00C0E63958100DABBD6 /* SimpleType_M.template */,
+				622241410E7722D4005D3D36 /* WSDL2ObjC Standard Additions */,
 				6240653F0E70A8C5006BEB94 /* Binding_H.template */,
 				624065410E70A8D0006BEB94 /* Binding_M.template */,
+				6235F00A0E63954100DABBD6 /* ComplexType_H.template */,
+				6235F00D0E63958E00DABBD6 /* ComplexType_M.template */,
+				62BFB2240E648CE100E19E18 /* Schema_H.template */,
+				62BFB2250E648CE900E19E18 /* Schema_M.template */,
 				624065390E70A6A0006BEB94 /* Service_H.template */,
 				6240653A0E70A6A8006BEB94 /* Service_M.template */,
+				6235F0090E63953500DABBD6 /* SimpleType_H.template */,
+				6235F00C0E63958100DABBD6 /* SimpleType_M.template */,
 			);
 			path = Templates;
 			sourceTree = "<group>";
@@ -368,16 +368,16 @@
 		62ADD38C0E688F290052979D /* Types */ = {
 			isa = PBXGroup;
 			children = (
-				62ADD3970E6890140052979D /* USParser+Types.h */,
-				62ADD3980E6890140052979D /* USParser+Types.m */,
-				B97798C60DF45829000F758E /* USType.h */,
-				62BFB31D0E64D15900E19E18 /* USType.m */,
-				B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */,
-				B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */,
 				B93FECA60DF76C5A00145322 /* USAttribute.h */,
 				B93FECA70DF76C5A00145322 /* USAttribute.m */,
 				62E6332B0E676DF40072DBDD /* USElement.h */,
 				62E6332C0E676DF40072DBDD /* USElement.m */,
+				62ADD3970E6890140052979D /* USParser+Types.h */,
+				62ADD3980E6890140052979D /* USParser+Types.m */,
+				B9ADEFD20DB1651A00998A45 /* USSequenceElement.h */,
+				B9ADEFD30DB1651A00998A45 /* USSequenceElement.m */,
+				B97798C60DF45829000F758E /* USType.h */,
+				62BFB31D0E64D15900E19E18 /* USType.m */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -406,23 +406,23 @@
 		B9FA26940DA6E8DD004C7479 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B9FA269A0DA6E901004C7479 /* USParserApplication.h */,
-				B9FA269B0DA6E901004C7479 /* USParserApplication.m */,
+				621D458D0E6E195C00CEF901 /* Bindings */,
+				621D458A0E6E18A900CEF901 /* Messages */,
+				621D458B0E6E18C500CEF901 /* PortTypes */,
+				621D458E0E6E196300CEF901 /* Services */,
+				62ADD38C0E688F290052979D /* Types */,
+				3F5B741E18294CFC000AA889 /* NSXMLElement+Children.h */,
+				3F5B741F18294CFC000AA889 /* NSXMLElement+Children.m */,
 				B9FEAA5B0E01F0C1002165CA /* USParser.h */,
 				B9FEAA5C0E01F0C1002165CA /* USParser.m */,
+				B9FA269A0DA6E901004C7479 /* USParserApplication.h */,
+				B9FA269B0DA6E901004C7479 /* USParserApplication.m */,
+				B9FEAA8B0E01F59B002165CA /* USSchema.h */,
+				B9FEAA8C0E01F59B002165CA /* USSchema.m */,
 				62BFAF760E645D8500E19E18 /* USWriter.h */,
 				62BFAF770E645D8500E19E18 /* USWriter.m */,
 				B9FEAA860E01F4A0002165CA /* USWSDL.h */,
 				B9FEAA870E01F4A0002165CA /* USWSDL.m */,
-				B9FEAA8B0E01F59B002165CA /* USSchema.h */,
-				B9FEAA8C0E01F59B002165CA /* USSchema.m */,
-				3F5B741E18294CFC000AA889 /* NSXMLElement+Children.h */,
-				3F5B741F18294CFC000AA889 /* NSXMLElement+Children.m */,
-				62ADD38C0E688F290052979D /* Types */,
-				621D458A0E6E18A900CEF901 /* Messages */,
-				621D458B0E6E18C500CEF901 /* PortTypes */,
-				621D458D0E6E195C00CEF901 /* Bindings */,
-				621D458E0E6E196300CEF901 /* Services */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -505,25 +505,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				62FF1F670E883F1D006D6377 /* USGlobals_H.template in Resources */,
-				62FF1F680E883F1D006D6377 /* USGlobals_M.template in Resources */,
-				621D44700E6E0BD200CEF901 /* Schema_H.template in Resources */,
-				621D44710E6E0BD200CEF901 /* Schema_M.template in Resources */,
-				621D446C0E6E0BD200CEF901 /* ComplexType_H.template in Resources */,
-				621D446D0E6E0BD200CEF901 /* ComplexType_M.template in Resources */,
-				621D446E0E6E0BD200CEF901 /* SimpleType_H.template in Resources */,
-				621D446F0E6E0BD200CEF901 /* SimpleType_M.template in Resources */,
 				624065F80E70B1F6006BEB94 /* Binding_H.template in Resources */,
 				624065F90E70B1F6006BEB94 /* Binding_M.template in Resources */,
-				6240653B0E70A6B0006BEB94 /* Service_H.template in Resources */,
-				6240653C0E70A6B0006BEB94 /* Service_M.template in Resources */,
+				621D446C0E6E0BD200CEF901 /* ComplexType_H.template in Resources */,
+				621D446D0E6E0BD200CEF901 /* ComplexType_M.template in Resources */,
 				6235EE6F0E63897300DABBD6 /* MainMenu.xib in Resources */,
-				62BF41B90E72009F00FA8190 /* USAdditions_H.template in Resources */,
-				62BF41BA0E72009F00FA8190 /* USAdditions_M.template in Resources */,
 				62BF42350E72099000FA8190 /* NSDate+ISO8601Parsing_H.template in Resources */,
 				62BF42360E72099000FA8190 /* NSDate+ISO8601Parsing_M.template in Resources */,
 				62BF42370E72099000FA8190 /* NSDate+ISO8601Unparsing_H.template in Resources */,
 				62BF42380E72099000FA8190 /* NSDate+ISO8601Unparsing_M.template in Resources */,
+				621D44700E6E0BD200CEF901 /* Schema_H.template in Resources */,
+				621D44710E6E0BD200CEF901 /* Schema_M.template in Resources */,
+				6240653B0E70A6B0006BEB94 /* Service_H.template in Resources */,
+				6240653C0E70A6B0006BEB94 /* Service_M.template in Resources */,
+				621D446E0E6E0BD200CEF901 /* SimpleType_H.template in Resources */,
+				621D446F0E6E0BD200CEF901 /* SimpleType_M.template in Resources */,
+				62BF41B90E72009F00FA8190 /* USAdditions_H.template in Resources */,
+				62BF41BA0E72009F00FA8190 /* USAdditions_M.template in Resources */,
+				62FF1F670E883F1D006D6377 /* USGlobals_H.template in Resources */,
+				62FF1F680E883F1D006D6377 /* USGlobals_M.template in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -535,38 +535,38 @@
 			buildActionMask = 2147483647;
 			files = (
 				6235EE970E638B7B00DABBD6 /* LIFO.m in Sources */,
+				F4FAC31D1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */,
+				623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */,
+				3F5B742018294CFC000AA889 /* NSXMLElement+Children.m in Sources */,
 				6235EE980E638B7B00DABBD6 /* STSNullError.m in Sources */,
 				6235EE990E638B7B00DABBD6 /* STSStringOps.m in Sources */,
 				6235EE9A0E638B7B00DABBD6 /* STSTemplateEngine.m in Sources */,
 				6235EE9B0E638B7B00DABBD6 /* STSTemplateEngineErrors.m in Sources */,
 				6235EE9C0E638B7B00DABBD6 /* USAttribute.m in Sources */,
+				624064770E709575006BEB94 /* USBinding.m in Sources */,
+				62E6332E0E676DF40072DBDD /* USElement.m in Sources */,
+				6240636C0E708294006BEB94 /* USMessage.m in Sources */,
+				621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */,
+				624063710E7082C9006BEB94 /* USOperation.m in Sources */,
+				6240637E0E70877F006BEB94 /* USOperationFault.m in Sources */,
+				624063770E708572006BEB94 /* USOperationInterface.m in Sources */,
+				624064730E709558006BEB94 /* USParser+Bindings.m in Sources */,
+				6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */,
+				6240636D0E708294006BEB94 /* USParser+PortTypes.m in Sources */,
+				624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */,
+				62ADD39A0E6890140052979D /* USParser+Types.m in Sources */,
 				6235EE9F0E638B7B00DABBD6 /* USParser.m in Sources */,
 				6235EEA00E638B7B00DABBD6 /* USParserApplication.m in Sources */,
+				6240636B0E708294006BEB94 /* USPart.m in Sources */,
+				624064900E709FAC006BEB94 /* USPort.m in Sources */,
+				624063690E70827A006BEB94 /* USPortType.m in Sources */,
 				6235EEA10E638B7B00DABBD6 /* USSchema.m in Sources */,
 				6235EEA20E638B7B00DABBD6 /* USSequenceElement.m in Sources */,
+				6240648D0E709F6B006BEB94 /* USService.m in Sources */,
+				62BFB31E0E64D15900E19E18 /* USType.m in Sources */,
+				62BFAF790E645D8500E19E18 /* USWriter.m in Sources */,
 				6235EEA50E638B7B00DABBD6 /* USWSDL.m in Sources */,
 				6235EEA60E638B7B00DABBD6 /* WSDLParser.m in Sources */,
-				62BFAF790E645D8500E19E18 /* USWriter.m in Sources */,
-				62BFB31E0E64D15900E19E18 /* USType.m in Sources */,
-				62E6332E0E676DF40072DBDD /* USElement.m in Sources */,
-				62ADD39A0E6890140052979D /* USParser+Types.m in Sources */,
-				624063690E70827A006BEB94 /* USPortType.m in Sources */,
-				621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */,
-				3F5B742018294CFC000AA889 /* NSXMLElement+Children.m in Sources */,
-				6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */,
-				6240636B0E708294006BEB94 /* USPart.m in Sources */,
-				6240636C0E708294006BEB94 /* USMessage.m in Sources */,
-				6240636D0E708294006BEB94 /* USParser+PortTypes.m in Sources */,
-				624063710E7082C9006BEB94 /* USOperation.m in Sources */,
-				624063770E708572006BEB94 /* USOperationInterface.m in Sources */,
-				6240637E0E70877F006BEB94 /* USOperationFault.m in Sources */,
-				624064730E709558006BEB94 /* USParser+Bindings.m in Sources */,
-				624064770E709575006BEB94 /* USBinding.m in Sources */,
-				6240648D0E709F6B006BEB94 /* USService.m in Sources */,
-				624064900E709FAC006BEB94 /* USPort.m in Sources */,
-				624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */,
-				623346330E759A5A0094F6F1 /* NSString+USAdditions.m in Sources */,
-				F4FAC31D1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -574,12 +574,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4FAC2B51227E4F0006B61BC /* LIFO.m in Sources */,
+				F4FAC2C31227E7DF006B61BC /* main.m in Sources */,
+				F4FAC31C1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */,
 				F4FAC29B1227E4BE006B61BC /* NSString+USAdditions.m in Sources */,
-				F4FAC29C1227E4BF006B61BC /* USObjCKeywords.m in Sources */,
+				3F5B742118294CFC000AA889 /* NSXMLElement+Children.m in Sources */,
+				F4FAC2B61227E4F2006B61BC /* STSNullError.m in Sources */,
+				F4FAC2B71227E4F3006B61BC /* STSStringOps.m in Sources */,
+				F4FAC2B81227E4F4006B61BC /* STSTemplateEngine.m in Sources */,
+				F4FAC2B91227E4F6006B61BC /* STSTemplateEngineErrors.m in Sources */,
 				F4FAC29E1227E4C5006B61BC /* USAttribute.m in Sources */,
 				F4FAC29F1227E4C7006B61BC /* USBinding.m in Sources */,
 				F4FAC2A01227E4C8006B61BC /* USElement.m in Sources */,
 				F4FAC2A11227E4C9006B61BC /* USMessage.m in Sources */,
+				F4FAC29C1227E4BF006B61BC /* USObjCKeywords.m in Sources */,
 				F4FAC2A21227E4CA006B61BC /* USOperation.m in Sources */,
 				F4FAC2A31227E4CB006B61BC /* USOperationFault.m in Sources */,
 				F4FAC2A41227E4CD006B61BC /* USOperationInterface.m in Sources */,
@@ -592,7 +600,6 @@
 				F4FAC2AB1227E4DA006B61BC /* USParserApplication.m in Sources */,
 				F4FAC2AC1227E4DB006B61BC /* USPart.m in Sources */,
 				F4FAC2AD1227E4DC006B61BC /* USPort.m in Sources */,
-				3F5B742118294CFC000AA889 /* NSXMLElement+Children.m in Sources */,
 				F4FAC2AE1227E4DD006B61BC /* USPortType.m in Sources */,
 				F4FAC2AF1227E4DF006B61BC /* USSchema.m in Sources */,
 				F4FAC2B01227E4E0006B61BC /* USSequenceElement.m in Sources */,
@@ -600,13 +607,6 @@
 				F4FAC2B21227E4E4006B61BC /* USType.m in Sources */,
 				F4FAC2B31227E4E5006B61BC /* USWriter.m in Sources */,
 				F4FAC2B41227E4E6006B61BC /* USWSDL.m in Sources */,
-				F4FAC2B51227E4F0006B61BC /* LIFO.m in Sources */,
-				F4FAC2B61227E4F2006B61BC /* STSNullError.m in Sources */,
-				F4FAC2B71227E4F3006B61BC /* STSStringOps.m in Sources */,
-				F4FAC2B81227E4F4006B61BC /* STSTemplateEngine.m in Sources */,
-				F4FAC2B91227E4F6006B61BC /* STSTemplateEngineErrors.m in Sources */,
-				F4FAC2C31227E7DF006B61BC /* main.m in Sources */,
-				F4FAC31C1227F0F9006B61BC /* NSBundle+USAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
