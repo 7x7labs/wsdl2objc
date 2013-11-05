@@ -24,27 +24,7 @@
 #import "USParser.h"
 
 @class USSchema;
-@class USBinding;
-@class USOperation;
-@class USOperationInterface;
-@class USOperationFault;
 
 @interface USParser (Bindings)
-
 - (void)processBindingElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processBindingChildElement:(NSXMLElement *)el binding:(USBinding *)binding;
-- (void)processSoapBindingElement:(NSXMLElement *)el binding:(USBinding *)binding;
-- (void)processBindingOperationElement:(NSXMLElement *)el binding:(USBinding *)binding;
-- (void)processBindingOperationChildElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processSoapOperationElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processBindingOperationInputElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processBindingOperationOutputElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processBindingOperationInterfaceElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface;
-- (void)processBindingOperationInterfaceChildElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface;
-- (void)processSoapHeaderElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface;
-- (void)processSoapBodyElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface;
-- (void)processBindingOperationFaultElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processBindingOperationFaultChildElement:(NSXMLElement *)el fault:(USOperationFault *)fault;
-- (void)processSoapFaultElement:(NSXMLElement *)el fault:(USOperationFault *)fault;
-
 @end

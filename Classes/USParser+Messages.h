@@ -24,12 +24,7 @@
 #import "USParser.h"
 
 @class USSchema;
-@class USMessage;
 
 @interface USParser (Messages)
-
 - (void)processMessageElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processMessageChildElement:(NSXMLElement *)el message:(USMessage *)message;
-- (void)processPartElement:(NSXMLElement *)el message:(USMessage *)message;
-
 @end

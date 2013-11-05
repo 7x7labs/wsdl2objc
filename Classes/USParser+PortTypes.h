@@ -24,17 +24,7 @@
 #import "USParser.h"
 
 @class USSchema;
-@class USPortType;
-@class USOperation;
 
 @interface USParser (PortTypes)
-
 - (void)processPortTypeElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processPortTypeChildElement:(NSXMLElement *)el portType:(USPortType *)portType;
-- (void)processPortTypeOperationElement:(NSXMLElement *)el portType:(USPortType *)portType;
-- (void)processPortTypeOperationChildElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processPortTypeInputElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processPortTypeOutputElement:(NSXMLElement *)el operation:(USOperation *)operation;
-- (void)processPortTypeFaultElement:(NSXMLElement *)el operation:(USOperation *)operation;
-
 @end

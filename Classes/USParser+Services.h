@@ -24,15 +24,7 @@
 #import "USParser.h"
 
 @class USSchema;
-@class USService;
-@class USPort;
 
 @interface USParser (Services)
-
 - (void)processServiceElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processServiceChildElement:(NSXMLElement *)el service:(USService *)service;
-- (void)processPortElement:(NSXMLElement *)el service:(USService *)service;
-- (void)processPortChildElement:(NSXMLElement *)el port:(USPort *)port;
-- (void)processSoapAddressElement:(NSXMLElement *)el port:(USPort *)port;
-
 @end

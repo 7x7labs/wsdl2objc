@@ -32,61 +32,45 @@
 
 - (void)processMessageElement:(NSXMLElement *)el schema:(USSchema *)schema
 {
-	NSString *name = [[el attributeForName:@"name"] stringValue];
-	USMessage *message = [schema messageForName:name];
+	USMessage *message = [schema messageForName:[[el attributeForName:@"name"] stringValue]];
+    if (message.hasBeenParsed) return;
 
-	if (!message.hasBeenParsed) {
-		for (NSXMLNode *child in [el children]) {
-			if ([child kind] == NSXMLElementKind) {
-				[self processMessageChildElement:(NSXMLElement*)child message:message];
-			}
-		}
+    for (NSXMLNode *child in [el children]) {
+        if ([child kind] != NSXMLElementKind) continue;
 
-		message.hasBeenParsed = YES;
-	}
-}
+        if ([[el localName] isEqualToString:@"part"]) {
+            [self processPartElement:el message:message];
+        }
+    }
 
-- (void)processMessageChildElement:(NSXMLElement *)el message:(USMessage *)message
-{
-	NSString *localName = [el localName];
-
-	if ([localName isEqualToString:@"part"]) {
-		[self processPartElement:el message:message];
-	}
+    message.hasBeenParsed = YES;
 }
 
 - (void)processPartElement:(NSXMLElement *)el message:(USMessage *)message
 {
 	NSString *name = [[el attributeForName:@"name"] stringValue];
 	USPart *part = [message partForName:name];
-	USElement *element = nil;
 
 	NSString *elementQName = [[el attributeForName:@"element"] stringValue];
-	if (elementQName != nil) {
+	if (elementQName) {
 		NSString *uri = [[el resolveNamespaceForName:elementQName] stringValue];
 		USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
 		NSString *elementLocalName = [NSXMLNode localNameForName:elementQName];
-		element = [elementSchema elementForName:elementLocalName];
-	} else {
-		NSString *typeQName = [[el attributeForName:@"type"] stringValue];
-		if (typeQName != nil) {
-			NSString *uri = [[el resolveNamespaceForName:typeQName] stringValue];
-			USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
-			NSString *elementLocalName = [NSXMLNode localNameForName:typeQName];
-			element = [USElement new];
-			element.name = name;
-			element.schema = elementSchema;
-			element.type = [elementSchema typeForName:elementLocalName];
-			element.hasBeenParsed = YES;
-//
-//			element = [elementSchema elementForName:elementLocalName];
-//			if (element.type == nil) {
-//				element.type = [elementSchema typeForName:elementLocalName];
-//			}
-		}
+		part.element = [elementSchema elementForName:elementLocalName];
+        return;
 	}
 
-	part.element = element;
+    NSString *typeQName = [[el attributeForName:@"type"] stringValue];
+    if (typeQName) {
+        NSString *uri = [[el resolveNamespaceForName:typeQName] stringValue];
+        USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
+        NSString *elementLocalName = [NSXMLNode localNameForName:typeQName];
+        part.element = [USElement new];
+        part.element.name = name;
+        part.element.schema = elementSchema;
+        part.element.type = [elementSchema typeForName:elementLocalName];
+        part.element.hasBeenParsed = YES;
+    }
 }
 
 @end

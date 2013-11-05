@@ -22,7 +22,6 @@
 
 #import "USMessage.h"
 
-#import "USWSDL.h"
 #import "USPart.h"
 
 @implementation USMessage

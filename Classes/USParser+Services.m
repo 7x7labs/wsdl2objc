@@ -38,23 +38,15 @@
 		name = [name stringByAppendingString:@"Svc"];
 	}
 
-	USService *service = [schema serviceForName:name];
-
 	schema.wsdl.targetNamespace.prefix = name;
 
+	USService *service = [schema serviceForName:name];
 	for (NSXMLNode *child in [el children]) {
 		if ([child kind] == NSXMLElementKind) {
-			[self processServiceChildElement:(NSXMLElement*)child service:service];
+            if ([[el localName] isEqualToString:@"port"]) {
+                [self processPortElement:el service:service];
+            }
 		}
-	}
-}
-
-- (void)processServiceChildElement:(NSXMLElement *)el service:(USService *)service
-{
-	NSString *localName = [el localName];
-
-	if ([localName isEqualToString:@"port"]) {
-		[self processPortElement:el service:service];
 	}
 }
 

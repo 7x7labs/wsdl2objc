@@ -29,12 +29,6 @@
 #import "USWSDL.h"
 #import "USOperationFault.h"
 
-@interface USParser (PortTypes_Private)
-
-- (void)processPortTypeOperationInterfaceElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface;
-
-@end
-
 @implementation USParser (PortTypes)
 
 - (void)processPortTypeElement:(NSXMLElement *)el schema:(USSchema *)schema
