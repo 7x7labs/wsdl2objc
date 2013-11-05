@@ -27,7 +27,7 @@
 
 @interface USOperationInterface : NSObject
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) NSMutableArray *headers;
+@property (nonatomic, strong) NSMutableOrderedSet *headers;
 @property (nonatomic, strong) USMessage *body;
 @property (nonatomic, strong) USOperation *operation;
 @property (nonatomic, readonly) NSString *className;

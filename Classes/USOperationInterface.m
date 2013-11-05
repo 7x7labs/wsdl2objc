@@ -39,7 +39,7 @@
 - (id)init
 {
 	if ((self = [super init])) {
-		self.headers = [NSMutableArray array];
+		self.headers = [NSMutableOrderedSet new];
 	}
 
 	return self;
