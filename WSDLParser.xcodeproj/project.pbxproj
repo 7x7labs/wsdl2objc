@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F5B742018294CFC000AA889 /* NSXMLElement+Children.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F5B741F18294CFC000AA889 /* NSXMLElement+Children.m */; };
+		3F5B742118294CFC000AA889 /* NSXMLElement+Children.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F5B741F18294CFC000AA889 /* NSXMLElement+Children.m */; };
 		621D446C0E6E0BD200CEF901 /* ComplexType_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F00A0E63954100DABBD6 /* ComplexType_H.template */; };
 		621D446D0E6E0BD200CEF901 /* ComplexType_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F00D0E63958E00DABBD6 /* ComplexType_M.template */; };
 		621D446E0E6E0BD200CEF901 /* SimpleType_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6235F0090E63953500DABBD6 /* SimpleType_H.template */; };
@@ -96,6 +98,8 @@
 		08FB7796FE84155DC02AAC07 /* WSDLParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WSDLParser.m; sourceTree = "<group>"; };
 		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32A70AAB03705E1F00C91783 /* WSDLParser_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WSDLParser_Prefix.pch; sourceTree = "<group>"; };
+		3F5B741E18294CFC000AA889 /* NSXMLElement+Children.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSXMLElement+Children.h"; path = "Classes/NSXMLElement+Children.h"; sourceTree = SOURCE_ROOT; };
+		3F5B741F18294CFC000AA889 /* NSXMLElement+Children.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSXMLElement+Children.m"; path = "Classes/NSXMLElement+Children.m"; sourceTree = SOURCE_ROOT; };
 		621D44F00E6E119B00CEF901 /* USObjCKeywords.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USObjCKeywords.h; sourceTree = "<group>"; };
 		621D44F10E6E119B00CEF901 /* USObjCKeywords.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USObjCKeywords.m; sourceTree = "<group>"; };
 		623346310E759A5A0094F6F1 /* NSString+USAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+USAdditions.h"; sourceTree = "<group>"; };
@@ -412,6 +416,8 @@
 				B9FEAA870E01F4A0002165CA /* USWSDL.m */,
 				B9FEAA8B0E01F59B002165CA /* USSchema.h */,
 				B9FEAA8C0E01F59B002165CA /* USSchema.m */,
+				3F5B741E18294CFC000AA889 /* NSXMLElement+Children.h */,
+				3F5B741F18294CFC000AA889 /* NSXMLElement+Children.m */,
 				62ADD38C0E688F290052979D /* Types */,
 				621D458A0E6E18A900CEF901 /* Messages */,
 				621D458B0E6E18C500CEF901 /* PortTypes */,
@@ -546,6 +552,7 @@
 				62ADD39A0E6890140052979D /* USParser+Types.m in Sources */,
 				624063690E70827A006BEB94 /* USPortType.m in Sources */,
 				621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */,
+				3F5B742018294CFC000AA889 /* NSXMLElement+Children.m in Sources */,
 				6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */,
 				6240636B0E708294006BEB94 /* USPart.m in Sources */,
 				6240636C0E708294006BEB94 /* USMessage.m in Sources */,
@@ -585,6 +592,7 @@
 				F4FAC2AB1227E4DA006B61BC /* USParserApplication.m in Sources */,
 				F4FAC2AC1227E4DB006B61BC /* USPart.m in Sources */,
 				F4FAC2AD1227E4DC006B61BC /* USPort.m in Sources */,
+				3F5B742118294CFC000AA889 /* NSXMLElement+Children.m in Sources */,
 				F4FAC2AE1227E4DD006B61BC /* USPortType.m in Sources */,
 				F4FAC2AF1227E4DF006B61BC /* USSchema.m in Sources */,
 				F4FAC2B01227E4E0006B61BC /* USSequenceElement.m in Sources */,

@@ -22,6 +22,8 @@
 
 #import "USParser+Messages.h"
 
+#import "NSXMLElement+Children.h"
+
 #import "USMessage.h"
 #import "USSchema.h"
 #import "USPart.h"
@@ -32,33 +34,27 @@
 
 - (void)processMessageElement:(NSXMLElement *)el schema:(USSchema *)schema
 {
-	USMessage *message = [schema messageForName:[[el attributeForName:@"name"] stringValue]];
+    USMessage *message = [schema messageForName:[[el attributeForName:@"name"] stringValue]];
     if (message.hasBeenParsed) return;
 
-    for (NSXMLNode *child in [el children]) {
-        if ([child kind] != NSXMLElementKind) continue;
-
-        if ([[el localName] isEqualToString:@"part"]) {
-            [self processPartElement:el message:message];
-        }
-    }
-
     message.hasBeenParsed = YES;
+    for (NSXMLElement *child in [el childElementsWithName:@"part"])
+        [self processPartElement:child message:message];
 }
 
 - (void)processPartElement:(NSXMLElement *)el message:(USMessage *)message
 {
-	NSString *name = [[el attributeForName:@"name"] stringValue];
-	USPart *part = [message partForName:name];
+    NSString *name = [[el attributeForName:@"name"] stringValue];
+    USPart *part = [message partForName:name];
 
-	NSString *elementQName = [[el attributeForName:@"element"] stringValue];
-	if (elementQName) {
-		NSString *uri = [[el resolveNamespaceForName:elementQName] stringValue];
-		USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
-		NSString *elementLocalName = [NSXMLNode localNameForName:elementQName];
-		part.element = [elementSchema elementForName:elementLocalName];
+    NSString *elementQName = [[el attributeForName:@"element"] stringValue];
+    if (elementQName) {
+        NSString *uri = [[el resolveNamespaceForName:elementQName] stringValue];
+        USSchema *elementSchema = [message.schema.wsdl schemaForNamespace:uri];
+        NSString *elementLocalName = [NSXMLNode localNameForName:elementQName];
+        part.element = [elementSchema elementForName:elementLocalName];
         return;
-	}
+    }
 
     NSString *typeQName = [[el attributeForName:@"type"] stringValue];
     if (typeQName) {

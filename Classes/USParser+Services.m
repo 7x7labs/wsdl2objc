@@ -22,6 +22,8 @@
 
 #import "USParser+Services.h"
 
+#import "NSXMLElement+Children.h"
+
 #import "USSchema.h"
 #import "USService.h"
 #import "USPort.h"
@@ -32,64 +34,52 @@
 
 - (void)processServiceElement:(NSXMLElement *)el schema:(USSchema *)schema
 {
-	NSString *name = [[el attributeForName:@"name"] stringValue];
+    NSString *name = [[el attributeForName:@"name"] stringValue];
 
-	if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"addTagToServiceName"] boolValue]) {
-		name = [name stringByAppendingString:@"Svc"];
-	}
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"addTagToServiceName"] boolValue]) {
+        name = [name stringByAppendingString:@"Svc"];
+    }
 
-	schema.wsdl.targetNamespace.prefix = name;
+    schema.wsdl.targetNamespace.prefix = name;
 
-	USService *service = [schema serviceForName:name];
-	for (NSXMLNode *child in [el children]) {
-		if ([child kind] == NSXMLElementKind) {
-            if ([[el localName] isEqualToString:@"port"]) {
-                [self processPortElement:el service:service];
-            }
-		}
-	}
+    USService *service = [schema serviceForName:name];
+    for (NSXMLElement *child in [el childElementsWithName:@"port"])
+        [self processPortElement:child service:service];
 }
 
 - (void)processPortElement:(NSXMLElement *)el service:(USService *)service
 {
-	NSString *name = [[el attributeForName:@"name"] stringValue];
-	USPort *port = [service portForName:name];
+    NSString *name = [[el attributeForName:@"name"] stringValue];
+    USPort *port = [service portForName:name];
 
-	NSString *bindingQName = [[el attributeForName:@"binding"] stringValue];
-	NSString *uri = [[el resolveNamespaceForName:bindingQName] stringValue];
-	USSchema *bindingSchema = [service.schema.wsdl schemaForNamespace:uri];
-	NSString *bindingLocalName = [NSXMLNode localNameForName:bindingQName];
-	USBinding *binding = [bindingSchema bindingForName:bindingLocalName];
+    NSString *bindingQName = [[el attributeForName:@"binding"] stringValue];
+    NSString *uri = [[el resolveNamespaceForName:bindingQName] stringValue];
+    USSchema *bindingSchema = [service.schema.wsdl schemaForNamespace:uri];
+    NSString *bindingLocalName = [NSXMLNode localNameForName:bindingQName];
+    USBinding *binding = [bindingSchema bindingForName:bindingLocalName];
 
-	port.binding = binding;
+    port.binding = binding;
 
-	for (NSXMLNode *child in [el children]) {
-		if ([child kind] == NSXMLElementKind) {
-			[self processPortChildElement:(NSXMLElement*)child port:port];
-		}
-	}
+    for (NSXMLElement *child in [el childElementsWithName:@"address"])
+        [self processPortChildElement:(NSXMLElement*)child port:port];
 }
 
 - (void)processPortChildElement:(NSXMLElement *)el port:(USPort *)port
 {
-	NSString *localName = [el localName];
-
-	if ([localName isEqualToString:@"address"]) {
-		NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-		if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
-		   [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
-			[self processSoapAddressElement:el port:port];
-		} else {
-			[port.service.ports removeObject:port];
-		}
-	}
+    NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
+    if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"] ||
+        [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {
+        [self processSoapAddressElement:el port:port];
+    } else {
+        [port.service.ports removeObject:port];
+    }
 }
 
 - (void)processSoapAddressElement:(NSXMLElement *)el port:(USPort *)port
 {
-	NSString *location = [[el attributeForName:@"location"] stringValue];
+    NSString *location = [[el attributeForName:@"location"] stringValue];
     NSString *namespace = [[el resolveNamespaceForName:[el name]] stringValue];
-	port.address = location;
+    port.address = location;
     if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]) {
         port.binding.soapVersion = @"1.1";
     } else if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"]) {

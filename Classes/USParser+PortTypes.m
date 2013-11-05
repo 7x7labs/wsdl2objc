@@ -22,6 +22,8 @@
 
 #import "USParser+PortTypes.h"
 
+#import "NSXMLElement+Children.h"
+
 #import "USSchema.h"
 #import "USPortType.h"
 #import "USOperation.h"
@@ -36,20 +38,8 @@
 	NSString *name = [[el attributeForName:@"name"] stringValue];
 	USPortType *portType = [schema portTypeForName:name];
 
-	for (NSXMLNode *child in [el children]) {
-		if ([child kind] == NSXMLElementKind) {
-			[self processPortTypeChildElement:(NSXMLElement*)child portType:portType];
-		}
-	}
-}
-
-- (void)processPortTypeChildElement:(NSXMLElement *)el portType:(USPortType *)portType
-{
-	NSString *localName = [el localName];
-
-	if ([localName isEqualToString:@"operation"]) {
-		[self processPortTypeOperationElement:el portType:portType];
-	}
+	for (NSXMLElement *child in [el childElementsWithName:@"operation"])
+		[self processPortTypeOperationElement:child portType:portType];
 }
 
 - (void)processPortTypeOperationElement:(NSXMLElement *)el portType:(USPortType *)portType
@@ -59,34 +49,20 @@
 	USOperation *operation = [portType operationForName:name];
 	operation.name = name;
 
-	for (NSXMLNode *child in [el children]) {
-		if ([child kind] == NSXMLElementKind) {
-			[self processPortTypeOperationChildElement:(NSXMLElement*)child operation:operation];
-		}
-	}
+	for (NSXMLElement *child in [el childElements])
+        [self processPortTypeOperationChildElement:child operation:operation];
 }
 
 - (void)processPortTypeOperationChildElement:(NSXMLElement *)el operation:(USOperation *)operation
 {
 	NSString *localName = [el localName];
-
 	if ([localName isEqualToString:@"input"]) {
-		[self processPortTypeInputElement:el operation:operation];
+        [self processPortTypeOperationInterfaceElement:el operationInterface:operation.input];
 	} else if ([localName isEqualToString:@"output"]) {
-		[self processPortTypeOutputElement:el operation:operation];
+        [self processPortTypeOperationInterfaceElement:el operationInterface:operation.output];
 	} else if ([localName isEqualToString:@"fault"]) {
 		[self processPortTypeFaultElement:el operation:operation];
 	}
-}
-
-- (void)processPortTypeInputElement:(NSXMLElement *)el operation:(USOperation *)operation
-{
-	[self processPortTypeOperationInterfaceElement:el operationInterface:operation.input];
-}
-
-- (void)processPortTypeOutputElement:(NSXMLElement *)el operation:(USOperation *)operation
-{
-	[self processPortTypeOperationInterfaceElement:el operationInterface:operation.output];
 }
 
 - (void)processPortTypeOperationInterfaceElement:(NSXMLElement *)el operationInterface:(USOperationInterface *)interface
