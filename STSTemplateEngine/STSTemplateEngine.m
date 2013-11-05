@@ -29,10 +29,6 @@
 #define keyDefined(x,y) ([NSString valueForDictionary:x key:y] != nil)
 #define keyNotDefined(x,y) ([NSString valueForDictionary:x key:y] == nil)
 
-static BOOL classExists(NSString *className) {
-	return NSClassFromString(className) != nil;
-}
-
 @interface NSFileManager (STSTemplateEnginePrivateCategory1)
 - (BOOL)isRegularFileAtPath:(NSString *)path;
 @end
@@ -236,27 +232,13 @@ static BOOL classExists(NSString *className) {
 	_dictionary[@"_uniqueID"] = [processInfo globallyUniqueString];
 	_dictionary[@"_hostname"] = [processInfo hostName];
 
-	if (classExists(@"NSLocale")) {
-		NSLocale *locale;
-		locale = [NSLocale currentLocale];
-		_dictionary[@"_userCountryCode"] = [locale objectForKey:NSLocaleCountryCode];
-		_dictionary[@"_userLanguage"] = [locale objectForKey:NSLocaleLanguageCode];
-		locale = [NSLocale systemLocale];
-		key = [locale objectForKey:NSLocaleCountryCode];
-		if (key == nil) {
-			_dictionary[@"_systemCountryCode"] = @"";
-		}
-		else {
-			_dictionary[@"_systemCountryCode"] = key;
-		}
-		key = [locale objectForKey:NSLocaleLanguageCode];
-		if (key == nil) {
-			_dictionary[@"_systemLanguage"] = @"";
-		}
-		else {
-			_dictionary[@"_systemLanguage"] = key;
-		}
-	}
+    NSLocale *locale = [NSLocale currentLocale];
+    _dictionary[@"_userCountryCode"] = [locale objectForKey:NSLocaleCountryCode];
+    _dictionary[@"_userLanguage"] = [locale objectForKey:NSLocaleLanguageCode];
+
+    locale = [NSLocale systemLocale];
+    _dictionary[@"_systemCountryCode"] = [locale objectForKey:NSLocaleCountryCode] ?: @"";
+    _dictionary[@"_systemLanguage"] = [locale objectForKey:NSLocaleLanguageCode] ?: @"";
 
 	while ((line = [list nextObject])) {
 		lineNumber++;
