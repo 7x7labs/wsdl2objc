@@ -484,7 +484,7 @@ done:
 
 		for (NSString *key in headerElements) {
 			id header = headerElements[key];
-			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
+			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key]);
 		}
 	}
 
@@ -495,7 +495,7 @@ done:
 
 		for (NSString *key in bodyElements) {
 			id body = bodyElements[key];
-			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
+			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key]);
 		}
 	}
 

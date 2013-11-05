@@ -15,7 +15,7 @@
 %ENDIF
 - (NSString *)nsPrefix;
 
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 %IF hasAttributes
 - (void)addAttributesToNode:(xmlNodePtr)node;
 %ENDIF

@@ -25,12 +25,12 @@
 	return @"%«schema.prefix»";
 }
 
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
 {
 %IFDEF IsAttributedString
-	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:elNSPrefix];
+	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:[self nsPrefix]];
 %ELSE
-	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:elNSPrefix];
+	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:[self nsPrefix]];
 %ENDIF
 %IFDEF superClass
 
