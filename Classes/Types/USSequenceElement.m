@@ -25,19 +25,6 @@
 #import "NSString+USAdditions.h"
 
 @implementation USSequenceElement
-- (id)copyWithZone:(NSZone *)zone
-{
-	USSequenceElement *newSeqElement = [USSequenceElement new];
-
-	newSeqElement.minOccurs = self.minOccurs;
-	newSeqElement.maxOccurs = self.maxOccurs;
-	newSeqElement.name = self.name;
-	newSeqElement.wsdlName = self.wsdlName;
-	newSeqElement.type = self.type;
-
-	return newSeqElement;
-}
-
 - (void)setName:(NSString *)aName
 {
 	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];

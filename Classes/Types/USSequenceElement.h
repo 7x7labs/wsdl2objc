@@ -23,7 +23,7 @@
 #import <Foundation/Foundation.h>
 #import "UStype.h"
 
-@interface USSequenceElement : NSObject <NSCopying>
+@interface USSequenceElement : NSObject
 @property (nonatomic) NSInteger minOccurs; /* -1 represents 'unbounded' */
 @property (nonatomic) NSInteger maxOccurs; /* -1 represents 'unbounded' */
 @property (nonatomic, copy) NSString *name;
