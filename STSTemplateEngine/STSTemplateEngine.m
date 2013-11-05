@@ -601,7 +601,7 @@
 						}
 						else {
 							id value = [NSString valueForDictionary:_dictionary key:key];
-							if (value == nil || ![value isKindOfClass:[NSArray class]])
+							if (value == nil || ![value conformsToProtocol:@protocol(NSFastEnumeration)])
 							{
 								error = [TEError error:TE_UNDEFINED_PLACEHOLDER_FOUND_ERROR
 												inLine:lineNumber atToken:TE_FOREACH];
