@@ -1,15 +1,3 @@
-//
-//	LIFO.m
-//	A LIFO Stack Library ver 1.00
-//
-//	Provides a universal LIFO stack class for storage of generic objects.
-//
-//	Created by benjk on 7/15/05.
-//
-//	This software is released as open source under the terms of the new BSD
-//	License obtained from http://www.opensource.org/licenses/bsd-license.php
-//	on Tuesday, July 19, 2005.  The full license text follows below.
-//
 //	Copyright 2005 Sunrise Telephone Systems Ltd. All rights reserved.
 //
 //	Redistribution and use in source and binary forms, with or without modi-
@@ -35,7 +23,6 @@
 //	LIABILITY,  WHETHER  IN  CONTRACT,  STRICT LIABILITY,  OR TORT  (INCLUDING
 //	NEGLIGENCE OR OTHERWISE)  ARISING  IN  ANY  WAY  OUT  OF  THE  USE OF THIS
 //	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-//
 
 #import "LIFO.h"
 

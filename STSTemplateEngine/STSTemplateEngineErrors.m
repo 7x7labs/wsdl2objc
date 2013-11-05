@@ -1,41 +1,28 @@
-//
-//	STSTemplateEngineErrors.h
-//	STS Template Engine ver 1.00
-//
-//	Provides error reporting and error logging to the STS Template Engine.
-//
-//	Created by benjk on 7/4/05.
 //	Copyright 2005 Sunrise Telephone Systems Ltd. All rights reserved.
 //
-//	This software is released as open source under the terms of the General
-//	Public License (GPL) version 2.  A copy of the GPL license should have
-//	been distributed along with this software.  If you have not received a
-//	copy of the GPL license, you can obtain it from Free Software Foundation
-//	Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
+//	Redistribution and use in source and binary forms, with or without modi-
+//	fication, are permitted provided that the following conditions are met:
 //
-//	Permission is hereby granted to link this code against Apple's proprietary
-//	Cocoa Framework, regardless of the limitations in the GPL license. The
-//	Copyright notice and credits must be preserved at all times in every
-//	redistributed copy and any derivative work of this software.
+//	Redistributions of source code must retain the above copyright notice,
+//	this list of conditions and the following disclaimer.  Redistributions in
+//	binary form must reproduce the above copyright notice, this list of
+//	conditions and the following disclaimer in the documentation and/or other
+//	materials provided with the distribution.  Neither the name of Sunrise
+//	Telephone Systems Ltd. nor the names of its contributors may be used to
+//	endorse or promote products derived from this software without specific
+//	prior written permission.
 //
-//	THIS SOFTWARE  IS PROVIDED "AS IS"  WITHOUT  ANY  WARRANTY  OF  ANY  KIND,
-//	WHETHER  EXPRESSED OR IMPLIED,  INCLUDING  BUT NOT LIMITED TO  ANY IMPLIED
-//	WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.  THE
-//	ENTIRE RISK  AS TO THE QUALITY AND PERFORMANCE OF THIS SOFTWARE  LIES WITH
-//	THE LICENSEE.  FOR FURTHER INFORMATION PLEASE REFER TO THE GPL VERSION 2.
-//
-//	For projects and software products for which the terms of the GPL license
-//	are not suitable, alternative licensing can be obtained directly from
-//	Sunrise Telephone Systems Ltd. at http://www.sunrise-tel.com
-//
-//	Still to do: read error messages from a localized strings file
-
-// ---------------------------------------------------------------------------
-// NSRange constant:  kZeroRange
-// ---------------------------------------------------------------------------
-//
-// Defines an NSRange constant kZeroRange with zero location and zero length.
-// This is used to indicate an undefined range to the TEError class.
+//	THIS  SOFTWARE  IS  PROVIDED  BY  THE  COPYRIGHT HOLDERS  AND CONTRIBUTORS
+//	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,  INCLUDING, BUT NOT LIMITED
+//	TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+//	PURPOSE  ARE  DISCLAIMED.  IN  NO  EVENT  SHALL  THE  COPYRIGHT  OWNER  OR
+//	CONTRIBUTORS  BE  LIABLE  FOR  ANY  DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+//	EXEMPLARY,  OR  CONSEQUENTIAL  DAMAGES  (INCLUDING,  BUT  NOT LIMITED  TO,
+//	PROCUREMENT  OF SUBSTITUTE  GOODS  OR  SERVICES;  LOSS  OF  USE,  DATA, OR
+//	PROFITS;  OR  BUSINESS  INTERRUPTION)  HOWEVER CAUSED AND ON ANY THEORY OF
+//	LIABILITY,  WHETHER  IN  CONTRACT,  STRICT LIABILITY,  OR TORT  (INCLUDING
+//	NEGLIGENCE OR OTHERWISE)  ARISING  IN  ANY  WAY  OUT  OF  THE  USE OF THIS
+//	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 const NSRange kZeroRange = { 0, 0 };
 
@@ -43,23 +30,10 @@ const NSRange kZeroRange = { 0, 0 };
 
 @implementation TEError
 
-// private method: initialise instance
 - (id)init {
 	self = [super init];
 	return self;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Class Method:  error:inLine:atToken:
-// ---------------------------------------------------------------------------
-//
-// Creates a new instance of TEError. Severity and remedy codes are set
-// implicitly according to the parameters passed. The error code is defined by
-// TEErrorCode, line indicates the line number in the template source in which
-// the error ocurred, token indicates the offending token as defined by
-// TEToken. The optional parameter range is initialised with kZeroRange and it
-// may be set using method setRange:. The optional parameter literal is
-// initialised with nil and it may be set using method setLiteral:
+}
 
 + (TEError *)error:(enum TEErrorCode)code
 			inLine:(unsigned)line
@@ -68,14 +42,12 @@ const NSRange kZeroRange = { 0, 0 };
 	TEError *thisInstance = [[TEError alloc] init];
 	NSException *exception;
 
-	// initialise instance variables
 	thisInstance->errorCode = code;
 	thisInstance->lineNumber = line;
 	thisInstance->token = token;
 	thisInstance->range = kZeroRange;
-	thisInstance->literal = nil; // this is optional info only
+	thisInstance->literal = nil;
 
-	// set remedy and severity according to error type and token
 	switch (code) {
 		case TE_GENERIC_ERROR :
 			thisInstance->remedyCode = TE_ABORTING_TEMPLATE_EXPANSION;
@@ -111,91 +83,90 @@ const NSRange kZeroRange = { 0, 0 };
 			break;
 		case TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR :
 			switch (token) {
-				case TE_LOG : // %LOG requires an argument
+				case TE_LOG :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_ECHO : // %ECHO will require an argument
+				case TE_ECHO :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_DEBUG : // %DEBUG will require an argument
+				case TE_DEBUG :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_INCLUDE : // %INCLUDE will require an argument
+				case TE_INCLUDE :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_IF : // %IF requires an argument
+				case TE_IF :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_IFNOT : // %IFNOT requires an argument
+				case TE_IFNOT :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ELSIF : // %ELSIF requires an argument
+				case TE_ELSIF :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ELSIFNOT : // %ELSIFNOT requires an argument
+				case TE_ELSIFNOT :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_IFEQ : // %IFEQ requires two arguments
+				case TE_IFEQ :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_IFNEQ : // %IFNEQ requires two arguments
+				case TE_IFNEQ :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ELSIFEQ : // %ELSIFEQ requires two arguments
+				case TE_ELSIFEQ :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ELSIFNEQ : // %ELSIFNEQ requires two arguments
+				case TE_ELSIFNEQ :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_IFDEF : // %IFDEF requires an argument
+				case TE_IFDEF :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_IFNDEF : // %IFNDEF requires an argument
+				case TE_IFNDEF :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ELSIFDEF : // %ELSIFDEF requires an argument
+				case TE_ELSIFDEF :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ELSIFNDEF : // %ELSIFNDEF requires an argument
+				case TE_ELSIFNDEF :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_ANY : // %ANY will require multiple arguments
+				case TE_ANY :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_EVERY : // %EVERY will require multiple arguments
+				case TE_EVERY :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_DEFINE : // %DEFINE requires an argument
+				case TE_DEFINE :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_UNDEF : // %UNDEF requires an argument
+				case TE_UNDEF :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_KEY : // key after %IFEQ/%IFNEQ/%ELSIFEQ/%ELSIFNEQ must be followed by an operand
+				case TE_KEY :
 					thisInstance->remedyCode = TE_ASSUMING_FALSE_TO_CONTINUE;
 					break;
-				case TE_START_TAG : // start tag must be followed by a key
+				case TE_START_TAG :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_PLACEHOLDER : // placeholder must be followed by an end tag
+				case TE_PLACEHOLDER :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_TARGET : // %TARGET will require an argument
+				case TE_TARGET :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_APPEND : // %APPED will require an argument
+				case TE_APPEND :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
-				case TE_INSERT : // %INSERT will require an argument
+				case TE_INSERT :
 					thisInstance->remedyCode = TE_IGNORING_DIRECTIVE_TO_CONTINUE;
 					break;
 				default:
-					// we should never get here -- bail out by raising an exception
 					exception = [NSException exceptionWithName:@"UndefinedEnumValue"
 														reason:@"undefined enum value encountered" userInfo:nil];
 					[exception raise];
 					break;
-			} // end switch
+			}
 			thisInstance->severityCode = TE_ERROR;
 			break;
 		case TE_EXPECTED_ENDIF_BUT_FOUND_TOKEN_ERROR :
@@ -219,146 +190,66 @@ const NSRange kZeroRange = { 0, 0 };
 			thisInstance->severityCode = TE_ERROR;
 			break;
 		default:
-			// we should never get here -- bail out by raising an exception
 			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
 												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
-	} // end switch
+	}
 
 	return thisInstance;
-} // end method
-
-//
-// ---------------------------------------------------------------------------
-// Instance Method:  setRange:
-// ---------------------------------------------------------------------------
-//
-// Sets the range of the receiver. This info is used to pinpoint the offending
-// token's postion in the template source. By default it is initialised to
-// kZeroRange (both position and length set to zero) indicating that range
-// information is unavailable.
+}
 
 - (void)setRange:(NSRange)aRange
 {
 	self->range = aRange;
 	return;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  setLiteral:
-// ---------------------------------------------------------------------------
-//
-// Sets the *optional* clear text info of the receiver. This info is used to
-// store the literal name of a placeholder when the token is TEplaceholder.
-// By default it is initialised to nil.
+}
 
 - (void)setLiteral:(NSString *)literalString
 {
 	self->literal = [literalString copy];
-} // end method
-
-
-// ---------------------------------------------------------------------------
-// Instance Method:  errorCode
-// ---------------------------------------------------------------------------
-//
-// Returns the error code of the receiver. The error code identifies the type
-// of error described by the receiver as defined by TEErrorCode.
+}
 
 - (enum TEErrorCode)errorCode
 {
 	return self->errorCode;
-} // end method;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  severityCode
-// ---------------------------------------------------------------------------
-//
-// Returns the severity code of the receiver. The severity code specifies the
-// severity of the error described by the receiver as defined by TESeverity.
+}
 
 - (enum TESeverity)severityCode
 {
 	return self->severityCode;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  lineNumber
-// ---------------------------------------------------------------------------
-//
-// Returns the line number in which the error described by the receiver
-// ocurred. The line number may be 0 in the event of file access errors.
+}
 
 - (unsigned)lineNumber
 {
 	return self->lineNumber;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  token
-// ---------------------------------------------------------------------------
-//
-// Returns the offending token of the error described by the receiver. Tokens
-// represent parsed symbols in the template source and are defined by TEToken.
+}
 
 - (enum TEToken)token
 {
 	return self->token;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  range
-// ---------------------------------------------------------------------------
-//
-// Returns an NSRange for the offending token of the error described by the
-// receiver. The range pinpoints the offending token as it was encountered in
-// the template source. This may be used to generate an attributed string
-// representation of the template source to highlight where errors ocurred.
+}
 
 - (NSRange)range
 {
 	return self->range;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  remedyCode
-// ---------------------------------------------------------------------------
-//
-// Returns the remedy code of the remedy taken for the error described by the
-// receiver. Remedy codes are defined by TERemedy.
+}
 
 - (enum TERemedy)remedyCode
 {
 	return self->remedyCode;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  literal
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with the optional clear text info of the receiver. This
-// info is used to store the literal name of a placeholder when the token is
-// TEplaceholder. Returns nil if the literal is nil (default).
+}
 
 - (NSString *)literal
 {
 	return self->literal;
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithToken
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable token string for the token of the
-// error described by the receiver. Tokens are defined by TEToken.
+}
 
 - (NSString *)stringWithToken
 {
 	NSString *tokenString = nil;
 	NSException *exception;
 
-	// setting the token string
 	switch (self->token) {
 		case TE_TOKEN_NOT_AVAILABLE :
 			tokenString = @"";
@@ -457,30 +348,20 @@ const NSRange kZeroRange = { 0, 0 };
 			tokenString = @"EOF marker";
 			break;
 		default:
-			// we should never get here -- bail out by raising an exception
 			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
 												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
-	} // end switch
+	}
 
-	// return the token string
 	return [NSString stringWithString:tokenString];
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithDescription
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable description of the error
-// described by the receiver.
+}
 
 - (NSString *)stringWithDescription
 {
 	NSString *tokenString, *description = nil;
 	NSException *exception;
 
-	// setting the description string
 	switch (self->errorCode) {
 		case TE_GENERIC_ERROR :
 			if (self->literal == nil) {
@@ -488,7 +369,7 @@ const NSRange kZeroRange = { 0, 0 };
 			}
 			else {
 				description = [NSString stringWithFormat:@"'%@'", self->literal];
-			} // end if
+			}
 			break;
 		case TE_INVALID_PATH_ERROR :
 			description = @"Template file path is invalid.";
@@ -499,7 +380,7 @@ const NSRange kZeroRange = { 0, 0 };
 			}
 			else {
 				description = [NSString stringWithFormat:@"Template file at path '%@' not found.", self->literal];
-			} // end if
+			}
 			break;
 		case TE_UNABLE_TO_READ_FILE_ERROR :
 			if (self->literal == nil) {
@@ -508,7 +389,7 @@ const NSRange kZeroRange = { 0, 0 };
 			else {
 				description = [NSString stringWithFormat:@"Unable to read template file at path '%@'.",
                                self->literal];
-			} // end if
+			}
 			break;
 		case TE_INVALID_FILE_FORMAT_ERROR :
 			description = @"Unable to recognize template file format.";
@@ -544,7 +425,7 @@ const NSRange kZeroRange = { 0, 0 };
 			}
 			else {
 				tokenString = [NSString stringWithFormat:@"'%@'", self->literal];
-			} // end if
+			}
 			description = [NSString stringWithFormat:@"Placeholder %@ is undefined.", tokenString];
 			break;
 		case TE_EXPECTED_ENDTAG_BUT_FOUND_TOKEN_ERROR :
@@ -552,30 +433,20 @@ const NSRange kZeroRange = { 0, 0 };
 			description = [NSString stringWithFormat:@"Expected closing end tag but found %@.", tokenString];
 			break;
 		default:
-			// we should never get here -- bail out by raising an exception
 			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
 												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
-	} // end switch
+	}
 
-	// return the description string
 	return [NSString stringWithString:description];
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithRemedy
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable description of the remedy taken
-// for the error described by the receiver.
+}
 
 - (NSString *)stringWithRemedy
 {
 	NSString *tokenString, *remedy = nil;
 	NSException *exception;
 
-	// setting the remedy string
 	switch (self->remedyCode) {
 		case TE_REMEDY_NOT_AVAILABLE:
 			remedy = @"";
@@ -597,7 +468,7 @@ const NSRange kZeroRange = { 0, 0 };
 			}
 			else {
 				tokenString = [NSString stringWithFormat:@"'%@'", self->literal];
-			} // end if
+			}
 			remedy = [NSString stringWithFormat:@"Skipping placeholder %@ to continue.", tokenString];
 			break;
 		case TE_CLOSING_IF_BLOCK_TO_CONTINUE :
@@ -618,38 +489,22 @@ const NSRange kZeroRange = { 0, 0 };
 			remedy = @"Template expansion aborted.";
 			break;
 		default:
-			// we should never get here -- bail out by raising an exception
 			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
 												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
-	} // end switch
+	}
 
-	// return the remedy string
 	return [NSString stringWithString:remedy];
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithErrorMessageForTemplate:
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable detailed error message for the
-// error described by the receiver comprising a prefix identifying the message
-// to have come from the STS TemplateEngine, the severity of the error, the
-// name or path and filename of the template, the line number in which the
-// error ocurred and the error description and remedy taken. If an empty
-// string is passed for nameOrPath, then the name of the template will be
-// omitted in the error message returned.
+}
 
 - (NSString *)stringWithErrorMessageForTemplate:(NSString *)nameOrPath
 {
 	NSString *prefix, *severity = nil, *description, *remedy;
 	NSException *exception;
 
-	// setting the prefix text
 	prefix = @"STS TemplateEngine";
 
-	// setting the severity string
 	switch (self->severityCode) {
 		case TE_WARNING :
 			severity = @"*WARNING*";
@@ -661,49 +516,35 @@ const NSRange kZeroRange = { 0, 0 };
 			severity = @"*FATAL ERROR*";
 			break;
 		default:
-			// we should never get here -- bail out by raising an exception
 			exception = [NSException exceptionWithName:@"UndefinedEnumValue"
 												reason:@"undefined enum value encountered" userInfo:nil];
 			[exception raise];
 			break;
-	} // end switch
+	}
 
-	// get the description string
 	description = [self stringWithDescription];
 
-	// get the remedy string
 	remedy = [self stringWithRemedy];
 
-	// compose and return clear text message for message without template name
 	if ([nameOrPath length] == 0) {
 		if (self->lineNumber == 0) {
-			// when line number is irrelevant
 			return [NSString stringWithFormat:@"%@ encountered %@\n%@\n%@",
 				prefix, severity, description, remedy];
 		}
 		else {
-			// when line number is relevant
 			return [NSString stringWithFormat:@"%@ encountered %@ in line %u \n%@\n%@",
 				prefix, severity, self->lineNumber, description, remedy];
-		} // end if
+		}
 	}
-	// compose and return clear text message for message with template name
 	else {
 		return [NSString stringWithFormat:@"%@ encountered %@ in template %@:%u \n%@\n%@",
 			prefix, severity, nameOrPath, self->lineNumber, description, remedy];
-	} // end if
-} // end method
-
-// ---------------------------------------------------------------------------
-// Instance Method:  logErrorMessageForTemplate:
-// ---------------------------------------------------------------------------
-//
-// Convenience method to invoke stringWithErrorMessageForTemplate: and log the
-// result returned to the console.
+	}
+}
 
 - (void)logErrorMessageForTemplate:(NSString *)nameOrPath
 {
     NSLog(@"Unable to parse template document %@: %@", nameOrPath, [self stringWithErrorMessageForTemplate:nameOrPath]);
-} // end method
+}
 
-@end // STSTemplateEngineErrors
+@end
