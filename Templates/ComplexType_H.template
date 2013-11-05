@@ -6,12 +6,12 @@
 %ENDIF
 %IFDEF superClass
 %IFDEF IsAttributedString
-@interface %«className» : NSObject <NSCoding>
+@interface %«className» : NSObject
 %ELSE
 @interface %«className» : %«superClass.classNameWithoutPtr»
 %ENDIF
 %ELSE
-@interface %«className» : NSObject <NSCoding>
+@interface %«className» : NSObject
 %ENDIF
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
 %IF hasAttributes

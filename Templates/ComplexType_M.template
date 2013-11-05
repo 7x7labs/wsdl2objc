@@ -345,31 +345,4 @@
 	}
 }
 %ENDIF
-
-- (id)initWithCoder:(NSCoder *)decoder
-{
-%IFDEF superClass
-%IFDEF IsAttributedString
-	self = [super init];
-%ELSE
-	self = [super initWithCoder:decoder];
-%ENDIF
-%ELSE
-	self = [super init];
-%ENDIF
-	decode_object(self, decoder);
-	return self;
-}
-
-- (void)encodeWithCoder:(NSCoder *)encoder
-{
-%IFDEF superClass
-%IFNDEF IsAttributedString
-	[super encodeWithCoder:encoder];
-
-%ENDIF
-%ENDIF
-	encode_object(self, encoder);
-}
-
 @end

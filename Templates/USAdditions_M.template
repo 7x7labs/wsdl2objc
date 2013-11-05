@@ -280,7 +280,6 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 @end
 
 @implementation USBoolean
-
 - (id)initWithBool:(BOOL)aValue
 {
 	self = [super init];
@@ -311,21 +310,6 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 		return [[USBoolean alloc] initWithBool:NO];
     return nil;
 }
-
-- (void)encodeWithCoder:(NSCoder*)coder
-{
-	[coder encodeValueOfObjCType:@encode(BOOL) at:&_value];
-}
-
-- (id)initWithCoder:(NSCoder*)coder
-{
-	if ((self = [super init])) {
-		[coder decodeValueOfObjCType:@encode(BOOL) at:&_value];
-	}
-
-	return self;
-}
-
 @end
 
 @implementation SOAPFault

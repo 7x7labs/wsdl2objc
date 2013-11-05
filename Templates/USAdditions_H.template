@@ -63,7 +63,7 @@
 - (void)addToNode:(xmlNodePtr)node elementName:(NSString *)name elementNSPrefix:(NSString *)nsPrefix;
 @end
 
-@interface USBoolean : NSObject <NSCoding>
+@interface USBoolean : NSObject
 
 @property(nonatomic) BOOL boolValue;
 
