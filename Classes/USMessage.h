@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Copyright (c) 2013 7x7 Labs, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -23,13 +23,10 @@
 #import <Foundation/Foundation.h>
 
 @class USSchema;
-@class USPart;
 
 @interface USMessage : NSObject
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) NSMutableArray *parts;
-@property (nonatomic) BOOL hasBeenParsed;
-@property (nonatomic, strong) USSchema *schema;
+@property (nonatomic, strong) NSDictionary *parts;
 
-- (USPart *)partForName:(NSString *)aName;
++ (USMessage *)messageWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

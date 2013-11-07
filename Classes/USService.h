@@ -22,18 +22,16 @@
 
 #import <Foundation/Foundation.h>
 
-@class USPort;
 @class USSchema;
 
 @interface USService : NSObject
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) NSMutableArray *ports;
-@property (nonatomic, strong) USSchema *schema;
 @property (nonatomic, readonly) NSString *className;
-
-- (USPort *)portForName:(NSString *)aName;
+@property (nonatomic, strong) NSArray *ports;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;
 - (NSDictionary *)templateKeyDictionary;
+
++ (instancetype)serviceWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

@@ -23,56 +23,53 @@
 #import "USType.h"
 
 #import "NSBundle+USAdditions.h"
-#import "USObjCKeywords.h"
+#import "NSString+USAdditions.h"
 #import "USSchema.h"
 #import "USSequenceElement.h"
 #import "USWSDL.h"
 
 @implementation USType
++ (USType *)simpleTypeWithName:(NSString *)name prefix:(NSString *)prefix {
+    USType *type = [USType new];
+    type.behavior = TypeBehavior_simple;
+    type.typeName = name;
+    type.prefix = prefix;
+    return type;
+}
 
-- (id)init
-{
-	if ((self = [super init]))
-	{
-		self.typeName = @"";
-		self.behavior = TypeBehavior_uninitialized;
++ (USType *)complexTypeWithName:(NSString *)name prefix:(NSString *)prefix {
+    USType *type = [USType new];
+    type.behavior = TypeBehavior_complex;
+    type.typeName = name;
+    type.prefix = prefix;
+    return type;
+}
 
-		self.representationClass = @"";
-		self.enumerationValues = [NSMutableArray array];
-
+- (id)init {
+	if ((self = [super init])) {
 		self.sequenceElements = [NSMutableArray array];
 		self.attributes = [NSMutableArray array];
 	}
 	return self;
 }
 
-- (BOOL)isSimpleType
-{
+- (BOOL)isSimpleType {
 	return self.behavior == TypeBehavior_simple;
 }
 
-- (BOOL)isComplexType
-{
+- (BOOL)isComplexType {
 	return self.behavior == TypeBehavior_complex;
 }
 
-- (NSString *)className
-{
-	if ([self.schema prefix]) {
-		if (self.isSimpleType && [self.representationClass length] && [self.enumerationValues count] == 0) {
-			return self.representationClass;
-		}
-		return [NSString stringWithFormat:@"%@_%@",
-				[self.schema prefix],
-				[[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet]
-				 componentsJoinedByString:@""]];
-	}
+- (NSString *)className {
+    if (self.isSimpleType && [self.enumerationValues count] == 0)
+        return self.representationClass;
 
-	return [[self.typeName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
+    return [NSString stringWithFormat:@"%@_%@",
+            self.prefix, [self.typeName stringByRemovingIllegalCharacters]];
 }
 
-- (NSString *)classNameWithPtr
-{
+- (NSString *)classNameWithPtr {
 	if (self.isSimpleType)
 		return [self className];
 	if (self.isComplexType)
@@ -81,29 +78,24 @@
 	return self.typeName;
 }
 
-- (NSString *)classNameWithoutPtr
-{
+- (NSString *)classNameWithoutPtr {
 	return [[self className] stringByReplacingOccurrencesOfString:@" *" withString:@""];
 }
 
-- (NSString *)assignOrRetain
-{
+- (NSString *)assignOrRetain {
 	if (self.isSimpleType) {
-		if ([[self className] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound) {
+		if ([[self className] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound)
 			return @"weak";
-		}
 	}
 
 	return @"strong";
 }
 
-- (NSString *)enumCount
-{
+- (NSString *)enumCount {
 	return [[NSNumber numberWithUnsignedInt:[self.enumerationValues count]] stringValue];
 }
 
-- (NSString *)templateFileHPath
-{
+- (NSString *)templateFileHPath {
 	switch (self.behavior) {
 		case TypeBehavior_simple:
 			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_H"];
@@ -114,8 +106,7 @@
 	}
 }
 
-- (NSString *)templateFileMPath
-{
+- (NSString *)templateFileMPath {
 	switch (self.behavior) {
 		case TypeBehavior_simple:
 			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_M"];
@@ -126,12 +117,11 @@
 	}
 }
 
-- (NSDictionary *)templateKeyDictionary
-{
+- (NSDictionary *)templateKeyDictionary {
 	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
 	returning[@"className"] = [self className];
-	returning[@"schema"] = self.schema;
 	returning[@"typeName"] = self.typeName;
+	returning[@"prefix"] = self.prefix;
 	returning[@"classNameWithPtr"] = [self classNameWithPtr];
 	returning[@"classNameWithoutPtr"] = [self classNameWithoutPtr];
 
@@ -155,17 +145,8 @@
 			}
 			returning[@"sequenceElements"] = self.sequenceElements ?: @[];
 			returning[@"hasSequenceElements"] = @([self.sequenceElements count]);
-			returning[@"hasArraySequenceElements"] = @NO;
 			returning[@"attributes"] = self.attributes ?: @[];
 			returning[@"hasAttributes"] = @([self.attributes count] > 0);
-			returning[@"isInTargetNamespace"] = @([self.schema.fullName isEqualToString:self.schema.wsdl.targetNamespace.fullName]);
-
-			for (USSequenceElement *element in self.sequenceElements) {
-				if (element.maxOccurs < 0 || element.maxOccurs > 1) {
-					returning[@"hasArraySequenceElements"] = @YES;
-					break;
-				}
-			}
 			break;
 		}
 

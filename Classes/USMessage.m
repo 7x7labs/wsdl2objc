@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Copyright (c) 2013 7x7 Labs, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,33 +22,33 @@
 
 #import "USMessage.h"
 
-#import "USPart.h"
+#import "NSXMLElement+Children.h"
+#import "USElement.h"
+#import "USSchema.h"
 
 @implementation USMessage
++ (USMessage *)messageWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+	USMessage *message = [USMessage new];
+	message.name = [[el attributeForName:@"name"] stringValue];
 
-- (id)init
-{
-	if ((self = [super init])) {
-		self.parts = [NSMutableArray array];
-	}
+    NSMutableDictionary *parts = [NSMutableDictionary new];
+    for (NSXMLElement *child in [el childElementsWithName:@"part"]) {
+        NSString *name = [[child attributeForName:@"name"] stringValue];
+        BOOL hasElement = [schema withElementFromElement:child attrName:@"element" call:^(USElement *element) {
+            parts[name] = element;
+        }];
 
-	return self;
+        if (!hasElement) {
+            [schema withTypeFromElement:child attrName:@"type" call:^(USType *type) {
+                USElement *element = [USElement new];
+                element.name = name;
+                element.type = type;
+                parts[name] = element;
+            }];
+        }
+    }
+    message.parts = parts;
+    return message;
+
 }
-
-- (USPart *)partForName:(NSString *)aName
-{
-	for (USPart *part in self.parts) {
-		if ([part.name isEqualToString:aName]) {
-			return part;
-		}
-	}
-
-	USPart *newPart = [USPart new];
-	newPart.message = self;
-	newPart.name = aName;
-	[self.parts addObject:newPart];
-
-	return newPart;
-}
-
 @end

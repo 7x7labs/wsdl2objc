@@ -34,32 +34,41 @@
 
 @interface USSchema : NSObject
 @property (nonatomic, copy) NSString *prefix;			// unique global schema prefix (after all includes)
-@property (nonatomic, copy) NSString *localPrefix;		// specified schema prefix within local scope
 @property (nonatomic, copy) NSString *fullName;
-@property (nonatomic, strong) NSMutableArray *types;
-@property (nonatomic, strong) NSMutableArray *elements;
-@property (nonatomic, strong) NSMutableArray *attributes;
+@property (nonatomic, strong) NSMutableDictionary *types;
+@property (nonatomic, strong) NSMutableDictionary *elements;
+@property (nonatomic, strong) NSMutableDictionary *attributes;
 @property (nonatomic, strong) NSMutableArray *imports;
-@property (nonatomic, strong) NSMutableArray *messages;
-@property (nonatomic, strong) NSMutableArray *portTypes;
-@property (nonatomic, strong) NSMutableArray *bindings;
-@property (nonatomic, strong) NSMutableArray *services;
+@property (nonatomic, strong) NSMutableDictionary *messages;
+@property (nonatomic, strong) NSMutableDictionary *portTypes;
+@property (nonatomic, strong) NSMutableDictionary *bindings;
+@property (nonatomic, strong) NSMutableDictionary *services;
 @property (nonatomic, strong) USWSDL *wsdl;
-@property (nonatomic) BOOL hasBeenParsed;
 @property (nonatomic) BOOL hasBeenWritten;
 
 - (id)initWithWSDL:(USWSDL *)aWsdl;
 
-- (USType *)typeForName:(NSString *)aName;
-- (USElement *)elementForName:(NSString *)aName;
-- (USAttribute *)attributeForName:(NSString *)aName;
-- (USMessage *)messageForName:(NSString *)aName;
-- (USPortType *)portTypeForName:(NSString *)aName;
-- (USBinding *)bindingForName:(NSString *)aName;
-- (USService *)serviceForName:(NSString *)aName;
+- (BOOL)withTypeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USType *))block;
+- (void)registerType:(USType *)type;
+
+- (BOOL)withElementFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USElement *))block;
+- (void)registerElement:(USElement *)element;
+
+- (BOOL)withAttributeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USAttribute *))block;
+- (void)registerAttribute:(USAttribute *)attribute;
+
+- (BOOL)withMessageFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USMessage *))block;
+- (void)registerMessage:(USMessage *)attribute;
+
+- (BOOL)withPortTypeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USPortType *))block;
+- (void)registerPortType:(USPortType *)attribute;
+
+- (BOOL)withBindingFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USBinding *))block;
+- (void)registerBinding:(USBinding *)attribute;
+
+- (void)registerService:(USService *)attribute;
 
 - (void)addSimpleClassWithName:(NSString *)aName representationClass:(NSString *)aClass;
-- (void)addComplexClassWithName:(NSString *)aName representationClass:(NSString *)aClass;
 
 - (BOOL)shouldNotWrite;
 

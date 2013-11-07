@@ -41,4 +41,18 @@
     return ret;
 }
 
+- (NSXMLElement *)childElementWithNames:(NSArray *)localNames parentName:(NSString *)name {
+    for (NSXMLElement *child in self.children) {
+		if ([child kind] == NSXMLElementKind && [localNames containsObject:child.localName])
+            return child;
+    }
+    return nil;
+}
+
+- (BOOL)isSoapNS {
+    NSString *namespace = [[self resolveNamespaceForName:[self name]] stringValue];
+    return [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap/"]
+        || [namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"];
+}
+
 @end

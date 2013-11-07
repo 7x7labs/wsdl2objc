@@ -28,7 +28,7 @@
 @property (nonatomic) NSInteger maxOccurs; /* -1 represents 'unbounded' */
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, strong) NSString *wsdlName;
-@property (nonatomic, strong) USType * type;
+@property (nonatomic, strong) USType *type;
 
 - (NSString *)uname;
 - (NSNumber *)useAnArray;

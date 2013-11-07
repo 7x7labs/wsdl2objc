@@ -13,7 +13,7 @@
 %ELSE
 @interface %«className» : NSObject
 %ENDIF
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName;
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix;
 %IF hasAttributes
 - (void)addAttributesToNode:(xmlNodePtr)node;
 %ENDIF

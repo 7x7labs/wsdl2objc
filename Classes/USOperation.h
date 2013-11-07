@@ -24,19 +24,16 @@
 
 @class USOperationInterface;
 @class USPortType;
-@class USOperationFault;
+@class USSchema;
 
 @interface USOperation : NSObject
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, copy) NSString *soapAction;
 @property (nonatomic, strong) USOperationInterface *input;
 @property (nonatomic, strong) USOperationInterface *output;
-@property (nonatomic, strong) NSMutableArray *faults;
-@property (nonatomic, strong) USPortType *portType;
-@property (nonatomic, readonly) NSString* className;
-
-- (USOperationFault *)faultForName:(NSString *)aName;
+@property (nonatomic, readonly) NSString *className;
 
 - (NSString *)invokeString;
 - (NSString *)asyncInvokeString;
++ (USOperation *)operationWithElement:(NSXMLElement *)el schema:(USSchema *)schema portType:(USPortType *)portType;
 @end

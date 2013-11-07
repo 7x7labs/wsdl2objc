@@ -1,7 +1,7 @@
 /* Cookies handling provided by http://en.wikibooks.org/wiki/Programming:WebObjects/Web_Services/Web_Service_Provider */
 
 #import <libxml/parser.h>
-%FOREACH schema in schema.wsdl.schemas
+%FOREACH schema in wsdl.schemas
 %IFNOT schema.shouldNotWrite
 #import "%«schema.prefix».h"
 %ENDIF

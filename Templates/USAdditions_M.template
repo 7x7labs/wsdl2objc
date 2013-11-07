@@ -267,8 +267,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 @end
 
 @implementation NSArray (USAdditions)
-- (void)addToNode:(xmlNodePtr)node elementName:(NSString *)name elementNSPrefix:(NSString *)nsPrefix
-{
+- (void)addToNode:(xmlNodePtr)node elementName:(NSString *)name elementNSPrefix:(NSString *)nsPrefix {
     for (id child in self) {
         xmlAddChild(node, [child xmlNodeForDoc:node->doc elementName:name elementNSPrefix:nsPrefix]);
     }

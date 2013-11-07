@@ -25,4 +25,6 @@
 @interface NSXMLElement (Children)
 - (NSArray *)childElements;
 - (NSArray *)childElementsWithName:(NSString *)localName;
+- (NSXMLElement *)childElementWithNames:(NSArray *)localNames parentName:(NSString *)name;
+- (BOOL)isSoapNS;
 @end

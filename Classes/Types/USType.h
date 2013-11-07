@@ -32,20 +32,22 @@ typedef enum {
 } TypeBehavior;
 
 @interface USType : NSObject
-#pragma mark Global type methods
-- (BOOL)isSimpleType;
-- (BOOL)isComplexType;
-
-- (NSString *)className;
-- (NSString *)classNameWithPtr;
-- (NSString *)classNameWithoutPtr;
-- (NSString *)assignOrRetain;
++ (USType *)simpleTypeWithName:(NSString *)name prefix:(NSString *)prefix;
++ (USType *)complexTypeWithName:(NSString *)name prefix:(NSString *)prefix;
 
 @property (nonatomic, copy) NSString *typeName;
-@property (nonatomic, strong) USSchema *schema;
+@property (nonatomic, copy) NSString *prefix;
 @property (nonatomic) TypeBehavior behavior;
-@property (nonatomic) BOOL hasBeenParsed;
 @property (nonatomic) BOOL hasBeenWritten;
+
+#pragma mark Global type methods
+@property (nonatomic, readonly) BOOL isSimpleType;
+@property (nonatomic, readonly) BOOL isComplexType;
+
+@property (nonatomic, readonly) NSString *className;
+@property (nonatomic, readonly) NSString *classNameWithPtr;
+@property (nonatomic, readonly) NSString *classNameWithoutPtr;
+@property (nonatomic, readonly) NSString *assignOrRetain;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;
@@ -54,12 +56,12 @@ typedef enum {
 #pragma mark Simple type methods
 @property (nonatomic, copy) NSString *representationClass;
 @property (nonatomic, strong) NSArray *enumerationValues;
-
-- (NSString *)enumCount;
+@property (nonatomic, readonly) NSString *enumCount;
 
 #pragma mark Complex type methods
 @property (nonatomic, strong) USType *superClass;
 @property (nonatomic, strong) NSMutableArray *sequenceElements;
 @property (nonatomic, strong) NSMutableArray *attributes;
+@property (nonatomic) BOOL isArray;
 
 @end

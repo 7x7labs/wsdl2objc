@@ -28,8 +28,5 @@
 	NSArray *keywords;
 }
 
-+ (USObjCKeywords *)sharedInstance;
-
-- (BOOL)isAKeyword:(NSString *)testString;
-
++ (NSString *)mangleName:(NSString *)name;
 @end

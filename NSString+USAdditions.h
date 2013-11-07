@@ -1,6 +1,6 @@
 /*
- Copyright (c) 2008 LightSPEED Technologies, Inc.
- 
+ Copyright (c) 2013 7x7 Labs Inc.
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
@@ -22,9 +22,8 @@
 
 #import <Foundation/Foundation.h>
 
-
 @interface NSString (USAdditions)
-
 - (NSString *)stringWithCapitalizedFirstCharacter;
-
+- (NSString *)stringByRemovingCharactersInSet:(NSCharacterSet *)set;
+- (NSString *)stringByRemovingIllegalCharacters;
 @end

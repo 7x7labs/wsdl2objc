@@ -70,11 +70,11 @@
 
 %FOREACH operation in operations
 @interface %«className»_%«operation.className» : %«className»Operation
-%FOREACH part in operation.input.body.parts
-%IFEQ part.element.type.assignOrRetain strong
-@property(nonatomic, strong) %«part.element.type.classNameWithPtr» %«part.name»;
+%FOREACH part in operation.input.bodyParts
+%IFEQ part.type.assignOrRetain strong
+@property(nonatomic, strong) %«part.type.classNameWithPtr» %«part.name»;
 %ELSE
-@property(nonatomic) %«part.element.type.classNameWithPtr» %«part.name»;
+@property(nonatomic) %«part.type.classNameWithPtr» %«part.name»;
 %ENDIF
 %ENDFOR
 %FOREACH header in operation.input.headers
@@ -86,8 +86,8 @@
 %ENDFOR
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate
-%FOREACH part in operation.input.body.parts
-	%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
+%FOREACH part in operation.input.bodyParts
+	%«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
 	%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»

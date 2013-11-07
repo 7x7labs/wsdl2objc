@@ -21,14 +21,17 @@
  */
 
 #import <Foundation/Foundation.h>
-#import "USType.h"
+
+@class USSchema;
+@class USType;
 
 @interface USAttribute : NSObject
-@property (nonatomic, copy) NSString *name;
+@property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *wsdlName;
-@property (nonatomic, copy) NSString *attributeDefault;
-@property (nonatomic, strong) USSchema * schema;
-@property (nonatomic, strong) USType * type;
+@property (nonatomic, strong) NSString *attributeDefault;
+@property (nonatomic, strong) USType *type;
 
 - (NSDictionary *)templateKeyDictionary;
+
++ (USAttribute *)attributeWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

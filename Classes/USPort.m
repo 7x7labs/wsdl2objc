@@ -22,8 +22,23 @@
 
 #import "USPort.h"
 
+#import "NSXMLElement+Children.h"
 #import "USBinding.h"
 #import "USService.h"
+#import "USSchema.h"
 
 @implementation USPort
++ (USPort *)portWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    USPort *port = [USPort new];
+    port.name = [[el attributeForName:@"name"] stringValue];
+
+    for (NSXMLElement *child in [el childElementsWithName:@"address"])
+        port.address = [[child attributeForName:@"location"] stringValue];
+
+    [schema withBindingFromElement:el attrName:@"binding" call:^(USBinding *binding) {
+        port.binding = binding;
+    }];
+
+    return port;
+}
 @end

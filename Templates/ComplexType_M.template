@@ -5,32 +5,18 @@
 %ENDIF
 
 @implementation %«className»
-%IF hasArraySequenceElements
-- (id)init
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix
 {
-	if ((self = [super init])) {
-%FOREACH element in sequenceElements
-%IF element.useAnArray
-		_%«element.name» = [[NSMutableArray alloc] init];
-%ENDIF
-%ENDFOR
-	}
-
-	return self;
-}
-
-%ENDIF
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName
-{
+	if (!prefix) prefix = @"%«prefix»";
 %IFDEF IsAttributedString
-	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:@"%«schema.prefix»"];
+	xmlNodePtr node = [self._content xmlNodeForDoc:doc elementName:elName elementNSPrefix:prefix];
 %ELSE
-	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:@"%«schema.prefix»"];
+	xmlNodePtr node = [@"" xmlNodeForDoc:doc elementName:elName elementNSPrefix:prefix];
 %ENDIF
 %IFDEF superClass
 
 	xmlNsPtr xsi = xmlSearchNs(doc, xmlDocGetRootElement(doc), (const xmlChar *)"xsi");
-	xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)[[@"%«schema.prefix»" stringByAppendingString:@":%«typeName»"] UTF8String]);
+	xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)[[@"%«prefix»" stringByAppendingString:@":%«typeName»"] UTF8String]);
 
 %ENDIF
 %IF hasAttributes
@@ -94,7 +80,7 @@
 %FOREACH element in sequenceElements
 %IF element.useAnArray
 %IFEQ element.type.enumCount 0
-	[self.%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"];
+	[self.%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«prefix»"];
 %ELSE
 	for (NSNumber *intRepresentation in self.%«element.name») {
 		%«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
@@ -105,9 +91,9 @@
 	if (self.%«element.name») {
 %IFEQ element.type.assignOrRetain strong
 %IF element.type.isComplexType
-		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»"]);
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«prefix»"]);
 %ELSE
-		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«schema.prefix»"]);
+		xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«prefix»"]);
 %ENDIF
 %ELSIFEQ element.type.typeName boolean
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", (*self.%«element.name» ? (const xmlChar *)"true" : (const xmlChar *)"false"));
@@ -128,7 +114,7 @@
 		sprintf(buf, "%f", *self.%«element.name»);
 		xmlNewChild(node, NULL, (const xmlChar *)"%«element.wsdlName»", buf);
 %ELSIFNEQ element.type.enumCount 0
-		xmlNewChild(node, NULL, (const xmlChar *)"%«schema.prefix»:%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
+		xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«element.wsdlName»", [%«element.type.className»_stringFromEnum(self.%«element.name») xmlString]);
 %ENDIF
 	}
 %ENDIF
@@ -142,10 +128,10 @@
 %FOREACH element in sequenceElements
 %IF element.useAnArray
 
-- (void)add%«element.uname»:(%«element.type.classNameWithPtr»)toAdd
-{
+- (void)add%«element.uname»:(%«element.type.classNameWithPtr»)toAdd {
+	if (!self.%«element.name») _%«element.name» = [NSMutableArray new];
 %IFEQ element.type.assignOrRetain weak
-	[self.%«element.name» addObject:[NSNumber numberWithInt:(int)toAdd]];
+	[self.%«element.name» addObject:@((int)toAdd)];
 %ELSE
 	if (toAdd)
 		[self.%«element.name» addObject:toAdd];
@@ -276,10 +262,12 @@
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSIFEQ attribute.type.classNameWithoutPtr NSNumber
 		self.%«attribute.name» = @([attrString doubleValue]);
+%ELSIFEQ attribute.type.classNameWithoutPtr NSString
+		self.%«attribute.name» = attrString;
 %ELSIF attribute.type.isSimpleType
 		self.%«attribute.name» = attrString;
 %ELSE
-#warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName»
+#warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName» (%«attribute.type.classNameWithPtr»)
 %ENDIF
 	}
 %ENDFOR
@@ -302,8 +290,7 @@
 			Class elementClass = classForElement(cur) ?: [%«element.type.classNameWithoutPtr» class];
 			id newChild = [elementClass deserializeNode:cur];
 %IF element.useAnArray
-			if (newChild)
-				[self.%«element.name» addObject:newChild];
+			[self add%«element.uname»:newChild];
 %ELSE
 			self.%«element.name» = newChild;
 %ENDIF
@@ -330,7 +317,7 @@
 %ELSIFNEQ element.type.enumCount 0
 			%«element.type.className» enumRepresentation = %«element.type.className»_enumFromString(NSStringFromNodeList(cur));
 %IF element.useAnArray
-			[self.%«element.name» addObject:@((int)enumRepresentation)];
+			[self add%«element.uname»:enumRepresentation];
 %ELSE
 
 			self.%«element.name» = enumRepresentation;

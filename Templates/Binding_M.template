@@ -68,7 +68,7 @@
 - (%«className»Response *)%«operation.invokeString»
 {
 	%«className»_%«operation.className» *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:self
-%FOREACH part in operation.input.body.parts
+%FOREACH part in operation.input.bodyParts
 																							%«part.name»:a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
@@ -82,7 +82,7 @@
 - (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id <%«className»ResponseDelegate>)responseDelegate
 {
 	%«className»_%«operation.className»  *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
-%FOREACH part in operation.input.body.parts
+%FOREACH part in operation.input.bodyParts
 																							 %«part.name»:a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
@@ -242,15 +242,15 @@
 @implementation %«className»_%«operation.className»
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)responseDelegate
-%FOREACH part in operation.input.body.parts
-%«part.name»:(%«part.element.type.classNameWithPtr»)a%«part.uname»
+%FOREACH part in operation.input.bodyParts
+%«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
 %FOREACH header in operation.input.headers
 %«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»Header
 %ENDFOR
 {
 	if ((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
-%FOREACH part in operation.input.body.parts
+%FOREACH part in operation.input.bodyParts
 		self.%«part.name» = a%«part.uname»;
 %ENDFOR
 %FOREACH header in operation.input.headers
@@ -308,43 +308,43 @@
 %ENDFOR
 %ENDIF
 
-%IFDEF operation.input.body.parts
+%IFDEF operation.input.bodyParts
 	NSMutableDictionary *bodyElements = [NSMutableDictionary dictionary];
-%FOREACH part in operation.input.body.parts
-%IFEQ part.element.type.assignOrRetain strong
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = self.%«part.name»;
-%ELSIFEQ part.element.type.typeName boolean
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = [[USBoolean alloc] initWithBool:self.*%«part.name»];
-%ELSIFEQ part.element.type.typeName byte
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName int
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName integer
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName nonNegativeInteger
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName positiveInteger
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName unsignedChar
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName unsignedInt
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName long
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName unsignedLong
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName short
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName unsignedShort
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName double
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName float
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.element.type.typeName decimal
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFNEQ part.element.type.enumCount 0
-	if (self.%«part.name») bodyElements[@"%«part.element.wsdlName»"] = %«part.element.type.className»_stringFromEnum(self.%«part.name»);
+%FOREACH part in operation.input.bodyParts
+%IFEQ part.type.assignOrRetain strong
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = self.%«part.name»;
+%ELSIFEQ part.type.typeName boolean
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = [[USBoolean alloc] initWithBool:self.*%«part.name»];
+%ELSIFEQ part.type.typeName byte
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName int
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName integer
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName nonNegativeInteger
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName positiveInteger
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName unsignedChar
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName unsignedInt
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName long
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName unsignedLong
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName short
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName unsignedShort
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName double
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName float
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFEQ part.type.typeName decimal
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
+%ELSIFNEQ part.type.enumCount 0
+	if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = %«part.type.className»_stringFromEnum(self.%«part.name»);
 %ENDIF
 %ENDFOR
 %ENDIF
@@ -404,8 +404,8 @@
 		if (xmlStrEqual(cur->name, (const xmlChar *) "Body")) {
 			NSMutableArray *responseBodyParts = [NSMutableArray array];
 			NSDictionary *bodyParts = @{
-%FOREACH part in operation.output.body.parts
-				@"%«part.element.wsdlName»": [%«part.element.type.classNameWithoutPtr» class],
+%FOREACH part in operation.output.bodyParts
+				@"%«part.wsdlName»": [%«part.type.classNameWithoutPtr» class],
 %ENDFOR
 			};
 			for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next) {
@@ -414,12 +414,7 @@
 				if (cur->type != XML_ELEMENT_NODE) continue;
 				if ((bodyNode->ns && xmlStrEqual(bodyNode->ns->prefix, cur->ns->prefix)) &&
 					xmlStrEqual(bodyNode->name, (const xmlChar *)"Fault")) {
-					NSDictionary *exceptions = @{
-%FOREACH fault in operation.faults
-												@"%«fault.name»": @"%«schema.prefix»_%«fault.name»",
-%ENDFOR
-												};
-					SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode expectedExceptions:exceptions];
+					SOAPFault *bodyObject = [SOAPFault deserializeNode:bodyNode expectedExceptions:@{}];
 					if (bodyObject) [responseBodyParts addObject:bodyObject];
 				}
 			}
@@ -474,7 +469,7 @@ done:
 
 	xmlNewNsProp(root, xslNs, (const xmlChar *)"version", (const xmlChar *)"1.0");
 
-%FOREACH schema in schema.wsdl.schemas
+%FOREACH schema in wsdl.schemas
 	xmlNewNs(root, (const xmlChar *)"%«schema.fullName»", (const xmlChar *)"%«schema.prefix»");
 %ENDFOR
 
@@ -484,7 +479,7 @@ done:
 
 		for (NSString *key in headerElements) {
 			id header = headerElements[key];
-			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key]);
+			xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
 	}
 
@@ -495,7 +490,7 @@ done:
 
 		for (NSString *key in bodyElements) {
 			id body = bodyElements[key];
-			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key]);
+			xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
 		}
 	}
 

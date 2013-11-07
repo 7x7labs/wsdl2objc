@@ -21,35 +21,38 @@
  */
 
 #import "USElement.h"
-#import "USType.h"
-#import "USObjCKeywords.h"
+
 #import "NSString+USAdditions.h"
+#import "NSXMLElement+Children.h"
+#import "USObjCKeywords.h"
+#import "USParser+Types.h"
+#import "USSchema.h"
+#import "USType.h"
 
 @implementation USElement
-- (id)init
-{
-	if ((self = [super init])) {
-		self.waitingSeqElements = [NSMutableArray array];
-	}
++ (USElement *)elementWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    USElement *element = [USElement new];
+    element.wsdlName = [[el attributeForName:@"name"] stringValue];
+    element.name = [USObjCKeywords mangleName:element.wsdlName];
 
-	return self;
+    BOOL hasType = [schema withTypeFromElement:el attrName:@"type" call:^(USType *type) {
+        element.type = type;
+    }];
+
+    if (!hasType) {
+        USParser *parser = [USParser new];
+        NSString *typeName = [@"Element" stringByAppendingString:element.name];
+        for (NSXMLElement *child in [el childElements]) {
+            element.type = [parser parseTypeElement:child schema:schema name:typeName];
+            if (element.type) break;
+        }
+        [schema registerType:element.type];
+    }
+
+    return element;
 }
 
-- (void)setName:(NSString *)aName
-{
-	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
-
-	self.wsdlName = aName;
-	if ([keywords isAKeyword:aName]) {
-		aName = [NSString stringWithFormat:@"%@_", aName];
-	}
-
-	_name = [aName copy];
-}
-
-- (NSString *)uname
-{
+- (NSString *)uname {
 	return [self.name stringWithCapitalizedFirstCharacter];
 }
-
 @end

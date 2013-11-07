@@ -1,15 +1,13 @@
 @implementation %«className»
 
-+ (void)initialize
-{
-%FOREACH schema in schema.wsdl.schemas
++ (void)initialize {
+%FOREACH schema in wsdl.schemas
 	[[USGlobals sharedInstance].wsdlStandardNamespaces setObject:@"%«schema.prefix»" forKey:@"%«schema.fullName»"];
 %ENDFOR
 }
 
 %FOREACH port in ports
-+ (%«port.binding.className» *)%«port.binding.cleanName»
-{
++ (%«port.binding.className» *)%«port.binding.cleanName» {
 	return [[%«port.binding.className» alloc] initWithAddress:@"%«port.address»"];
 }
 %ENDFOR

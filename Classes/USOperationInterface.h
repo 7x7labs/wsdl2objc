@@ -23,17 +23,15 @@
 #import <Foundation/Foundation.h>
 
 @class USMessage;
-@class USOperation;
+@class USSchema;
 
 @interface USOperationInterface : NSObject
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) NSMutableOrderedSet *headers;
-@property (nonatomic, strong) USMessage *body;
-@property (nonatomic, strong) USOperation *operation;
+@property (nonatomic, strong) NSOrderedSet *headers;
+@property (nonatomic, strong) NSArray *bodyParts;
 @property (nonatomic, readonly) NSString *className;
-
-+ (USOperationInterface *)operationInterfaceForOperation:(USOperation *)operation;
 
 - (NSString *)className;
 - (NSNumber *)hasHeaders;
+
++ (instancetype)interfaceWithElement:(NSXMLElement *)el schema:(USSchema *)schema message:(USMessage *)message;
 @end

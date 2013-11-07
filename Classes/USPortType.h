@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Copyright (c) 2013 7x7 Labs, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,13 +22,20 @@
 
 #import <Foundation/Foundation.h>
 
+@class USMessage;
 @class USSchema;
-@class USOperation;
+
+@interface USPortTypeOperation : NSObject
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) USMessage *input;
+@property (nonatomic, strong) USMessage *output;
+
++ (USPortTypeOperation *)operationWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
+@end
 
 @interface USPortType : NSObject
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) NSMutableArray *operations;
-@property (nonatomic, strong) USSchema *schema;
+@property (nonatomic, strong) NSDictionary *operations;
 
-- (USOperation *)operationForName:(NSString *)aName;
++ (USPortType *)portTypeWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

@@ -25,26 +25,17 @@
 #import "NSString+USAdditions.h"
 
 @implementation USSequenceElement
-- (void)setName:(NSString *)aName
-{
-	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
-
+- (void)setName:(NSString *)aName {
 	self.wsdlName = aName;
-	if ([keywords isAKeyword:aName]) {
-		aName = [NSString stringWithFormat:@"%@_", aName];
-	}
-
-	_name = [aName copy];
+    _name = [[USObjCKeywords mangleName:aName] copy];
 }
 
-- (NSString *)uname
-{
+- (NSString *)uname {
 	return [self.name stringWithCapitalizedFirstCharacter];
 }
 
-- (NSNumber *)useAnArray
-{
-    return @(self.maxOccurs != 0 && self.maxOccurs != 1);
+- (NSNumber *)useAnArray {
+    return @((self.maxOccurs != 0 && self.maxOccurs != 1) || self.type.isArray);
 }
 
 @end

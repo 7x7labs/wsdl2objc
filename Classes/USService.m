@@ -22,57 +22,44 @@
 
 #import "USService.h"
 
-#import "USPort.h"
-#import "USObjCKeywords.h"
 #import "NSBundle+USAdditions.h"
+#import "NSString+USAdditions.h"
+#import "NSXMLElement+Children.h"
+#import "USPort.h"
 
 @implementation USService
-- (id)init
-{
-	if ((self = [super init])) {
-		self.ports = [NSMutableArray array];
-	}
++ (instancetype)serviceWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    NSString *name = [[el attributeForName:@"name"] stringValue];
+    if ([[[NSUserDefaults standardUserDefaults] objectForKey:@"addTagToServiceName"] boolValue])
+        name = [name stringByAppendingString:@"Svc"];
 
-	return self;
+    USService *service = [USService new];
+    service.name = name;
+    NSMutableArray *ports = [NSMutableArray new];
+    for (NSXMLElement *child in [el childElementsWithName:@"port"]) {
+        USPort *port = [USPort portWithElement:child schema:schema];
+        if (port)
+            [ports addObject:port];
+    }
+    service.ports = ports;
+    return service;
 }
 
-- (USPort *)portForName:(NSString *)aName
-{
-	for (USPort *port in self.ports) {
-		if ([port.name isEqualToString:aName]) {
-			return port;
-		}
-	}
-
-	USPort *newPort = [USPort new];
-	newPort.service = self;
-	newPort.name = aName;
-	[self.ports addObject:newPort];
-
-	return newPort;
+- (NSString *)className {
+	return [self.name stringByRemovingIllegalCharacters];
 }
 
-- (NSString *)className
-{
-	return [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
-}
-
-- (NSString *)templateFileHPath
-{
+- (NSString *)templateFileHPath {
 	return [[NSBundle mainBundle] pathForTemplateNamed:@"Service_H"];
 }
 
-- (NSString *)templateFileMPath
-{
+- (NSString *)templateFileMPath {
 	return [[NSBundle mainBundle] pathForTemplateNamed:@"Service_M"];
 }
 
-- (NSDictionary *)templateKeyDictionary
-{
+- (NSDictionary *)templateKeyDictionary {
     return @{@"name": self.name,
              @"className": self.className,
-             @"ports": self.ports,
-             @"schema": self.schema};
+             @"ports": self.ports};
 }
-
 @end

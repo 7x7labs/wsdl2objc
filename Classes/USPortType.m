@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2008 LightSPEED Technologies, Inc.
+ Copyright (c) 2013 7x7 Labs, Inc.
 
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
@@ -22,32 +22,42 @@
 
 #import "USPortType.h"
 
-#import "USOperation.h"
+#import "NSXMLElement+Children.h"
+#import "USSchema.h"
+
+@implementation USPortTypeOperation
++ (USPortTypeOperation *)operationWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    USPortTypeOperation *operation = [USPortTypeOperation new];
+    operation.name = [[el attributeForName:@"name"] stringValue];
+
+    for (NSXMLElement *child in [el childElements]) {
+        NSString *localName = [child localName];
+        if ([localName isEqualToString:@"input"]) {
+            [schema withMessageFromElement:child attrName:@"message" call:^(USMessage *message) {
+                operation.input = message;
+            }];
+        }
+        else if ([localName isEqualToString:@"output"]) {
+            [schema withMessageFromElement:child attrName:@"message" call:^(USMessage *message) {
+                operation.output = message;
+            }];
+        }
+    }
+    return operation;
+}
+@end
 
 @implementation USPortType
-- (id)init
-{
-	if ((self = [super init])) {
-		self.operations = [NSMutableArray array];
-	}
++ (USPortType *)portTypeWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    USPortType *portType = [USPortType new];
+    portType.name = [[el attributeForName:@"name"] stringValue];
 
-	return self;
+    NSMutableDictionary *operations = [NSMutableDictionary new];
+    for (NSXMLElement *child in [el childElementsWithName:@"operation"]) {
+        USPortTypeOperation *operation = [USPortTypeOperation operationWithElement:child schema:schema];
+        operations[operation.name] = operation;
+    }
+    portType.operations = operations;
+    return portType;
 }
-
-- (USOperation *)operationForName:(NSString *)aName
-{
-	for (USOperation *operation in self.operations) {
-		if ([operation.name isEqualToString:aName]) {
-			return operation;
-		}
-	}
-
-	USOperation *newOperation = [USOperation new];
-	newOperation.name = aName;
-	newOperation.portType = self;
-	[self.operations addObject:newOperation];
-
-	return newOperation;
-}
-
 @end

@@ -26,14 +26,16 @@
 @class USSchema;
 
 @interface USBinding : NSObject
+@property (nonatomic, copy) NSString *prefix;
 @property (nonatomic, copy) NSString *name;
-@property (nonatomic, strong) USPortType *portType;
 @property (nonatomic, copy) NSString *soapVersion;
-@property (nonatomic, strong) USSchema *schema;
 @property (nonatomic, readonly) NSString *className;
 @property (nonatomic, readonly) NSString *cleanName;
+@property (nonatomic, strong) NSDictionary *operations;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;
 - (NSDictionary *)templateKeyDictionary;
+
++ (instancetype)bindingWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

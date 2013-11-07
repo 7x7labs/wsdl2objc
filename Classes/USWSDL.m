@@ -25,59 +25,20 @@
 #import "USWSDL.h"
 
 #import "USAttribute.h"
-#import "USMessage.h"
-#import "USPortType.h"
 #import "USSchema.h"
-#import "USType.h"
+
+@interface USWSDL ()
+@property (nonatomic, strong) NSMutableDictionary *schemaPrefixes;
+@end
 
 @implementation USWSDL
-- (id)init
-{
-	if ((self = [super init]))
-	{
-		self.schemas = [NSMutableArray array];
-	}
-	return self;
-}
+- (id)init {
+	if (!(self = [super init])) return nil;
 
-- (USSchema *)schemaForNamespace:(NSString *)aNamespace
-{
-	for (USSchema *schema in self.schemas) {
-		if ([schema.fullName isEqualToString:aNamespace]) {
-			return schema;
-		}
-	}
+    self.schemas = [NSMutableDictionary new];
+    self.schemaPrefixes = [NSMutableDictionary new];
 
-	USSchema *newSchema = [[USSchema alloc] initWithWSDL:self];
-	newSchema.fullName = aNamespace;
-	[self.schemas addObject:newSchema];
-
-	return newSchema;
-}
-
-- (USSchema *)existingSchemaForPrefix:(NSString *)aPrefix
-{
-	if (aPrefix == nil) return nil;
-
-	for (USSchema *schema in self.schemas) {
-		if ([schema.prefix isEqualToString:aPrefix]) {
-			return schema;
-		}
-	}
-
-	return nil;
-}
-
-- (USType *)typeForNamespace:(NSString *)aNamespace name:(NSString *)aName
-{
-	return [[self schemaForNamespace:aNamespace] typeForName:aName];
-}
-
-- (void)addXSDSchema
-{
-	USSchema *xsd = [self schemaForNamespace:@"http://www.w3.org/2001/XMLSchema"];
-	xsd.prefix = @"xsd";
-
+    USSchema *xsd = [self createSchemaForNamespace:@"http://www.w3.org/2001/XMLSchema" prefix:@"xsd"];
 	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
 	[xsd addSimpleClassWithName:@"byte" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
@@ -112,10 +73,35 @@
 	[xsd addSimpleClassWithName:@"IDREF" representationClass:@"NSString *"];
 	[xsd addSimpleClassWithName:@"NMTOKEN" representationClass:@"NSString *"];
 
-	USSchema *xml = [self schemaForNamespace:@"http://www.w3.org/XML/1998/namespace"];
-	xml.prefix = @"xml";
-	USAttribute *attr = [xml attributeForName:@"lang"];
-	attr.type = [xsd typeForName:@"string"];
+    USSchema *xml = [self createSchemaForNamespace:@"http://www.w3.org/XML/1998/namespace" prefix:@"xml"];
+    USAttribute *attr = [USAttribute new];
+    attr.name = @"lang";
+    attr.wsdlName = @"lang";
+    attr.type = xsd.types[@"string"];
+    [xml registerAttribute:attr];
+
+	return self;
+}
+
+- (USSchema *)createSchemaForNamespace:(NSString *)xmlNS prefix:(NSString *)prefix {
+    USSchema *schema = [[USSchema alloc] initWithWSDL:self];
+    schema.fullName = xmlNS;
+    schema.prefix = prefix;
+    for (int i = 2; self.schemaPrefixes[schema.prefix]; ++i)
+        schema.prefix = [NSString stringWithFormat:@"%@%d", prefix, i];
+
+    assert(!self.schemas[xmlNS]);
+    self.schemas[xmlNS] = schema;
+    self.schemaPrefixes[schema.prefix] = schema;
+    return schema;
+}
+
+- (USSchema *)schemaForPrefix:(NSString *)prefix {
+    return self.schemaPrefixes[prefix];
+}
+
+- (NSDictionary *)templateKeyDictionary {
+    return @{@"schemas": [self.schemas allValues]};
 }
 
 @end
