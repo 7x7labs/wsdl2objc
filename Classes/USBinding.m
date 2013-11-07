@@ -22,26 +22,46 @@
 
 #import "USBinding.h"
 
+#import "NSBundle+USAdditions.h"
+#import "NSString+USAdditions.h"
+#import "NSXMLElement+Children.h"
+#import "USOperation.h"
 #import "USPortType.h"
 #import "USSchema.h"
-#import "USWSDL.h"
-#import "USObjCKeywords.h"
-#import "NSBundle+USAdditions.h"
 
 @implementation USBinding
-- (id)init
++ (instancetype)bindingWithElement:(NSXMLElement *)el schema:(USSchema *)schema
 {
-	if ((self = [super init])) {
-		self.portType = [USPortType new];
-        self.soapVersion = @"1.1";
-	}
+    USBinding *binding = [USBinding new];
+    binding.name = [[el attributeForName:@"name"] stringValue];
+    binding.prefix = schema.prefix;
+    binding.soapVersion = @"1.1";
 
-	return self;
+    __block USPortType *portType;
+    [schema withPortTypeFromElement:el attrName:@"type" call:^(USPortType *pt) {
+        portType = pt;
+    }];
+
+    NSMutableDictionary *operations = [NSMutableDictionary new];
+    for (NSXMLElement *child in [el childElementsWithName:@"operation"]) {
+        USOperation *operation = [USOperation operationWithElement:child schema:schema portType:portType];
+        if (operation)
+            operations[operation.name] = operation;
+    }
+
+    for (NSXMLElement *child in [el childElementsWithName:@"binding"]) {
+        NSString *namespace = [[child resolveNamespaceForName:[child name]] stringValue];
+        if ([namespace isEqualToString:@"http://schemas.xmlsoap.org/wsdl/soap12/"])
+            binding.soapVersion = @"1.2";
+    }
+
+    binding.operations = operations;
+    return binding;
 }
 
 - (NSString *)cleanName
 {
-	NSString *result = [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
+	NSString *result = [self.name stringByRemovingIllegalCharacters];
 	if (![result.lowercaseString hasSuffix:@"binding"])
 		result = [result stringByAppendingString:@"Binding"];
 	return result;
@@ -49,17 +69,7 @@
 
 - (NSString *)className
 {
-    NSString *prefixedName = [NSString stringWithFormat:@"%@_%@", self.schema.wsdl.targetNamespace.prefix, self.name];
-    ;
-	NSString *result = [[prefixedName componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
-	if (![result.lowercaseString hasSuffix:@"binding"])
-		result = [result stringByAppendingString:@"Binding"];
-	return result;
-}
-
-- (NSMutableArray *)operations
-{
-	return self.portType.operations;
+    return [NSString stringWithFormat:@"%@_%@", self.prefix, self.cleanName];
 }
 
 - (NSString *)templateFileHPath
@@ -76,10 +86,8 @@
 {
     return @{@"name": self.name,
              @"className": self.className,
-             @"portType": self.portType,
              @"soapVersion": self.soapVersion,
-             @"operations": [self operations],
-             @"schema": self.schema};
+             @"operations": self.operations};
 }
 
 @end

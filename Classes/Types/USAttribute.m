@@ -21,18 +21,45 @@
  */
 
 #import "USAttribute.h"
+
+#import "NSXMLElement+Children.h"
+#import "USParser+Types.h"
 #import "USObjCKeywords.h"
+#import "USSchema.h"
+#import "USType.h"
 
 @implementation USAttribute
-- (id)init
-{
-	if ((self = [super init]))
-	{
-		self.name = @"";
-		self.wsdlName = @"";
-		self.attributeDefault = @"";
-	}
-	return self;
++ (USAttribute *)attributeWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    USAttribute *attribute = [USAttribute new];
+
+    BOOL isRef = [schema withAttributeFromElement:el attrName:@"ref" call:^(USAttribute *ref) {
+        attribute.name = ref.name;
+        attribute.wsdlName = ref.wsdlName;
+        attribute.attributeDefault = ref.attributeDefault;
+        attribute.type = ref.type;
+
+    }];
+    if (isRef) return attribute;
+
+    attribute.wsdlName = [[el attributeForName:@"name"] stringValue];
+    attribute.name = [USObjCKeywords mangleName:attribute.wsdlName];
+    attribute.attributeDefault = [[el attributeForName:@"default"] stringValue] ?: @"";
+
+    BOOL hasType = [schema withTypeFromElement:el attrName:@"type" call:^(USType *type) {
+        attribute.type = type;
+    }];
+
+    if (!hasType) {
+        // Anonymous type, so we need to convert it to a named type
+        USParser *parser = [USParser new];
+        NSString *typeName = [@"Attribute" stringByAppendingString:attribute.name];
+        for (NSXMLElement *child in [el childElements]) {
+            attribute.type = [parser parseTypeElement:child schema:schema name:typeName];
+            if (attribute.type) break;
+        }
+        [schema registerType:attribute.type];
+    }
+    return attribute;
 }
 
 - (NSDictionary *)templateKeyDictionary
@@ -41,17 +68,4 @@
              @"typeName": self.type.typeName,
              @"default": self.attributeDefault};
 }
-
-- (void)setName:(NSString *)aName
-{
-	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
-
-	self.wsdlName = aName;
-	if ([keywords isAKeyword:aName]) {
-		aName = [NSString stringWithFormat:@"%@_", aName];
-	}
-
-	_name = [aName copy];
-}
-
 @end

@@ -26,13 +26,9 @@
 @class USType;
 
 @interface USWSDL : NSObject
-@property (nonatomic, strong) NSMutableArray *schemas;
+@property (nonatomic, strong) NSMutableDictionary *schemas;
 @property (nonatomic, strong) USSchema *targetNamespace;
 
-- (void)addXSDSchema;
-
-- (USSchema *)schemaForNamespace:(NSString *)aNamespace;
-- (USSchema *)existingSchemaForPrefix:(NSString *)aPrefix;
-
-- (USType *)typeForNamespace:(NSString *)aNamespace name:(NSString *)aName;
+- (USSchema *)createSchemaForNamespace:(NSString *)xmlNS prefix:(NSString *)prefix;
+- (USSchema *)schemaForPrefix:(NSString *)prefix;
 @end

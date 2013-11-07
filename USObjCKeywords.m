@@ -103,12 +103,17 @@
 	return self;
 }
 
-- (BOOL)isAKeyword:(NSString *)testString
-{
+- (BOOL)isAKeyword:(NSString *)testString {
   // Compiler objects to things with the same name as keywords even if the
   // case differs, so convert to lower case for the test.
   
 	return [keywords containsObject:[testString lowercaseString]];
+}
+
++ (NSString *)mangleName:(NSString *)name {
+    if ([[self sharedInstance] isAKeyword:name])
+        return [name stringByAppendingString:@"_"];
+    return name;
 }
 
 @end

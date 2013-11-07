@@ -24,78 +24,70 @@
 
 #import "USOperationInterface.h"
 #import "USPortType.h"
-#import "USOperationFault.h"
-#import "USPart.h"
 #import "USMessage.h"
 #import "USElement.h"
 #import "USType.h"
-#import "USObjCKeywords.h"
+#import "NSString+USAdditions.h"
+#import "NSXMLElement+Children.h"
 
 @implementation USOperation
-- (id)init
++ (USOperation *)operationWithElement:(NSXMLElement *)el schema:(USSchema *)schema portType:(USPortType *)portType
 {
-	if ((self = [super init])) {
-		self.input = [USOperationInterface operationInterfaceForOperation:self];
-		self.output = [USOperationInterface operationInterfaceForOperation:self];
-		self.faults = [NSMutableArray array];
-	}
+    USOperation *operation = [USOperation new];
+    operation.name = [[el attributeForName:@"name"] stringValue];
 
-	return self;
+    USPortTypeOperation *pto = portType.operations[operation.name];
+    if (!pto) {
+        NSLog(@"Skipping operation %@: Not present in PortType", operation.name);
+        return nil;
+    }
+
+    for (NSXMLElement *child in [el childElements]) {
+        NSString *localName = [child localName];
+
+        if ([localName isEqualToString:@"operation"] && [child isSoapNS])
+            operation.soapAction = [[el attributeForName:@"soapAction"] stringValue];
+        else if ([localName isEqualToString:@"input"])
+            operation.input = [USOperationInterface interfaceWithElement:el schema:schema message:pto.input];
+        else if ([localName isEqualToString:@"output"])
+            operation.output = [USOperationInterface interfaceWithElement:el schema:schema message:pto.output];
+    }
+    return operation;
 }
 
-- (USOperationFault *)faultForName:(NSString *)aName
-{
-	for (USOperationFault *fault in self.faults) {
-		if ([fault.name isEqualToString:aName]) {
-			return fault;
-		}
-	}
-
-	USOperationFault *newFault = [USOperationFault new];
-	newFault.operation = self;
-	newFault.name = aName;
-	[self.faults addObject:newFault];
-
-	return newFault;
+- (NSString *)className {
+    return [self.name stringByRemovingIllegalCharacters];
 }
 
-- (NSString *)className
-{
-	return [[self.name componentsSeparatedByCharactersInSet:kIllegalClassCharactersSet] componentsJoinedByString:@""];
+- (NSString *)invokeStringWithAsync:(BOOL)async {
+    if (!self.input.bodyParts && [self.input.headers count] == 0 && !async)
+        return self.className;
+
+    NSMutableString *invokeString = [NSMutableString stringWithFormat:@"%@%@Using",
+                                     self.className, async ? @"Async" : @""];
+
+    BOOL firstArgument = YES;
+    for (USElement *element in self.input.bodyParts) {
+        [invokeString appendFormat:@"%@:(%@)a%@ ",
+         firstArgument ? element.uname : element.name, element.type.classNameWithPtr, element.uname];
+        firstArgument = NO;
+    }
+
+    for (USElement *element in self.input.headers) {
+        [invokeString appendFormat:@"%@:(%@)a%@Header ",
+         firstArgument ? element.uname : element.name, element.type.classNameWithPtr, element.uname];
+        firstArgument = NO;
+    }
+
+    return invokeString;
 }
 
-- (NSString *)invokeStringWithAsync:(BOOL)async
-{
-	if (self.input.body == nil && self.input.headers == nil && !async) {
-		return self.className;
-	}
-
-	NSMutableString *invokeString = [NSMutableString string];
-
-	[invokeString appendFormat:@"%@%@Using", self.className, ((async)?@"Async":@"")];
-
-	BOOL firstArgument = YES;
-	for (USPart *part in self.input.body.parts) {
-		[invokeString appendFormat:@"%@:(%@)a%@ ", (firstArgument ? [part uname] : part.name), [part.element.type classNameWithPtr], [part uname]];
-		firstArgument = NO;
-	}
-
-	for (USElement *element in self.input.headers) {
-		[invokeString appendFormat:@"%@:(%@)a%@Header ", (firstArgument ? [element uname] : element.name), [element.type classNameWithPtr], [element uname]];
-		firstArgument = NO;
-	}
-
-	return invokeString;
+- (NSString *)invokeString {
+    return [self invokeStringWithAsync:NO];
 }
 
-- (NSString *)invokeString
-{
-	return [self invokeStringWithAsync:NO];
-}
-
-- (NSString *)asyncInvokeString
-{
-	return [self invokeStringWithAsync:YES];
+- (NSString *)asyncInvokeString {
+    return [self invokeStringWithAsync:YES];
 }
 
 @end

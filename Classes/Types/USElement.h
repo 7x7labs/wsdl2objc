@@ -26,12 +26,10 @@
 @class USSchema;
 
 @interface USElement : NSObject
-@property (nonatomic, copy) NSString *name;
+@property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *wsdlName;
 @property (nonatomic, strong) USType *type;
-@property (nonatomic, strong) USSchema *schema;
-@property (nonatomic) BOOL hasBeenParsed;
-@property (nonatomic, strong) NSMutableArray *waitingSeqElements;
 
 - (NSString *)uname;
++ (USElement *)elementWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

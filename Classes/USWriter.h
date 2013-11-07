@@ -24,10 +24,6 @@
 #import "USWSDL.h"
 
 @interface USWriter : NSObject
-@property (nonatomic, copy) NSURL *outDir;
-@property (nonatomic, strong) USWSDL *wsdl;
-
 - (id)initWithWSDL:(USWSDL *)aWsdl outputDirectory:(NSURL *)anOutDir;
-
-- (BOOL)write;
+- (void)write;
 @end

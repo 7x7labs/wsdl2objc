@@ -27,14 +27,8 @@
 @implementation USSequenceElement
 - (void)setName:(NSString *)aName
 {
-	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
-
 	self.wsdlName = aName;
-	if ([keywords isAKeyword:aName]) {
-		aName = [NSString stringWithFormat:@"%@_", aName];
-	}
-
-	_name = [aName copy];
+    _name = [[USObjCKeywords mangleName:aName] copy];
 }
 
 - (NSString *)uname

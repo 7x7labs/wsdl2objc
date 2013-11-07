@@ -22,7 +22,6 @@
 
 #import "NSBundle+USAdditions.h"
 
-
 @implementation NSBundle(USAdditions)
 
 /*
@@ -35,26 +34,23 @@
  */
 - (NSString *)pathForTemplateNamed:(NSString *)templateName
 {
-    NSString    *templateDirectory = [[NSUserDefaults standardUserDefaults] stringForKey:@"templateDirectory"];
+    NSString *templateDirectory = [[NSUserDefaults standardUserDefaults] stringForKey:@"templateDirectory"];
     
     templateName = [templateName stringByAppendingPathExtension:@"template"];
-    if (templateDirectory == nil) {
-        for (templateDirectory in NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSAllDomainsMask, YES)) {
-            NSString    *path = [templateDirectory stringByAppendingPathComponent:[@"wsdl2objc" stringByAppendingPathComponent:templateName]];
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-                return path;
-            }
-        }
-#ifdef APPKIT_EXTERN
-        return [self pathForResource:[templateName stringByDeletingPathExtension] ofType:@"template"];
-#else
-        return nil;
-#endif
-    }
-    else{
+    if (templateDirectory)
         return [templateDirectory stringByAppendingPathComponent:templateName];
+
+    for (templateDirectory in NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSAllDomainsMask, YES)) {
+        NSString *path = [templateDirectory stringByAppendingPathComponent:[@"wsdl2objc" stringByAppendingPathComponent:templateName]];
+
+        if ([[NSFileManager defaultManager] fileExistsAtPath:path])
+            return path;
     }
+#ifdef APPKIT_EXTERN
+    return [self pathForResource:[templateName stringByDeletingPathExtension] ofType:@"template"];
+#else
+    return nil;
+#endif
 }
 
 @end

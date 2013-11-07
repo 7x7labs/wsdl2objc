@@ -23,11 +23,12 @@
 #import <Foundation/Foundation.h>
 
 @class USBinding;
-@class USService;
+@class USSchema;
 
 @interface USPort : NSObject
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic, strong) USBinding *binding;
 @property (nonatomic, copy) NSString *address;
-@property (nonatomic, strong) USService *service;
+
++ (USPort *)portWithElement:(NSXMLElement *)el schema:(USSchema *)schema;
 @end

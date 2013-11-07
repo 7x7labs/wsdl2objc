@@ -31,18 +31,12 @@
 		6235EEA50E638B7B00DABBD6 /* USWSDL.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA870E01F4A0002165CA /* USWSDL.m */; };
 		6235EEA60E638B7B00DABBD6 /* WSDLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* WSDLParser.m */; };
 		624063690E70827A006BEB94 /* USPortType.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063680E70827A006BEB94 /* USPortType.m */; };
-		6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FA0E706800006BEB94 /* USParser+Messages.m */; };
-		6240636B0E708294006BEB94 /* USPart.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FD0E70687B006BEB94 /* USPart.m */; };
 		6240636C0E708294006BEB94 /* USMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063020E70692E006BEB94 /* USMessage.m */; };
-		6240636D0E708294006BEB94 /* USParser+PortTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063640E70816C006BEB94 /* USParser+PortTypes.m */; };
 		624063710E7082C9006BEB94 /* USOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063700E7082C9006BEB94 /* USOperation.m */; };
 		624063770E708572006BEB94 /* USOperationInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063760E708572006BEB94 /* USOperationInterface.m */; };
-		6240637E0E70877F006BEB94 /* USOperationFault.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240637D0E70877F006BEB94 /* USOperationFault.m */; };
-		624064730E709558006BEB94 /* USParser+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064720E709558006BEB94 /* USParser+Bindings.m */; };
 		624064770E709575006BEB94 /* USBinding.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064760E709575006BEB94 /* USBinding.m */; };
 		6240648D0E709F6B006BEB94 /* USService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648C0E709F6B006BEB94 /* USService.m */; };
 		624064900E709FAC006BEB94 /* USPort.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648F0E709FAC006BEB94 /* USPort.m */; };
-		624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064950E70A0D1006BEB94 /* USParser+Services.m */; };
 		6240653B0E70A6B0006BEB94 /* Service_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 624065390E70A6A0006BEB94 /* Service_H.template */; };
 		6240653C0E70A6B0006BEB94 /* Service_M.template in Resources */ = {isa = PBXBuildFile; fileRef = 6240653A0E70A6A8006BEB94 /* Service_M.template */; };
 		624065F80E70B1F6006BEB94 /* Binding_H.template in Resources */ = {isa = PBXBuildFile; fileRef = 6240653F0E70A8C5006BEB94 /* Binding_H.template */; };
@@ -66,16 +60,10 @@
 		F4FAC2A01227E4C8006B61BC /* USElement.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6332C0E676DF40072DBDD /* USElement.m */; };
 		F4FAC2A11227E4C9006B61BC /* USMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063020E70692E006BEB94 /* USMessage.m */; };
 		F4FAC2A21227E4CA006B61BC /* USOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063700E7082C9006BEB94 /* USOperation.m */; };
-		F4FAC2A31227E4CB006B61BC /* USOperationFault.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240637D0E70877F006BEB94 /* USOperationFault.m */; };
 		F4FAC2A41227E4CD006B61BC /* USOperationInterface.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063760E708572006BEB94 /* USOperationInterface.m */; };
-		F4FAC2A51227E4D0006B61BC /* USParser+Bindings.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064720E709558006BEB94 /* USParser+Bindings.m */; };
-		F4FAC2A61227E4D1006B61BC /* USParser+Messages.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FA0E706800006BEB94 /* USParser+Messages.m */; };
-		F4FAC2A71227E4D2006B61BC /* USParser+PortTypes.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063640E70816C006BEB94 /* USParser+PortTypes.m */; };
-		F4FAC2A81227E4D3006B61BC /* USParser+Services.m in Sources */ = {isa = PBXBuildFile; fileRef = 624064950E70A0D1006BEB94 /* USParser+Services.m */; };
 		F4FAC2A91227E4D5006B61BC /* USParser+Types.m in Sources */ = {isa = PBXBuildFile; fileRef = 62ADD3980E6890140052979D /* USParser+Types.m */; };
 		F4FAC2AA1227E4D6006B61BC /* USParser.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA5C0E01F0C1002165CA /* USParser.m */; };
 		F4FAC2AB1227E4DA006B61BC /* USParserApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FA269B0DA6E901004C7479 /* USParserApplication.m */; };
-		F4FAC2AC1227E4DB006B61BC /* USPart.m in Sources */ = {isa = PBXBuildFile; fileRef = 624062FD0E70687B006BEB94 /* USPart.m */; };
 		F4FAC2AD1227E4DC006B61BC /* USPort.m in Sources */ = {isa = PBXBuildFile; fileRef = 6240648F0E709FAC006BEB94 /* USPort.m */; };
 		F4FAC2AE1227E4DD006B61BC /* USPortType.m in Sources */ = {isa = PBXBuildFile; fileRef = 624063680E70827A006BEB94 /* USPortType.m */; };
 		F4FAC2AF1227E4DF006B61BC /* USSchema.m in Sources */ = {isa = PBXBuildFile; fileRef = B9FEAA8C0E01F59B002165CA /* USSchema.m */; };
@@ -111,32 +99,20 @@
 		6235F00A0E63954100DABBD6 /* ComplexType_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = ComplexType_H.template; sourceTree = "<group>"; usesTabs = 1; };
 		6235F00C0E63958100DABBD6 /* SimpleType_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = SimpleType_M.template; sourceTree = "<group>"; usesTabs = 1; };
 		6235F00D0E63958E00DABBD6 /* ComplexType_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = ComplexType_M.template; sourceTree = "<group>"; usesTabs = 1; };
-		624062F90E706800006BEB94 /* USParser+Messages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Messages.h"; sourceTree = "<group>"; };
-		624062FA0E706800006BEB94 /* USParser+Messages.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Messages.m"; sourceTree = "<group>"; };
-		624062FC0E70687B006BEB94 /* USPart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPart.h; sourceTree = "<group>"; };
-		624062FD0E70687B006BEB94 /* USPart.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPart.m; sourceTree = "<group>"; };
 		624063010E70692E006BEB94 /* USMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USMessage.h; sourceTree = "<group>"; };
 		624063020E70692E006BEB94 /* USMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USMessage.m; sourceTree = "<group>"; };
-		624063630E70816C006BEB94 /* USParser+PortTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+PortTypes.h"; sourceTree = "<group>"; };
-		624063640E70816C006BEB94 /* USParser+PortTypes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+PortTypes.m"; sourceTree = "<group>"; };
 		624063670E70827A006BEB94 /* USPortType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPortType.h; sourceTree = "<group>"; };
 		624063680E70827A006BEB94 /* USPortType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPortType.m; sourceTree = "<group>"; };
 		6240636F0E7082C9006BEB94 /* USOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperation.h; sourceTree = "<group>"; };
 		624063700E7082C9006BEB94 /* USOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperation.m; sourceTree = "<group>"; };
 		624063750E708572006BEB94 /* USOperationInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperationInterface.h; sourceTree = "<group>"; };
 		624063760E708572006BEB94 /* USOperationInterface.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperationInterface.m; sourceTree = "<group>"; };
-		6240637C0E70877F006BEB94 /* USOperationFault.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USOperationFault.h; sourceTree = "<group>"; };
-		6240637D0E70877F006BEB94 /* USOperationFault.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USOperationFault.m; sourceTree = "<group>"; };
-		624064710E709558006BEB94 /* USParser+Bindings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Bindings.h"; sourceTree = "<group>"; };
-		624064720E709558006BEB94 /* USParser+Bindings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Bindings.m"; sourceTree = "<group>"; };
 		624064750E709575006BEB94 /* USBinding.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USBinding.h; sourceTree = "<group>"; };
 		624064760E709575006BEB94 /* USBinding.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USBinding.m; sourceTree = "<group>"; };
 		6240648B0E709F6B006BEB94 /* USService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USService.h; sourceTree = "<group>"; };
 		6240648C0E709F6B006BEB94 /* USService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USService.m; sourceTree = "<group>"; };
 		6240648E0E709FAC006BEB94 /* USPort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = USPort.h; sourceTree = "<group>"; };
 		6240648F0E709FAC006BEB94 /* USPort.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = USPort.m; sourceTree = "<group>"; };
-		624064940E70A0D1006BEB94 /* USParser+Services.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "USParser+Services.h"; sourceTree = "<group>"; };
-		624064950E70A0D1006BEB94 /* USParser+Services.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "USParser+Services.m"; sourceTree = "<group>"; };
 		624065390E70A6A0006BEB94 /* Service_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Service_H.template; sourceTree = "<group>"; usesTabs = 1; };
 		6240653A0E70A6A8006BEB94 /* Service_M.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Service_M.template; sourceTree = "<group>"; usesTabs = 1; };
 		6240653F0E70A8C5006BEB94 /* Binding_H.template */ = {isa = PBXFileReference; explicitFileType = text; fileEncoding = 4; includeInIndex = 0; path = Binding_H.template; sourceTree = "<group>"; usesTabs = 1; };
@@ -267,10 +243,6 @@
 			children = (
 				624063010E70692E006BEB94 /* USMessage.h */,
 				624063020E70692E006BEB94 /* USMessage.m */,
-				624062F90E706800006BEB94 /* USParser+Messages.h */,
-				624062FA0E706800006BEB94 /* USParser+Messages.m */,
-				624062FC0E70687B006BEB94 /* USPart.h */,
-				624062FD0E70687B006BEB94 /* USPart.m */,
 			);
 			name = Messages;
 			sourceTree = "<group>";
@@ -278,14 +250,6 @@
 		621D458B0E6E18C500CEF901 /* PortTypes */ = {
 			isa = PBXGroup;
 			children = (
-				6240636F0E7082C9006BEB94 /* USOperation.h */,
-				624063700E7082C9006BEB94 /* USOperation.m */,
-				6240637C0E70877F006BEB94 /* USOperationFault.h */,
-				6240637D0E70877F006BEB94 /* USOperationFault.m */,
-				624063750E708572006BEB94 /* USOperationInterface.h */,
-				624063760E708572006BEB94 /* USOperationInterface.m */,
-				624063630E70816C006BEB94 /* USParser+PortTypes.h */,
-				624063640E70816C006BEB94 /* USParser+PortTypes.m */,
 				624063670E70827A006BEB94 /* USPortType.h */,
 				624063680E70827A006BEB94 /* USPortType.m */,
 			);
@@ -297,8 +261,10 @@
 			children = (
 				624064750E709575006BEB94 /* USBinding.h */,
 				624064760E709575006BEB94 /* USBinding.m */,
-				624064710E709558006BEB94 /* USParser+Bindings.h */,
-				624064720E709558006BEB94 /* USParser+Bindings.m */,
+				6240636F0E7082C9006BEB94 /* USOperation.h */,
+				624063700E7082C9006BEB94 /* USOperation.m */,
+				624063750E708572006BEB94 /* USOperationInterface.h */,
+				624063760E708572006BEB94 /* USOperationInterface.m */,
 			);
 			name = Bindings;
 			sourceTree = "<group>";
@@ -306,8 +272,6 @@
 		621D458E0E6E196300CEF901 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				624064940E70A0D1006BEB94 /* USParser+Services.h */,
-				624064950E70A0D1006BEB94 /* USParser+Services.m */,
 				6240648E0E709FAC006BEB94 /* USPort.h */,
 				6240648F0E709FAC006BEB94 /* USPort.m */,
 				6240648B0E709F6B006BEB94 /* USService.h */,
@@ -548,16 +512,10 @@
 				6240636C0E708294006BEB94 /* USMessage.m in Sources */,
 				621D44F60E6E133400CEF901 /* USObjCKeywords.m in Sources */,
 				624063710E7082C9006BEB94 /* USOperation.m in Sources */,
-				6240637E0E70877F006BEB94 /* USOperationFault.m in Sources */,
 				624063770E708572006BEB94 /* USOperationInterface.m in Sources */,
-				624064730E709558006BEB94 /* USParser+Bindings.m in Sources */,
-				6240636A0E708294006BEB94 /* USParser+Messages.m in Sources */,
-				6240636D0E708294006BEB94 /* USParser+PortTypes.m in Sources */,
-				624064960E70A0D1006BEB94 /* USParser+Services.m in Sources */,
 				62ADD39A0E6890140052979D /* USParser+Types.m in Sources */,
 				6235EE9F0E638B7B00DABBD6 /* USParser.m in Sources */,
 				6235EEA00E638B7B00DABBD6 /* USParserApplication.m in Sources */,
-				6240636B0E708294006BEB94 /* USPart.m in Sources */,
 				624064900E709FAC006BEB94 /* USPort.m in Sources */,
 				624063690E70827A006BEB94 /* USPortType.m in Sources */,
 				6235EEA10E638B7B00DABBD6 /* USSchema.m in Sources */,
@@ -589,16 +547,10 @@
 				F4FAC2A11227E4C9006B61BC /* USMessage.m in Sources */,
 				F4FAC29C1227E4BF006B61BC /* USObjCKeywords.m in Sources */,
 				F4FAC2A21227E4CA006B61BC /* USOperation.m in Sources */,
-				F4FAC2A31227E4CB006B61BC /* USOperationFault.m in Sources */,
 				F4FAC2A41227E4CD006B61BC /* USOperationInterface.m in Sources */,
-				F4FAC2A51227E4D0006B61BC /* USParser+Bindings.m in Sources */,
-				F4FAC2A61227E4D1006B61BC /* USParser+Messages.m in Sources */,
-				F4FAC2A71227E4D2006B61BC /* USParser+PortTypes.m in Sources */,
-				F4FAC2A81227E4D3006B61BC /* USParser+Services.m in Sources */,
 				F4FAC2A91227E4D5006B61BC /* USParser+Types.m in Sources */,
 				F4FAC2AA1227E4D6006B61BC /* USParser.m in Sources */,
 				F4FAC2AB1227E4DA006B61BC /* USParserApplication.m in Sources */,
-				F4FAC2AC1227E4DB006B61BC /* USPart.m in Sources */,
 				F4FAC2AD1227E4DC006B61BC /* USPort.m in Sources */,
 				F4FAC2AE1227E4DD006B61BC /* USPortType.m in Sources */,
 				F4FAC2AF1227E4DF006B61BC /* USSchema.m in Sources */,

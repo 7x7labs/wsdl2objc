@@ -20,201 +20,183 @@
  THE SOFTWARE.
  */
 
-#import "USObjCKeywords.h"
 #import "USSchema.h"
-#import "USType.h"
-#import "USElement.h"
-#import "USAttribute.h"
-#import "USMessage.h"
-#import "USPortType.h"
-#import "USBinding.h"
-#import "USService.h"
+
 #import "NSBundle+USAdditions.h"
+#import "USAttribute.h"
+#import "USBinding.h"
+#import "USElement.h"
+#import "USMessage.h"
+#import "USObjCKeywords.h"
+#import "USPortType.h"
+#import "USService.h"
+#import "USType.h"
+#import "USWSDL.h"
+
+@interface USSchema ()
+@property (nonatomic, strong) NSMutableDictionary *attributeWaits;
+@property (nonatomic, strong) NSMutableDictionary *elementWaits;
+@property (nonatomic, strong) NSMutableDictionary *typeWaits;
+@property (nonatomic, strong) NSMutableDictionary *messageWaits;
+@property (nonatomic, strong) NSMutableDictionary *portTypeWaits;
+@property (nonatomic, strong) NSMutableDictionary *bindingWaits;
+@end
 
 @implementation USSchema
-- (id)initWithWSDL:(USWSDL *)aWsdl
-{
-	if ((self = [super init]))
-	{
-		self.fullName = @"";
-		self.types = [NSMutableArray array];
-		self.elements = [NSMutableArray array];
-		self.attributes = [NSMutableArray array];
-		self.imports = [NSMutableArray array];
-		self.messages = [NSMutableArray array];
-		self.portTypes = [NSMutableArray array];
-		self.bindings = [NSMutableArray array];
-		self.services = [NSMutableArray array];
-		self.wsdl = aWsdl;
-	}
-	return self;
+- (id)initWithWSDL:(USWSDL *)aWsdl {
+    if ((self = [super init])) {
+        self.fullName = @"";
+        self.types = [NSMutableDictionary new];
+        self.elements = [NSMutableDictionary new];
+        self.attributes = [NSMutableDictionary new];
+        self.imports = [NSMutableArray new];
+        self.messages = [NSMutableDictionary new];
+        self.portTypes = [NSMutableDictionary new];
+        self.bindings = [NSMutableDictionary new];
+        self.services = [NSMutableDictionary new];
+        self.wsdl = aWsdl;
+
+        self.attributeWaits = [NSMutableDictionary new];
+        self.elementWaits = [NSMutableDictionary new];
+        self.typeWaits = [NSMutableDictionary new];
+        self.messageWaits = [NSMutableDictionary new];
+        self.portTypeWaits = [NSMutableDictionary new];
+        self.bindingWaits = [NSMutableDictionary new];
+    }
+    return self;
 }
 
-- (USType *)typeForName:(NSString *)aName
-{
-	if (aName == nil) return nil;
-
-	for (USType * type in self.types) {
-		if ([type.typeName isEqualToString:aName]) {
-			// NSLog(@"Found Type: %@ (%@)", type.typeName, type);
-			return type;
-		}
-	}
-
-	USType *newType = [USType new];
-	newType.typeName = aName;
-	newType.schema = self;
-
-	[self.types addObject:newType];
-
-	// NSLog(@"New Type: %@ (%@)", newType.typeName, newType);
-	return newType;
+- (USSchema *)schemaFromNode:(NSXMLNode *)node element:(NSXMLElement *)el {
+    if (!node) return nil;
+    NSString *qName = [node stringValue];
+    NSString *namespaceURI = [[el resolveNamespaceForName:qName] stringValue];
+    return self.wsdl.schemas[namespaceURI];
 }
 
-- (USElement *)elementForName:(NSString *)aName
+- (BOOL)call:(void (^)(id))block
+withValueForKey:(NSXMLNode *)node
+     ifKeyIn:(NSMutableDictionary *)items
+otherwiseEnqueueIn:(NSMutableDictionary *)waits
 {
-	if (aName == nil) return nil;
+    if (!node) return NO;
 
-	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
-	if ([keywords isAKeyword:aName]) {
-		aName = [NSString stringWithFormat:@"%@_", aName];
-	}
+    NSString *localName = [NSXMLNode localNameForName:[node stringValue]];
+    id value = items[localName];
+    if (value)
+        block(value);
+    else {
+        if (!waits[localName])
+            waits[localName] = [NSMutableArray new];
+        [waits[localName] addObject:block];
+    }
 
-	for (USElement * element in self.elements) {
-		if ([element.name isEqual:aName]) {
-			// NSLog(@"Found Element: %@ (%@), type: %@ (%@)", element.name, element, element.type.typeName, element.type);
-			return element;
-		}
-	}
-
-	USElement *newElement = [USElement new];
-	newElement.name = aName;
-	newElement.schema = self;
-
-	[self.elements addObject:newElement];
-
-	// NSLog(@"New Element: %@ (%@), type: %@ (%@)", newElement.name, newElement, newElement.type.typeName, newElement.type);
-	return newElement;
+    return YES;
 }
 
-- (USAttribute *)attributeForName:(NSString *)aName
-{
-	if (aName == nil) return nil;
-
-	USObjCKeywords *keywords = [USObjCKeywords sharedInstance];
-	if ([keywords isAKeyword:aName]) {
-		aName = [NSString stringWithFormat:@"%@_", aName];
-	}
-
-	for (USAttribute * attribute in self.attributes) {
-		if ([attribute.name isEqual:aName]) {
-			// NSLog(@"Found attribute: %@ (%@), type: %@ (%@)", attribute.name, attribute, attribute.type.typeName, attribute.type);
-			return attribute;
-		}
-	}
-
-	USAttribute *newAttribute = [USAttribute new];
-	newAttribute.name = aName;
-	newAttribute.schema = self;
-
-	[self.attributes addObject:newAttribute];
-
-	// NSLog(@"New attribute: %@ (%@), type: %@ (%@)", newattribute.name, newattribute, newattribute.type.typeName, newattribute.type);
-	return newAttribute;
+- (void)checkWaits:(NSMutableDictionary *)dictionary key:(NSString *)key value:(id)value {
+    if (dictionary[key]) {
+        for (void (^block)(id) in dictionary[key])
+            block(value);
+        [dictionary removeObjectForKey:key];
+    }
 }
 
-- (USMessage *)messageForName:(NSString *)aName
-{
-	if (aName == nil) return nil;
-
-	for (USMessage *message in self.messages) {
-		if ([message.name isEqualToString:aName]) {
-			return message;
-		}
-	}
-
-	USMessage *newMessage = [USMessage new];
-	newMessage.schema = self;
-	newMessage.name = aName;
-	[self.messages addObject:newMessage];
-
-	return newMessage;
+- (BOOL)withTypeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USType *))block {
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.types
+           otherwiseEnqueueIn:targetSchema.typeWaits];
 }
 
-- (USPortType *)portTypeForName:(NSString *)aName
-{
-	if (aName == nil) return nil;
-
-	for (USPortType *portType in self.portTypes) {
-		if ([portType.name isEqualToString:aName]) {
-			return portType;
-		}
-	}
-
-	USPortType *newPortType = [USPortType new];
-	newPortType.schema = self;
-	newPortType.name = aName;
-	[self.portTypes addObject:newPortType];
-
-	return newPortType;
+- (void)registerType:(USType *)type {
+    self.types[type.typeName] = type;
+    [self checkWaits:self.typeWaits key:type.typeName value:type];
 }
 
-- (USBinding *)bindingForName:(NSString *)aName
-{
-	if (aName == nil) return nil;
-
-	for (USBinding *binding in self.bindings) {
-		if ([binding.name isEqualToString:aName]) {
-			return binding;
-		}
-	}
-
-	USBinding *newBinding = [USBinding new];
-	newBinding.schema = self;
-	newBinding.name = aName;
-	[self.bindings addObject:newBinding];
-
-	return newBinding;
+- (BOOL)withElementFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USElement *))block {
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.elements
+           otherwiseEnqueueIn:targetSchema.elementWaits];
 }
 
-- (USService *)serviceForName:(NSString *)aName
-{
-	if (aName == nil) return nil;
-
-	for (USService *service in self.services) {
-		if ([service.name isEqualToString:aName]) {
-			return service;
-		}
-	}
-
-	USService *newService = [USService new];
-	newService.schema = self;
-	newService.name = aName;
-	[self.services addObject:newService];
-
-	return newService;
+- (void)registerElement:(USElement *)element {
+    self.elements[element.wsdlName] = element;
+    [self checkWaits:self.elementWaits key:element.wsdlName value:element];
 }
 
-- (void)addSimpleClassWithName:(NSString *)aName representationClass:(NSString *)aClass
+- (BOOL)withAttributeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USAttribute *))block
 {
-	USType *type = [self typeForName:aName];
-	type.behavior = TypeBehavior_simple;
-	type.representationClass = aClass;
-	type.hasBeenParsed = YES;
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.attributes
+           otherwiseEnqueueIn:targetSchema.attributeWaits];
 }
 
-- (void)addComplexClassWithName:(NSString *)aName representationClass:(NSString *)aClass
-{
-	USType *type = [self typeForName:aName];
-	type.behavior = TypeBehavior_complex;
-	[self addSimpleClassWithName:aClass representationClass:aClass];
-	USType *baseType = [self typeForName:aClass];
-	type.superClass = baseType;
-	type.hasBeenParsed = YES;
+- (void)registerAttribute:(USAttribute *)attribute {
+    self.attributes[attribute.name] = attribute;
+    [self checkWaits:self.attributeWaits key:attribute.name value:attribute];
 }
 
-- (BOOL)shouldNotWrite
-{
+- (BOOL)withMessageFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USMessage *))block {
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.messages
+           otherwiseEnqueueIn:targetSchema.messageWaits];
+}
+
+- (void)registerMessage:(USMessage *)message {
+    self.messages[message.name] = message;
+    [self checkWaits:self.messageWaits key:message.name value:message];
+}
+
+- (BOOL)withPortTypeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USPortType *))block {
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.portTypes
+           otherwiseEnqueueIn:targetSchema.portTypeWaits];
+}
+
+- (void)registerPortType:(USPortType *)portType {
+    self.portTypes[portType.name] = portType;
+    [self checkWaits:self.portTypeWaits key:portType.name value:portType];
+}
+
+- (BOOL)withBindingFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USBinding *))block {
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.bindings
+           otherwiseEnqueueIn:targetSchema.bindingWaits];
+}
+
+- (void)registerBinding:(USBinding *)binding {
+    self.bindings[binding.name] = binding;
+    [self checkWaits:self.bindingWaits key:binding.name value:binding];
+}
+
+- (void)registerService:(USService *)service {
+    self.services[service.name] = service;
+}
+
+- (void)addSimpleClassWithName:(NSString *)name representationClass:(NSString *)repClass {
+    USType *type = [USType simpleTypeWithName:name prefix:self.prefix];
+    type.representationClass = repClass;
+    self.types[name] = type;
+}
+
+- (BOOL)shouldNotWrite {
     if ([self.elements count] ||
         [self.imports count] ||
         [self.bindings count] ||
@@ -228,28 +210,21 @@
     return YES;
 }
 
-- (NSString *)templateFileHPath
-{
-	return [[NSBundle mainBundle] pathForTemplateNamed:@"Schema_H"];
+- (NSString *)templateFileHPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"Schema_H"];
 }
 
-- (NSString *)templateFileMPath
-{
-	return [[NSBundle mainBundle] pathForTemplateNamed:@"Schema_M"];
+- (NSString *)templateFileMPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"Schema_M"];
 }
 
-- (NSDictionary *)templateKeyDictionary
-{
-	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
-
-	returning[@"fullName"] = self.fullName;
-	returning[@"prefix"] = self.prefix;
-	returning[@"typeCount"] = [@([self.types count]) stringValue];
-	returning[@"imports"] = self.imports;
-	returning[@"types"] = self.types;
-	returning[@"wsdl"] = self.wsdl;
-
-	return returning;
+- (NSDictionary *)templateKeyDictionary {
+    return @{@"fullName": self.fullName,
+             @"prefix": self.prefix,
+             @"typeCount": [@([self.types count]) stringValue],
+             @"imports": self.imports,
+             @"types": self.types,
+             @"wsdl": self.wsdl};
 }
 
 @end

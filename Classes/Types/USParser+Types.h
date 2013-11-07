@@ -24,13 +24,10 @@
 #import "USParser.h"
 
 @class USSchema;
-@class USWSDL;
 @class USType;
 
 @interface USParser (Types)
-- (void)processTypesElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
-- (void)processSimpleTypeElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processComplexTypeElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processElementElement:(NSXMLElement *)el schema:(USSchema *)schema;
-- (void)processAttributeElement:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type;
+- (USType *)parseTypeElement:(NSXMLElement *)el schema:(USSchema *)schema name:(NSString *)name;
+- (USType *)parseSimpleType:(NSXMLElement *)el schema:(USSchema *)schema name:(NSString *)name;
+- (USType *)parseComplexType:(NSXMLElement *)el schema:(USSchema *)schema name:(NSString *)name;
 @end

@@ -22,43 +22,58 @@
 
 #import "USOperationInterface.h"
 
-#import "USMessage.h"
-#import "USOperation.h"
-#import "USType.h"
+#import "NSXMLElement+Children.h"
 #import "USElement.h"
-#import "USPart.h"
+#import "USMessage.h"
+#import "USSchema.h"
+#import "USType.h"
 
 @implementation USOperationInterface
-+ (USOperationInterface *)operationInterfaceForOperation:(USOperation *)operation
++ (instancetype)interfaceWithElement:(NSXMLElement *)el schema:(USSchema *)schema message:(USMessage *)message
 {
-	USOperationInterface *interface = [USOperationInterface new];
-	interface.operation = operation;
-	return interface;
+    USOperationInterface *interface = [USOperationInterface new];
+    interface.name = [[el attributeForName:@"name"] stringValue];
+
+    NSMutableOrderedSet *headers = [NSMutableOrderedSet new];
+
+    for (NSXMLElement *child in [el childElements]) {
+        if (![child isSoapNS]) continue;
+
+        NSString *localName = [el localName];
+        if ([localName isEqualToString:@"header"]) {
+            NSString *partName = [[el attributeForName:@"part"] stringValue];
+            [schema withMessageFromElement:el attrName:@"message" call:^(USMessage *m) {
+                [headers addObject:m.parts[partName]];
+            }];
+        }
+        else if ([localName isEqualToString:@"body"]) {
+            NSString *partsStr = [[child attributeForName:@"parts"] stringValue];
+            if ([partsStr length] == 0) {
+                // Empty or non-exists parts == all parts from message
+                interface.bodyParts = [message.parts allValues];
+                continue;
+            }
+
+            NSMutableArray *bodyParts = [NSMutableArray new];
+            for (NSString *partName in [partsStr componentsSeparatedByString:@" "])
+                [bodyParts addObject:message.parts[partName]];
+            interface.bodyParts = bodyParts;
+        }
+    }
+
+    interface.headers = headers;
+
+    return interface;
+
 }
 
-- (id)init
-{
-	if ((self = [super init])) {
-		self.headers = [NSMutableOrderedSet new];
-	}
-
-	return self;
-}
-
-- (NSString *)className
-{
-	NSMutableArray *parts = self.body.parts;
-	if ([parts count] == 1) {
-		USPart *bodyPart = [parts lastObject];
-		NSString *className = bodyPart.element.type.classNameWithPtr;
-		return className;
-	}
-
+- (NSString *)className {
+	if ([self.bodyParts count] == 1)
+		return ((USElement *)[self.bodyParts firstObject]).type.classNameWithPtr;
 	return @"NSArray *";
 }
 
-- (NSNumber *)hasHeaders
-{
+- (NSNumber *)hasHeaders {
 	return @([self.headers count] > 0);
 }
 

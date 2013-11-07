@@ -276,10 +276,12 @@
 		self.%«attribute.name» = %«attribute.type.className»_enumFromString(attrString);
 %ELSIFEQ attribute.type.classNameWithoutPtr NSNumber
 		self.%«attribute.name» = @([attrString doubleValue]);
+%ELSIFEQ attribute.type.classNameWithoutPtr NSString
+		self.%«attribute.name» = attrString;
 %ELSIF attribute.type.isSimpleType
 		self.%«attribute.name» = attrString;
 %ELSE
-#warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName»
+#warning Not handling attribute %«attribute.name» with type %«attribute.type.typeName» (%«attribute.type.classNameWithPtr»)
 %ENDIF
 	}
 %ENDFOR

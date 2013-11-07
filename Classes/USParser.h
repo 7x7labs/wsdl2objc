@@ -36,9 +36,6 @@ NSLog(@"%s[%d] >> " __NSSTRING, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__ )
 - (id)initWithURL:(NSURL *)anURL;
 - (USWSDL*)parse;
 
-- (void)processDefinitionsElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
-- (void)processDefinitionsChildElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
-- (void)processDefinitionsImportElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
 - (void)processImportElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
 - (void)processSchemaElement:(NSXMLElement *)el wsdl:(USWSDL *)wsdl;
 - (void)processNamespace:(NSXMLNode *)ns wsdl:(USWSDL *)wsdl;
