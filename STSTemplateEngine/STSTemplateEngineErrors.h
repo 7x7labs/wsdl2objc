@@ -18,11 +18,11 @@
 //	Copyright notice and credits must be preserved at all times in every
 //	redistributed copy and any derivative work of this software.
 //
-//	THIS SOFTWARE  IS PROVIDED "AS IS"  WITHOUT  ANY  WARRANTY  OF  ANY  KIND,
-//	WHETHER  EXPRESSED OR IMPLIED,  INCLUDING  BUT NOT LIMITED TO  ANY IMPLIED
-//	WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE.  THE
-//	ENTIRE RISK  AS TO THE QUALITY AND PERFORMANCE OF THIS SOFTWARE  LIES WITH
-//	THE LICENSEE.  FOR FURTHER INFORMATION PLEASE REFER TO THE GPL VERSION 2.
+//	THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY KIND,
+//	WHETHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY IMPLIED
+//	WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR ANY PARTICULAR PURPOSE. THE
+//	ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THIS SOFTWARE LIES WITH
+//	THE LICENSEE. FOR FURTHER INFORMATION PLEASE REFER TO THE GPL VERSION 2.
 //
 //	For projects and software products for which the terms of the GPL license
 //	are not suitable, alternative licensing can be obtained directly from
@@ -31,13 +31,8 @@
 
 #import <Foundation/Foundation.h>
 
-// ---------------------------------------------------------------------------
-// Enum typedef:  TEErrorCode
-// ---------------------------------------------------------------------------
-//
 // Defines error codes representing various error types handled by the
 // template engine during template expansion.
-
 enum TEErrorCode {
 	TE_GENERIC_ERROR,							// unknown, treat as fatal
 	TE_INVALID_PATH_ERROR,						// fatal
@@ -55,25 +50,15 @@ enum TEErrorCode {
 	TE_EXPECTED_ENDTAG_BUT_FOUND_TOKEN_ERROR	// error
 };
 
-// ---------------------------------------------------------------------------
-// Enum typedef:  TESeverity
-// ---------------------------------------------------------------------------
-//
 // Defines severity codes representing the error severities used to classify
 // errors depending on recoverability.
-
 enum TESeverity {
 	TE_WARNING,	// error is recoverable without consequences
 	TE_ERROR,	// error is recoverable within reason
 	TE_FATAL	// error is not recoverable
 };
 
-// ---------------------------------------------------------------------------
-// Enum typedef:  TEToken
-// ---------------------------------------------------------------------------
-//
 // Defines tokens representing parsed symbols in the template source.
-
 enum TEToken {
 	TE_TOKEN_NOT_AVAILABLE,
 	TE_LOG,			// %LOG keyword
@@ -111,13 +96,8 @@ enum TEToken {
 	TE_EOF			// the EOF marker
 };
 
-// ---------------------------------------------------------------------------
-// Enum typedef:  TERemedy
-// ---------------------------------------------------------------------------
-//
 // Defines remedy codes representing various error recovery actions taken by
 // the template engine depending on the type of error encountered.
-
 enum TERemedy {
 	TE_REMEDY_NOT_AVAILABLE,
 	TE_ASSUMING_TRUE_TO_CONTINUE,
@@ -132,27 +112,15 @@ enum TERemedy {
 	TE_ABORTING_TEMPLATE_EXPANSION
 };
 
+@interface TEError : NSObject
+@property (nonatomic) enum TEErrorCode errorCode;   // error code
+@property (nonatomic) enum TESeverity severityCode; // severity of the error
+@property (nonatomic) unsigned lineNumber;          // line number in which the error ocurred
+@property (nonatomic) NSRange range;                // range in the line pinpointing the error
+@property (nonatomic) enum TEToken token;           // offending token which caused the error
+@property (nonatomic) enum TERemedy remedyCode;     // remedy taken for error recovery
+@property (nonatomic, copy) NSString *literal;      // optional info used for placeholder name
 
-// ---------------------------------------------------------------------------
-// Class definition:  TEError
-// ---------------------------------------------------------------------------
-
-@interface TEError : NSObject {
-	// instance variable declaration
-	@private
-		enum TEErrorCode errorCode;		// error code
-		enum TESeverity severityCode;	// severity of the error
-		unsigned lineNumber;		// line number in which the error ocurred
-		NSRange range;				// range in the line pinpointing the error
-		enum TEToken token;			// offending token which caused the error
-		enum TERemedy remedyCode;	// remedy taken for error recovery
-		NSString *literal;			// optional info used for placeholder name
-} // end var
-
-// ---------------------------------------------------------------------------
-// Class Method:  error:inLine:atToken:
-// ---------------------------------------------------------------------------
-//
 // Creates a new instance of TEError. Severity and remedy codes are set
 // implicitly according to the parameters passed. The error code is defined by
 // TEErrorCode, line indicates the line number in the template source in which
@@ -160,135 +128,11 @@ enum TERemedy {
 // TEToken. The optional parameter range is initialised with kZeroRange and it
 // may be set using method setRange:. The optional parameter literal is
 // initialised with nil and it may be set using method setLiteral:
-
 + (TEError *)error:(enum TEErrorCode)code
 			inLine:(unsigned)line 
 		   atToken:(enum TEToken)token;
 
-// ---------------------------------------------------------------------------
-// Instance Method:  setLiteral:
-// ---------------------------------------------------------------------------
-//
-// Sets the *optional* clear text info of the receiver. This info is used to
-// store the literal name of a placeholder when the token is TEplaceholder.
-// Otherwise it is set to nil.
-
-- (void)setLiteral:(NSString *)literal;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  errorCode
-// ---------------------------------------------------------------------------
-//
-// Returns the error code of the receiver. The error code identifies the type
-// of error described by the receiver as defined by TEErrorCode.
-
-- (enum TEErrorCode)errorCode;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  severityCode
-// ---------------------------------------------------------------------------
-//
-// Returns the severity code of the receiver. The severity code specifies the
-// severity of the error described by the receiver as defined by TESeverity.
-
-- (enum TESeverity)severityCode;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  lineNumber
-// ---------------------------------------------------------------------------
-//
-// Returns the line number in which the error described by the receiver
-// ocurred. The line number may be 0 in the event of file access errors.
-
-- (unsigned)lineNumber;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  token
-// ---------------------------------------------------------------------------
-//
-// Returns the offending token of the error described by the receiver. Tokens
-// represent parsed symbols in the template source and are defined by TEToken.
-
-- (enum TEToken)token;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  range
-// ---------------------------------------------------------------------------
-//
-// Returns an NSRange for the offending token of the error described by the
-// receiver. The range pinpoints the offending token as it was encountered in
-// the template source. This may be used to generate an attributed string
-// representation of the template source to highlight where errors ocurred.
-
-- (NSRange)range;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  remedyCode
-// ---------------------------------------------------------------------------
-//
-// Returns the remedy code of the remedy taken for the error described by the
-// receiver. Remedy codes are defined by TERemedy.
-
-- (enum TERemedy)remedyCode;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  literal
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with the optional clear text info of the receiver. This
-// info is used to store the literal name of a placeholder when the token is
-// TEplaceholder. Returns nil if the literal is nil (default).
-
-- (NSString *)literal;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithToken
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable token string for the token of the
-// error described by the receiver. Tokens are defined by TEToken.
-
-- (NSString *)stringWithToken;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithDescription
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable description of the error
-// described by the receiver.
-
-- (NSString *)stringWithDescription;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithRemedy
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable description of the remedy taken
-// for the error described by the receiver.
-
-- (NSString *)stringWithRemedy;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  stringWithErrorMessageForTemplate:
-// ---------------------------------------------------------------------------
-//
-// Returns an NSString with a human readable detailed error message for the
-// error described by the receiver comprising a prefix identifying the message
-// to have come from the STS TemplateEngine, the severity of the error, the
-// name or path and filename of the template, the line number in which the
-// error ocurred and the error description and remedy taken. If an empty
-// string is passed for nameOrPath, then the name of the template will be
-// omitted in the error message returned.
-
-- (NSString *)stringWithErrorMessageForTemplate:(NSString *)nameOrPath;
-
-// ---------------------------------------------------------------------------
-// Instance Method:  logErrorMessageForTemplate:
-// ---------------------------------------------------------------------------
-//
 // Convenience method to invoke stringWithErrorMessageForTemplate: and log the
 // result returned to the console.
-
 - (void)logErrorMessageForTemplate:(NSString *)nameOrPath;
-
-@end // STSTemplateEngineErrors
+@end
