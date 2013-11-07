@@ -39,45 +39,18 @@
 
 #import <Foundation/Foundation.h>
 
-// ---------------------------------------------------------------------------
-// Class definition:  LIFO
-// ---------------------------------------------------------------------------
-
 @interface LIFO : NSObject
-
-// ---------------------------------------------------------------------------
-// Class Method:  stackWithCapacity:
-// ---------------------------------------------------------------------------
-//
 // Creates a new instance of LIFO with capacity depth.
-
 + (LIFO *)stackWithCapacity:(unsigned)depth;
 
-//
-// ---------------------------------------------------------------------------
-// Instance Method:  count
-// ---------------------------------------------------------------------------
-//
 // Returns the number of objects on the receiver's stack.
-
 - (unsigned)count;
 
-// ---------------------------------------------------------------------------
-// Instance Method:  pushObject:
-// ---------------------------------------------------------------------------
-//
 // Places an object on top of the receiver's stack. If anObject is nil, an
 // NSInvalidArgumentException is raised.
-
 - (void)pushObject:(id)anObject;
 
-// ---------------------------------------------------------------------------
-// Instance Method:  popObject:
-// ---------------------------------------------------------------------------
-//
 // Removes the top most object from the receiver's stack and returns it.
 // Returns nil if the receiver's stack is empty.
-
 - (id)popObject;
-
-@end // LIFO
+@end

@@ -45,7 +45,7 @@
 
 - (void)pushObject:(id)anObject
 {
-    [self->_stack addObject:anObject];
+    [self.stack addObject:anObject];
 }
 
 - (id)popObject

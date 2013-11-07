@@ -27,19 +27,6 @@
 #define keyDefined(x,y) ([NSString valueForDictionary:x key:y] != nil)
 #define keyNotDefined(x,y) ([NSString valueForDictionary:x key:y] == nil)
 
-@interface NSFileManager (STSTemplateEnginePrivateCategory1)
-- (BOOL)isRegularFileAtPath:(NSString *)path;
-@end
-
-@implementation NSFileManager (STSTemplateEnginePrivateCategory1)
-- (BOOL)isRegularFileAtPath:(NSString *)path
-{
-	return ([[[self attributesOfItemAtPath:path error:NULL] fileType]
-             isEqualToString:@"NSFileTypeRegular"]);
-}
-
-@end
-
 @interface NSString (STSTemplateEnginePrivateCategory2)
 + (NSString *)defaultStartTag;
 + (NSString *)defaultEndTag;
@@ -68,79 +55,66 @@
 										 errorsReturned:(NSArray **)errorLog
 											 lineNumber:(unsigned)lineNumber
 {
-	NSMutableString *remainder_ = [NSMutableString stringWithCapacity:[self length]];
+	if ([startTag length] == 0)
+        @throw [NSException exceptionWithName:@"TEStartTagEmptyOrNil"
+                                       reason:@"startTag is empty or nil" userInfo:nil];
+
+	if ([endTag length] == 0)
+		@throw [NSException exceptionWithName:@"TEEndTagEmptyOrNil"
+                                       reason:@"endTag is empty or nil" userInfo:nil];
+
+    *errorLog = nil;
+
+	NSRange tag = [self rangeOfString:startTag];
+    if (tag.location == NSNotFound)
+        return self;
+
+	NSMutableString *remainder = [self mutableCopy];
 	NSMutableString *result = [NSMutableString stringWithCapacity:[self length]];
-	NSMutableString *placeholder = [NSMutableString stringWithCapacity:20];
-	NSMutableString *value;
 	NSMutableArray *_errorLog = [NSMutableArray arrayWithCapacity:5];
-	NSException* exception = nil;
-	NSRange tag, range;
-	TEError *error;
 
-	if ((startTag == nil) || ([startTag length] == 0)) {
-		exception = [NSException exceptionWithName:@"TEStartTagEmptyOrNil"
-											reason:@"startTag is empty or nil" userInfo:nil];
-		[exception raise];
-	}
+    while (tag.location != NSNotFound) {
+        [result appendString:[remainder substringToIndex:tag.location]];
+        [remainder deleteCharactersInRange:NSMakeRange(0, tag.location + tag.length)];
 
-	if ((endTag == nil) || ([endTag length] == 0)) {
-		[NSException exceptionWithName:@"TEEndTagEmptyOrNil"
-								reason:@"endTag is empty or nil" userInfo:nil];
-		[exception raise];
-	}
+        tag = [remainder rangeOfString:endTag];
+        if (tag.location != NSNotFound) {
+            NSString *placeholder = [remainder substringToIndex:tag.location];
+            NSString *value = [NSString valueForDictionary:dictionary key:placeholder];
+            if (value == nil) {
+                [result appendFormat:@"%@%@%@ *** ERROR: undefined key *** ", startTag, placeholder, endTag];
+                TEError *error = [TEError error:TE_UNDEFINED_PLACEHOLDER_FOUND_ERROR
+                                         inLine:lineNumber atToken:TE_PLACEHOLDER];
+                [error setLiteral:placeholder];
+                [_errorLog addObject:error];
+                [error logErrorMessageForTemplate:@""];
+            }
+            else {
+                [result appendString:value];
+            }
 
-	[remainder_ setString:self];
-	tag = [remainder_ rangeOfString:startTag];
-	if (tag.location != NSNotFound) {
-		while (tag.location != NSNotFound) {
-			[result appendString:[remainder_ substringToIndex:tag.location]];
-			range.location = 0; range.length = tag.location+tag.length;
-			[remainder_ deleteCharactersInRange:range];
-			tag = [remainder_ rangeOfString:endTag];
-			if (tag.location != NSNotFound) {
-				[placeholder setString:[remainder_ substringToIndex:tag.location]];
-				value = [NSString valueForDictionary:dictionary key:placeholder];
-				if (value == nil) {
-					[result appendFormat:@"%@%@%@ *** ERROR: undefined key *** ", startTag, placeholder, endTag];
-					error = [TEError error:TE_UNDEFINED_PLACEHOLDER_FOUND_ERROR
-									inLine:lineNumber atToken:TE_PLACEHOLDER];
-					[error setLiteral:placeholder];
-					[_errorLog addObject:error];
-					[error logErrorMessageForTemplate:@""];
-				}
-				else {
-					[result appendString:value];
-				}
+            [remainder deleteCharactersInRange:NSMakeRange(0, tag.location + tag.length)];
+        }
 
-				range.location = 0; range.length = tag.location+tag.length;
-				[remainder_ deleteCharactersInRange:range];
-			}
+        else {
+            [result appendFormat:@"%@ *** ERROR: end tag missing *** ", startTag];
+            [remainder setString:@""];
+            TEError *error = [TEError error:TE_EXPECTED_ENDTAG_BUT_FOUND_TOKEN_ERROR
+                                     inLine:lineNumber atToken:TE_EOL];
+            [_errorLog addObject:error];
+            [error logErrorMessageForTemplate:@""];
+        }
 
-			else {
-				[result appendFormat:@"%@ *** ERROR: end tag missing *** ", startTag];
-				[remainder_ setString:@""];
-				error = [TEError error:TE_EXPECTED_ENDTAG_BUT_FOUND_TOKEN_ERROR
-								inLine:lineNumber atToken:TE_EOL];
-				[_errorLog addObject:error];
-				[error logErrorMessageForTemplate:@""];
-			}
+        tag = [remainder rangeOfString:startTag];
+    }
 
-			tag = [remainder_ rangeOfString:startTag];
-		}
-		if ([remainder_ length] > 0) {
-			[result appendString:remainder_];
-		}
-	}
-	else {
-		result = remainder_;
-	}
+    [result appendString:remainder];
+
 	if ([_errorLog count] > 0) {
 		*errorLog = _errorLog;
 		NSLog(@"errors have ocurred while expanding placeholders in string");
 	}
-	else {
-		*errorLog = nil;
-	}
+
 	return result;
 }
 
@@ -182,15 +156,18 @@
 				usingDictionary:(NSDictionary *)dictionary
 				 errorsReturned:(NSArray **)errorLog
 {
-	NSArray *template = [templateString arrayBySeparatingLinesUsingEOLmarkers];
-	NSEnumerator *list = [template objectEnumerator];
+	if ([startTag length] == 0)
+        @throw [NSException exceptionWithName:@"TEStartTagEmptyOrNil"
+                                       reason:@"startTag is empty or nil" userInfo:nil];
+
+	if ([endTag length] == 0)
+		@throw [NSException exceptionWithName:@"TEEndTagEmptyOrNil"
+                                       reason:@"endTag is empty or nil" userInfo:nil];
+
 	NSMutableString *result = [NSMutableString stringWithCapacity:[templateString length]];
 	NSMutableCharacterSet *whitespaceSet = [NSMutableCharacterSet whitespaceCharacterSet];
 	[whitespaceSet addCharactersInString:@"\""];
 	NSMutableDictionary *_dictionary = [NSMutableDictionary dictionaryWithDictionary:dictionary];
-	NSProcessInfo *processInfo = [NSProcessInfo processInfo];
-
-	unsigned complement = 0;
 
 	TEFlags *flags = [TEFlags flags];
 	LIFO *stack = [LIFO stackWithCapacity:8];
@@ -199,23 +176,11 @@
 	NSMutableArray *lineErrors = [NSMutableArray arrayWithCapacity:2];
 	TEError *error;
 
-	NSString *line = nil, *remainder_ = nil, *keyword = nil, *key = nil, *operand = nil, *varName = nil;
+	NSString *remainder_ = nil, *key = nil, *operand = nil, *varName = nil;
 	NSMutableString *innerString = nil;
 	unsigned len, lineNumber = 0, unexpandIf = 0, unexpandFor = 0;
 
-	NSException *exception = nil;
-	if ((startTag == nil) || ([startTag length] == 0)) {
-		exception = [NSException exceptionWithName:@"TEStartTagEmptyOrNil"
-											reason:@"startTag is empty or nil" userInfo:nil];
-		[exception raise];
-	}
-
-	if ((endTag == nil) || ([endTag length] == 0)) {
-		[NSException exceptionWithName:@"TEEndTagEmptyOrNil"
-								reason:@"endTag is empty or nil" userInfo:nil];
-		[exception raise];
-	}
-
+	NSProcessInfo *processInfo = [NSProcessInfo processInfo];
 	_dictionary[@"_timestamp"] = [[NSDate date] description];
 	_dictionary[@"_uniqueID"] = [processInfo globallyUniqueString];
 	_dictionary[@"_hostname"] = [processInfo hostName];
@@ -228,10 +193,12 @@
 	_dictionary[@"_systemCountryCode"] = [locale objectForKey:NSLocaleCountryCode] ?: @"";
 	_dictionary[@"_systemLanguage"] = [locale objectForKey:NSLocaleLanguageCode] ?: @"";
 
-	while ((line = [list nextObject])) {
+	unsigned complement = 0;
+
+    for (NSString *line in [templateString arrayBySeparatingLinesUsingEOLmarkers]) {
 		lineNumber++;
 		if (([line length] > 0) && ([line hasPrefix:startTag] == NO) && ([line characterAtIndex:0] == '%')) {
-			keyword = [line firstWordUsingDelimitersFromSet:whitespaceSet];
+			NSString *keyword = [line firstWordUsingDelimitersFromSet:whitespaceSet];
 			complement = (([keyword hasPrefix:@"%IFN"]) || ([keyword hasPrefix:@"%ELSIFN"]));
 
 			if (!flags->forBranch && (([keyword isEqualToString:@"%IF"]) || ([keyword isEqualToString:@"%IFNOT"]))) {
@@ -675,9 +642,6 @@
 					}
 				}
 			}
-
-			else {
-			}
 		}
 		else if (flags->expand) {
 			[result appendString:[line stringByExpandingPlaceholdersWithStartTag:startTag
@@ -709,7 +673,7 @@
 	if ([_errorLog count] > 0) {
 		*errorLog = _errorLog;
 		NSLog(@"errors have occurred while expanding placeholders in string using dictionary:\n%@", dictionary);
-		NSLog(@"using template:\n%@", template);
+		NSLog(@"using template:\n%@", templateString);
 	}
 	else {
 		if (errorLog != nil) *errorLog = nil;
@@ -737,110 +701,54 @@
 							 encoding:(NSStringEncoding)enc
 					   errorsReturned:(NSArray **)errorLog
 {
-	NSFileManager *fileMgr = [NSFileManager defaultManager];
-	NSString *templateString, *desc, *reason;
-	NSData *templateData;
-	NSError *fileError = nil;
-	TEError *error;
+    NSError *fileError;
+    NSString *templateString = [NSString stringWithContentsOfFile:path encoding:enc error:&fileError];
 
-	if ((path == nil) || ([path length] == 0)) {
-		error = [TEError error:TE_INVALID_PATH_ERROR inLine:0 atToken:TE_PATH];
-		[error setLiteral:@"(empty path)"];
-		[error logErrorMessageForTemplate:path];
-		*errorLog = @[error];
-		return nil;
-	}
+    if (templateString) {
+        return [NSString stringByExpandingTemplate:templateString
+                                      withStartTag:startTag
+                                         andEndTag:endTag
+                                   usingDictionary:dictionary
+                                    errorsReturned:errorLog];
+    }
 
-	path = [path stringByStandardizingPath];
-	if ([path isAbsolutePath] == NO) {
-		error = [TEError error:TE_INVALID_PATH_ERROR inLine:0 atToken:TE_PATH];
-		[error setLiteral:path];
-		[error logErrorMessageForTemplate:path];
-		*errorLog = @[error];
-		return nil;
-	}
-
-	if ([fileMgr fileExistsAtPath:path] == NO) {
-		error = [TEError error:TE_FILE_NOT_FOUND_ERROR inLine:0 atToken:TE_PATH];
-		[error setLiteral:path];
-		[error logErrorMessageForTemplate:path];
-		*errorLog = @[error];
-		return nil;
-	}
-	else if ([fileMgr isReadableFileAtPath:path] == NO) {
-		error = [TEError error:TE_UNABLE_TO_READ_FILE_ERROR inLine:0 atToken:TE_PATH];
-		[error setLiteral:path];
-		[error logErrorMessageForTemplate:path];
-		*errorLog = @[error];
-		return nil;
-	}
-	else if ([fileMgr isRegularFileAtPath:path] == NO) {
-		error = [TEError error:TE_UNABLE_TO_READ_FILE_ERROR inLine:0 atToken:TE_PATH];
-		[error setLiteral:path];
-		[error logErrorMessageForTemplate:path];
-		*errorLog = @[error];
-		return nil;
-	}
-
-	if ([NSString respondsToSelector:@selector(stringWithContentsOfFile:encoding:error:)]) {
-		templateString = [NSString stringWithContentsOfFile:path encoding:enc error:&fileError];
-
-		if (fileError != nil) {
-			desc = [fileError localizedDescription];
-			reason = [fileError localizedFailureReason];
-			if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]) {
-				switch ([fileError code]) {
-					case NSFileNoSuchFileError :
-					case NSFileReadNoSuchFileError :
-					case NSFileReadInvalidFileNameError :
-						error = [TEError error:TE_FILE_NOT_FOUND_ERROR inLine:0 atToken:TE_PATH];
-						break;
-					case NSFileReadNoPermissionError :
-						error = [TEError error:TE_UNABLE_TO_READ_FILE_ERROR inLine:0 atToken:TE_PATH];
-						break;
-					case NSFileReadCorruptFileError :
-						error = [TEError error:TE_INVALID_FILE_FORMAT_ERROR inLine:0 atToken:TE_PATH];
-						break;
-					case NSFileReadInapplicableStringEncodingError :
-						error = [TEError error:TE_TEMPLATE_ENCODING_ERROR inLine:0 atToken:TE_PATH];
-						break;
-					default :
-						error = [TEError error:TE_GENERIC_ERROR inLine:0 atToken:TE_PATH];
-						[error setLiteral:[NSString stringWithFormat:
-                                           @"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
-						break;
-				}
-			}
-			else {
-				error = [TEError error:TE_GENERIC_ERROR inLine:0 atToken:TE_PATH];
-				[error setLiteral:[NSString stringWithFormat:
+    TEError *error;
+    NSString *desc = [fileError localizedDescription];
+    NSString *reason = [fileError localizedFailureReason];
+    if ([[fileError domain] isEqualToString:NSCocoaErrorDomain]) {
+        switch ([fileError code]) {
+            case NSFileNoSuchFileError :
+            case NSFileReadNoSuchFileError :
+            case NSFileReadInvalidFileNameError :
+                error = [TEError error:TE_FILE_NOT_FOUND_ERROR inLine:0 atToken:TE_PATH];
+                break;
+            case NSFileReadNoPermissionError :
+                error = [TEError error:TE_UNABLE_TO_READ_FILE_ERROR inLine:0 atToken:TE_PATH];
+                break;
+            case NSFileReadCorruptFileError :
+                error = [TEError error:TE_INVALID_FILE_FORMAT_ERROR inLine:0 atToken:TE_PATH];
+                break;
+            case NSFileReadInapplicableStringEncodingError :
+                error = [TEError error:TE_TEMPLATE_ENCODING_ERROR inLine:0 atToken:TE_PATH];
+                break;
+            default :
+                error = [TEError error:TE_GENERIC_ERROR inLine:0 atToken:TE_PATH];
+                [error setLiteral:[NSString stringWithFormat:
                                    @"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
-			}
-			if ([[error literal] length] == 0) {
-				[error setLiteral:path];
-			}
-			[error logErrorMessageForTemplate:path];
-			*errorLog = @[error];
-			return nil;
-		}
-	}
-	else {
-		templateData = [NSData dataWithContentsOfFile:path];
-		templateString = [[NSString alloc] initWithData:templateData encoding:enc];
-		if (templateString == nil) {
-			error = [TEError error:TE_TEMPLATE_ENCODING_ERROR inLine:0 atToken:TE_PATH];
-			[error setLiteral:path];
-			[error logErrorMessageForTemplate:path];
-			*errorLog = @[error];
-			return nil;
-		}
-	}
-
-	return [NSString stringByExpandingTemplate:templateString
-								  withStartTag:startTag
-									 andEndTag:endTag
-							   usingDictionary:dictionary
-								errorsReturned:errorLog];
+                break;
+        }
+    }
+    else {
+        error = [TEError error:TE_GENERIC_ERROR inLine:0 atToken:TE_PATH];
+        [error setLiteral:[NSString stringWithFormat:
+                           @"while trying to access file at path %@\n%@\n%@", path, desc, reason]];
+    }
+    if ([[error literal] length] == 0) {
+        [error setLiteral:path];
+    }
+    [error logErrorMessageForTemplate:path];
+    *errorLog = @[error];
+    return nil;
 }
 
 + (id)valueForDictionary:(id)dictionary key:(NSString *)key
