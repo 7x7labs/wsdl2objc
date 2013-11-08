@@ -61,17 +61,29 @@
 }
 
 - (NSString *)invokeStringWithAsync:(BOOL)async {
-    if (!self.input.bodyParts && [self.input.headers count] == 0 && !async)
+    if (![self.input.bodyParts count] && !async)
         return self.className;
 
-    NSMutableString *invokeString = [NSMutableString stringWithFormat:@"%@%@Using",
-                                     self.className, async ? @"Async" : @""];
+    if (![self.input.bodyParts count])
+        return [self.className stringByAppendingString:@"Async"];
 
-    BOOL firstArgument = YES;
+    NSMutableString *invokeString;
+    BOOL first = YES;
     for (USElement *element in self.input.bodyParts) {
-        [invokeString appendFormat:@"%@:(%@)a%@ ",
-         firstArgument ? element.uname : element.name, element.type.classNameWithPtr, element.uname];
-        firstArgument = NO;
+        if (first) {
+            if ([element.uname isEqualToString:self.className])
+                invokeString = [NSMutableString stringWithFormat:@"%@%@:",
+                                self.className, async ? @"Async" : @""];
+            else
+                invokeString = [NSMutableString stringWithFormat:@"%@%@Using%@:",
+                                self.className, async ? @"Async" : @"", element.uname];
+            first = NO;
+        }
+        else {
+            [invokeString appendFormat:@" %@:", element.name];
+        }
+
+        [invokeString appendFormat:@"(%@)a%@", element.type.classNameWithPtr, element.uname];
     }
 
     return invokeString;
