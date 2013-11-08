@@ -7,25 +7,26 @@
 %IFDEF superClass
 %IFDEF IsAttributedString
 @interface %«className» : NSObject
+- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix;
++ (instancetype)deserializeNode:(xmlNodePtr)cur;
+
+@property (nonatomic, strong) SOAPSigner *soapSigner;
 %ELSE
 @interface %«className» : %«superClass.classNameWithoutPtr»
 %ENDIF
 %ELSE
 @interface %«className» : NSObject
-%ENDIF
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix;
 + (instancetype)deserializeNode:(xmlNodePtr)cur;
-%IFNDEF superClass
 
 @property (nonatomic, strong) SOAPSigner *soapSigner;
 %ENDIF
 %IFDEF IsAttributedString
-
 /* content */
 @property (nonatomic, strong) NSString *_content;
+
 %ENDIF
 %IF hasSequenceElements
-
 /* elements */
 %FOREACH element in sequenceElements
 %IF element.useAnArray
