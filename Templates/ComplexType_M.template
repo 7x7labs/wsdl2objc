@@ -38,7 +38,7 @@
 
 %ENDIF
 %FOREACH attribute in attributes
-    if (self.%«attribute.name») {
+    if (_%«attribute.name») {
 %IFEQ attribute.type.assignOrRetain strong
         xmlSetProp(node, (const xmlChar *)"%«attribute.wsdlName»", [[self.%«attribute.name» description] xmlString]);
 %ELSIFEQ attribute.type.typeName boolean
@@ -77,7 +77,7 @@
 %FOREACH element in sequenceElements
 %IF element.useAnArray
 %IFEQ element.type.enumCount 0
-    [self.%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«prefix»"];
+    [_%«element.name» addToNode:node elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«prefix»"];
 %ELSE
     for (NSNumber *intRepresentation in self.%«element.name») {
         %«element.type.className» enumRepresentation = (%«element.type.className»)[intRepresentation intValue];
@@ -85,7 +85,7 @@
     }
 %ENDIF
 %ELSE
-    if (self.%«element.name») {
+    if (_%«element.name») {
 %IFEQ element.type.assignOrRetain strong
 %IF element.type.isComplexType
         xmlAddChild(node, [self.%«element.name» xmlNodeForDoc:node->doc elementName:@"%«element.wsdlName»" elementNSPrefix:@"%«prefix»"]);
@@ -124,13 +124,19 @@
 %IF element.useAnArray
 
 - (void)add%«element.uname»:(%«element.type.classNameWithPtr»)toAdd {
-    if (!self.%«element.name») _%«element.name» = [NSMutableArray new];
+    if (!_%«element.name») _%«element.name» = [NSMutableArray new];
 %IFEQ element.type.assignOrRetain weak
     [self.%«element.name» addObject:@((int)toAdd)];
 %ELSE
     if (toAdd)
         [self.%«element.name» addObject:toAdd];
 %ENDIF
+}
+%ELSIFEQ element.type.assignOrRetain strong
+
+- (%«element.type.classNameWithPtr»)%«element.name» {
+    if (!_%«element.name») _%«element.name» = [%«element.type.classNameWithoutPtr» new];
+    return _%«element.name»;
 }
 %ENDIF
 %ENDFOR
@@ -141,13 +147,22 @@
     return @{
 %FOREACH attribute in attributes
 %IFEQ attribute.type.assignOrRetain strong
-        @"%«attribute.wsdlName»": self.%«attribute.name»,
+        @"%«attribute.wsdlName»": _%«attribute.name» ?: [NSNull null],
 %ELSE
         @"%«attribute.wsdlName»": @(self.%«attribute.name»),
 %ENDIF
 %ENDFOR
     };
 }
+%FOREACH attribute in attributes
+%IFEQ attribute.type.assignOrRetain strong
+
+- (%«attribute.type.classNameWithPtr»)%«attribute.name» {
+    if (!_%«attribute.name») _%«attribute.name» = [%«attribute.type.classNameWithoutPtr» new];
+    return _%«attribute.name»;
+}
+%ENDIF
+%ENDFOR
 
 %ENDIF
 + (%«classNameWithPtr»)deserializeNode:(xmlNodePtr)cur {
