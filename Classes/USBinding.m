@@ -25,13 +25,14 @@
 #import "NSBundle+USAdditions.h"
 #import "NSString+USAdditions.h"
 #import "NSXMLElement+Children.h"
+#import "USElement.h"
 #import "USOperation.h"
+#import "USOperationInterface.h"
 #import "USPortType.h"
 #import "USSchema.h"
 
 @implementation USBinding
-+ (instancetype)bindingWithElement:(NSXMLElement *)el schema:(USSchema *)schema
-{
++ (instancetype)bindingWithElement:(NSXMLElement *)el schema:(USSchema *)schema {
     USBinding *binding = [USBinding new];
     binding.name = [[el attributeForName:@"name"] stringValue];
     binding.prefix = schema.prefix;
@@ -59,35 +60,41 @@
     return binding;
 }
 
-- (NSString *)cleanName
-{
+- (NSString *)cleanName {
 	NSString *result = [self.name stringByRemovingIllegalCharacters];
 	if (![result.lowercaseString hasSuffix:@"binding"])
 		result = [result stringByAppendingString:@"Binding"];
 	return result;
 }
 
-- (NSString *)className
-{
+- (NSString *)className {
     return [NSString stringWithFormat:@"%@_%@", self.prefix, self.cleanName];
 }
 
-- (NSString *)templateFileHPath
-{
+- (NSString *)templateFileHPath {
 	return [[NSBundle mainBundle] pathForTemplateNamed:@"Binding_H"];
 }
 
-- (NSString *)templateFileMPath
-{
+- (NSString *)templateFileMPath {
 	return [[NSBundle mainBundle] pathForTemplateNamed:@"Binding_M"];
 }
 
-- (NSDictionary *)templateKeyDictionary
-{
+- (NSDictionary *)templateKeyDictionary {
+    NSMutableDictionary *inputHeaders = [NSMutableDictionary new];
+    for (NSString *key in self.operations) {
+        for (USElement *header in [self.operations[key] input].headers) {
+            if (inputHeaders[header.name]) {
+                assert([(USElement *)inputHeaders[header.name] type] == header.type);
+            }
+            inputHeaders[header.name] = header;
+        }
+    }
+
     return @{@"name": self.name,
              @"className": self.className,
              @"soapVersion": self.soapVersion,
-             @"operations": [self.operations allValues]};
+             @"operations": [self.operations allValues],
+             @"inputHeaders": [inputHeaders allValues]};
 }
 
 @end

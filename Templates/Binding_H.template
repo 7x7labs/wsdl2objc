@@ -38,6 +38,14 @@
 @property (nonatomic, strong) id <SSLCredentialsManaging> sslManager;
 @property (nonatomic, strong) SOAPSigner *soapSigner;
 
+%FOREACH header in inputHeaders
+%IFEQ header.type.assignOrRetain strong
+@property(nonatomic, strong) %«header.type.classNameWithPtr» %«header.name»Header;
+%ELSE
+@property(nonatomic) %«header.type.classNameWithPtr» %«header.name»Header;
+%ENDIF
+%ENDFOR
+
 + (NSTimeInterval) defaultTimeout;
 
 - (id)initWithAddress:(NSString *)anAddress;
@@ -49,7 +57,6 @@
 - (%«className»Response *)%«operation.invokeString»;
 - (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate;
 %ENDFOR
-
 @end
 
 @interface %«className»Operation : NSOperation <NSURLConnectionDelegate>
@@ -77,38 +84,23 @@
 @property(nonatomic) %«part.type.classNameWithPtr» %«part.name»;
 %ENDIF
 %ENDFOR
-%FOREACH header in operation.input.headers
-%IFEQ header.type.assignOrRetain strong
-@property(nonatomic, strong) %«header.type.classNameWithPtr» %«header.name»Header;
-%ELSE
-@property(nonatomic) %«header.type.classNameWithPtr» %«header.name»Header;
-%ENDIF
-%ENDFOR
 
 - (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate
 %FOREACH part in operation.input.bodyParts
 	%«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
-%FOREACH header in operation.input.headers
-	%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»
-%ENDFOR
 ;
-
 @end
 %ENDFOR
 
 @interface %«className»_envelope : NSObject
-
 + (%«className»_envelope *)sharedInstance;
 
 - (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements;
-
 @end
 
 @interface %«className»Response : NSObject
-
 @property(nonatomic, strong) NSArray *headers;
 @property(nonatomic, strong) NSArray *bodyParts;
 @property(nonatomic, strong) NSError *error;
-
 @end

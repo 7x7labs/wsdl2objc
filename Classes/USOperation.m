@@ -74,12 +74,6 @@
         firstArgument = NO;
     }
 
-    for (USElement *element in self.input.headers) {
-        [invokeString appendFormat:@"%@:(%@)a%@Header ",
-         firstArgument ? element.uname : element.name, element.type.classNameWithPtr, element.uname];
-        firstArgument = NO;
-    }
-
     return invokeString;
 }
 

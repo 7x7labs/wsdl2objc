@@ -47,10 +47,6 @@
     return operation.response;
 }
 
-- (void)performAsynchronousOperation:(%«className»Operation *)operation {
-    [operation start];
-}
-
 - (void)operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response {
     synchronousOperationComplete = YES;
 }
@@ -60,9 +56,6 @@
     %«className»_%«operation.className» *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:self
 %FOREACH part in operation.input.bodyParts
         %«part.name»:a%«part.uname»
-%ENDFOR
-%FOREACH header in operation.input.headers
-        %«header.name»:a%«header.uname»Header
 %ENDFOR
     ];
 
@@ -74,19 +67,15 @@
 %FOREACH part in operation.input.bodyParts
         %«part.name»:a%«part.uname»
 %ENDFOR
-%FOREACH header in operation.input.headers
-        %«header.name»:a%«header.uname»Header
-%ENDFOR
     ];
-    [self performAsynchronousOperation: op];
+	[op start];
     return op;
 }
 %ENDFOR
 
-- (void)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation
-{
+- (void)sendHTTPCallUsingBody:(NSString *)outputBody soapAction:(NSString *)soapAction forOperation:(%«className»Operation *)operation {
     if (!outputBody) {
-        NSError    *err = [NSError errorWithDomain:@"%«className»NULLRequestException" code:0 userInfo:nil];
+        NSError *err = [NSError errorWithDomain:@"%«className»NULLRequestException" code:0 userInfo:nil];
         [operation connection:nil didFailWithError:err];
         return;
     }
@@ -225,16 +214,10 @@
 %FOREACH part in operation.input.bodyParts
 %«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
-%FOREACH header in operation.input.headers
-%«header.name»:(%«header.type.classNameWithPtr»)a%«header.uname»Header
-%ENDFOR
 {
     if ((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
 %FOREACH part in operation.input.bodyParts
         self.%«part.name» = a%«part.uname»;
-%ENDFOR
-%FOREACH header in operation.input.headers
-        self.%«header.name»Header = a%«header.uname»Header;
 %ENDFOR
     }
 
@@ -250,39 +233,39 @@
     NSMutableDictionary *headerElements = [NSMutableDictionary dictionary];
 %FOREACH header in operation.input.headers
 %IFEQ header.type.assignOrRetain strong
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = self.%«header.name»Header;
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = self.binding.%«header.name»Header;
 %ELSIFEQ header.type.typeName boolean
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = [[USBoolean alloc] initWithBool:*%«header.name»Header];
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = [[USBoolean alloc] initWithBool:*%«header.name»Header];
 %ELSIFEQ header.type.typeName byte
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName int
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName integer
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName nonNegativeInteger
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName positiveInteger
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedByte
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedInt
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName long
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedLong
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName short
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName unsignedShort
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName double
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName float
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFEQ header.type.typeName decimal
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.*%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
 %ELSIFNEQ header.type.enumCount 0
-    if (self.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = %«header.type.className»_stringFromEnum(self.%«header.name»Header);
+    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = %«header.type.className»_stringFromEnum(self.binding.%«header.name»Header);
 %ENDIF
 %ENDFOR
 %ENDIF
