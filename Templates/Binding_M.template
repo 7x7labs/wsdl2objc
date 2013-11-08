@@ -53,7 +53,7 @@
 
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString» {
-    %«className»_%«operation.className» *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:self
+    %«className»_%«operation.className» *op = [[%«className»_%«operation.className» alloc] initWithBinding:self delegate:self
 %FOREACH part in operation.input.bodyParts
         %«part.name»:a%«part.uname»
 %ENDFOR
@@ -63,7 +63,7 @@
 }
 
 - (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id <%«className»ResponseDelegate>)responseDelegate {
-    %«className»_%«operation.className» *op = [(%«className»_%«operation.className»*)[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
+    %«className»_%«operation.className» *op = [[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
 %FOREACH part in operation.input.bodyParts
         %«part.name»:a%«part.uname»
 %ENDFOR
