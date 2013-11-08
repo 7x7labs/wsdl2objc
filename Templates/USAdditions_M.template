@@ -68,6 +68,7 @@
 }
 
 + (NSString *)stringWithXmlString:(xmlChar *)str free:(BOOL)freeOriginal {
+    if (!str) return nil;
     NSString *string = [NSString stringWithCString:(char*)str encoding:NSUTF8StringEncoding];
     if (freeOriginal)
         xmlFree(str);
