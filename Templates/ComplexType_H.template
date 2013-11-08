@@ -10,7 +10,6 @@
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix;
 + (instancetype)deserializeNode:(xmlNodePtr)cur;
 
-@property (nonatomic, strong) SOAPSigner *soapSigner;
 %ELSE
 @interface %«className» : %«superClass.classNameWithoutPtr»
 %ENDIF
@@ -19,7 +18,6 @@
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix;
 + (instancetype)deserializeNode:(xmlNodePtr)cur;
 
-@property (nonatomic, strong) SOAPSigner *soapSigner;
 %ENDIF
 %IFDEF IsAttributedString
 /* content */
