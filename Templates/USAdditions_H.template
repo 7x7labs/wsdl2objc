@@ -13,50 +13,37 @@
 #import <libxml/tree.h>
 
 @interface NSString (USAdditions)
-
 - (NSString *)stringByEscapingXML;
 - (NSString *)stringByUnescapingXML;
 - (const xmlChar *)xmlString;
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
 + (NSString *)deserializeNode:(xmlNodePtr)cur;
 + (NSString *)stringWithXmlString:(xmlChar *)str free:(BOOL)free;
-
 @end
 
 @interface NSNumber (USAdditions)
-
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
 + (NSNumber *)deserializeNode:(xmlNodePtr)cur;
-
 @end
 
 @interface NSDecimalNumber (USAdditions) 
-
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
-+ (NSDecimalNumber *)deserializeString:(NSString *)stringValue;
 + (NSDecimalNumber *)deserializeNode:(xmlNodePtr)cur;
-
 @end
 
 @interface NSDate (USAdditions)
-
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
 + (NSDate *)deserializeNode:(xmlNodePtr)cur;
-
 @end
 
 @interface NSData (USAdditions)
-
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
 + (NSData *)deserializeNode:(xmlNodePtr)cur;
-
 @end
 
 @interface NSData (MBBase64)
-
 + (id)dataWithBase64EncodedString:(NSString *)string; // Padding '=' characters are optional. Whitespace is ignored.
 - (NSString *)base64Encoding;
-
 @end
 
 @interface NSArray (USAdditions)
@@ -64,7 +51,6 @@
 @end
 
 @interface USBoolean : NSObject
-
 @property(nonatomic) BOOL boolValue;
 
 - (id)initWithBool:(BOOL)aValue;
@@ -72,11 +58,9 @@
 
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
 + (USBoolean *)deserializeNode:(xmlNodePtr)cur;
-
 @end
 
 @interface SOAPFault : NSObject
-
 @property(nonatomic, strong) NSString *faultcode;
 @property(nonatomic, strong) NSString *faultstring;
 @property(nonatomic, strong) NSString *faultactor;
@@ -84,7 +68,6 @@
 @property(nonatomic, readonly) NSString *simpleFaultString;
 
 + (SOAPFault *)deserializeNode:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions;
-
 @end
 
 @protocol SOAPSignerDelegate
@@ -94,12 +77,10 @@
 @end
 
 @interface SOAPSigner : NSObject
-
 @property (nonatomic, assign) id <SOAPSignerDelegate> delegate;
 
 - (id)initWithDelegate:(id <SOAPSignerDelegate>)del;
 - (NSString *)signRequest:(NSString *)req;
-
 @end
 
 @protocol SSLCredentialsManaging <NSObject>

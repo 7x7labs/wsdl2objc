@@ -1,19 +1,17 @@
 #import "USGlobals.h"
 
 @implementation USGlobals
-+ (USGlobals *)sharedInstance
-{
++ (USGlobals *)sharedInstance {
     static USGlobals *sharedInstance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{ sharedInstance = [USGlobals new]; });
-	return sharedInstance;
+    return sharedInstance;
 }
 
-- (id)init
-{
-	if ((self = [super init]))
-		_wsdlStandardNamespaces = [[NSMutableDictionary alloc] init];
+- (id)init {
+    if ((self = [super init]))
+        _wsdlStandardNamespaces = [[NSMutableDictionary alloc] init];
 
-	return self;
+    return self;
 }
 @end
