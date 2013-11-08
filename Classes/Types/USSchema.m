@@ -219,11 +219,13 @@ otherwiseEnqueueIn:(NSMutableDictionary *)waits
 }
 
 - (NSDictionary *)templateKeyDictionary {
+    NSArray *types = [self.types allValues];
     return @{@"fullName": self.fullName,
              @"prefix": self.prefix,
              @"typeCount": [@([self.types count]) stringValue],
              @"imports": self.imports,
-             @"types": [self.types allValues],
+             @"uniqueTypes": [NSSet setWithArray:types],
+             @"types": types,
              @"wsdl": self.wsdl};
 }
 

@@ -5,7 +5,7 @@
 #import "USAdditions.h"
 #import "USGlobals.h"
 
-%FOREACH type in types
+%FOREACH type in uniqueTypes
 %IFEQ type.assignOrRetain strong
 @class %«type.classNameWithoutPtr»;
 %ENDIF
