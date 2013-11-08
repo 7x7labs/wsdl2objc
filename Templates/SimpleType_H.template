@@ -2,7 +2,7 @@
 %IFNEQ enumCount 0
 typedef enum {
 	%«className»_none = 0,
-%FOREACH value in enumerationValues
+%FOREACH value in mangledEnumerationValues
 	%«className»_%«value»,
 %ENDFOR
 } %«className»;

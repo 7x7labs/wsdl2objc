@@ -126,11 +126,20 @@
 	returning[@"classNameWithoutPtr"] = [self classNameWithoutPtr];
 
 	switch (self.behavior) {
-		case TypeBehavior_simple:
+		case TypeBehavior_simple: {
 			if (self.representationClass) returning[@"representationClass"] = self.representationClass;
 			returning[@"enumerationValues"] = self.enumerationValues;
 			returning[@"enumCount"] = [self enumCount];
+
+            NSMutableArray *mangledEnumerationValues = [NSMutableArray arrayWithCapacity:self.enumerationValues.count];
+            for (NSString *str in self.enumerationValues)
+                [mangledEnumerationValues addObject:[[[str
+                                                    stringByReplacingOccurrencesOfString:@" " withString:@"_"]
+                                                    stringByReplacingOccurrencesOfString:@":" withString:@"_"]
+                                                    stringByRemovingIllegalCharacters]];
+            returning[@"mangledEnumerationValues"] = mangledEnumerationValues;
 			break;
+        }
 
 		case TypeBehavior_complex: {
 			if (self.superClass) {

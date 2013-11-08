@@ -95,7 +95,7 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
 - (USType *)parseRestriction:(NSXMLElement *)el type:(USType *)type schema:(USSchema *)schema {
     NSMutableOrderedSet *enumerationValues = [NSMutableOrderedSet new];
     for (NSXMLElement *child in [el childElementsWithName:@"enumeration"])
-        [enumerationValues addObject:[self processEnumerationElement:child]];
+        [enumerationValues addObject:[[child attributeForName:@"value"] stringValue]];
     type.enumerationValues = [enumerationValues array];
 
     [schema withTypeFromElement:el attrName:@"base" call:^(USType *baseType) {
@@ -106,13 +106,6 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
     }];
 
     return type;
-}
-
-- (NSString *)processEnumerationElement:(NSXMLElement *)el {
-    return [[[[[el attributeForName:@"value"] stringValue]
-            stringByReplacingOccurrencesOfString:@" " withString:@"_"]
-            stringByReplacingOccurrencesOfString:@":" withString:@"_"]
-            stringByRemovingIllegalCharacters];
 }
 
 #pragma mark - Complex
