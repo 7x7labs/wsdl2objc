@@ -141,13 +141,17 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
     }
 
     // Sequence, Group, Choice or Any
-    int minOccurs, maxOccurs;
-    readMinMax(content, &minOccurs, &maxOccurs);
-    if (maxOccurs != 1)
-        type.isArray = YES;
-
     for (NSXMLElement *child in [content childElementsWithName:@"element"])
         [type.sequenceElements addObject:[self processSequenceElementElement:child schema:schema]];
+
+    int minOccurs, maxOccurs;
+    readMinMax(content, &minOccurs, &maxOccurs);
+    if (maxOccurs != 1) {
+        if (type.sequenceElements.count == 1)
+            [[type.sequenceElements firstObject] setMaxOccurs:maxOccurs];
+        else
+            type.isArray = YES;
+    }
 
     return type;
 }
