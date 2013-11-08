@@ -1,25 +1,23 @@
 %IFNEQ enumCount 0
 
 static NSString *%«className»_enumValues[] = {
-	@"",
+    @"",
 %FOREACH value in enumerationValues
-	@"%«value»",
+    @"%«value»",
 %ENDFOR
 };
 
-%«className» %«className»_enumFromString(NSString *string)
-{
-	for (size_t i = 0; i <= %«enumCount»; ++i) {
-		if ([string isEqualToString:%«className»_enumValues[i]])
-			return (%«className»)i;
-	}
+%«className» %«className»_enumFromString(NSString *string) {
+    for (size_t i = 0; i <= %«enumCount»; ++i) {
+        if ([string isEqualToString:%«className»_enumValues[i]])
+            return (%«className»)i;
+    }
 
-	return %«className»_none;
+    return %«className»_none;
 }
 
-NSString *%«className»_stringFromEnum(%«className» enumValue)
-{
-	return %«className»_enumValues[(int)enumValue];
+NSString *%«className»_stringFromEnum(%«className» enumValue) {
+    return %«className»_enumValues[(int)enumValue];
 }
 
 %ENDIF

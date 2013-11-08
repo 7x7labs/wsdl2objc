@@ -17,27 +17,23 @@
 #endif
 
 static Class classForElement(xmlNodePtr cur) {
-	NSString *instanceType = [NSString stringWithXmlString:xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance")
-													 free:YES];
-	if (!instanceType) return nil;
+    NSString *instanceType = [NSString stringWithXmlString:xmlGetNsProp(cur, (const xmlChar *)"type", (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance")
+                                                     free:YES];
+    if (!instanceType) return nil;
 
-	NSArray *elementTypeArray = [instanceType componentsSeparatedByString:@":"];
+    NSArray *elementTypeArray = [instanceType componentsSeparatedByString:@":"];
+    if ([elementTypeArray count] > 1) {
+        NSString *prefix = elementTypeArray[0];
+        NSString *localName = elementTypeArray[1];
+        xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
+        NSString *standardPrefix = USGlobals.sharedInstance.wsdlStandardNamespaces[[NSString stringWithXmlString:(xmlChar*)elementNamespace->href free:NO]];
 
-	Class elementClass;
-	if ([elementTypeArray count] > 1) {
-		NSString *prefix = elementTypeArray[0];
-		NSString *localName = elementTypeArray[1];
-		xmlNsPtr elementNamespace = xmlSearchNs(cur->doc, cur, [prefix xmlString]);
-		NSString *standardPrefix = USGlobals.sharedInstance.wsdlStandardNamespaces[[NSString stringWithXmlString:(xmlChar*)elementNamespace->href free:NO]];
+        return NSClassFromString([NSString stringWithFormat:@"%@_%@", standardPrefix, localName]);
+    }
 
-		elementClass = NSClassFromString([NSString stringWithFormat:@"%@_%@", standardPrefix, localName]);
-	}
-	else
-		elementClass = NSClassFromString([instanceType stringByReplacingOccurrencesOfString:@":" withString:@"_"]);
-
-	return elementClass;
+    return NSClassFromString([instanceType stringByReplacingOccurrencesOfString:@":" withString:@"_"]);
 }
 
 static NSString *NSStringFromNodeList(xmlNodePtr node) {
-	return [NSString stringWithXmlString:xmlNodeListGetString(node->doc, node->children, 1) free:YES];
+    return [NSString stringWithXmlString:xmlNodeListGetString(node->doc, node->children, 1) free:YES];
 }
