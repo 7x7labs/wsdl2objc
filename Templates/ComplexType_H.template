@@ -14,22 +14,9 @@
 @interface %«className» : NSObject
 %ENDIF
 - (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)prefix;
-%IF hasAttributes
-- (void)addAttributesToNode:(xmlNodePtr)node;
-%ENDIF
-%IF hasSequenceElements
-- (void)addElementsToNode:(xmlNodePtr)node;
-%ENDIF
-
 + (instancetype)deserializeNode:(xmlNodePtr)cur;
-%IF hasAttributes
-- (void)deserializeAttributesFromNode:(xmlNodePtr)cur;
-%ENDIF
-%IF hasSequenceElements
-- (void)deserializeElementsFromNode:(xmlNodePtr)cur;
-%ENDIF
-
 %IFNDEF superClass
+
 @property (nonatomic, strong) SOAPSigner *soapSigner;
 %ENDIF
 %IFDEF IsAttributedString
