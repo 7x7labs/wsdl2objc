@@ -5,20 +5,10 @@
 @class %«className»_%«operation.className»;
 %ENDFOR
 
-@protocol %«className»ResponseDelegate <NSObject>
-@optional
+typedef void (^%«className»SuccessBlock)(NSArray *headers, NSArray *bodyParts);
+typedef void (^%«className»ErrorBlock)(NSError *error);
 
-/**
- * Will first try method <name>Operation:completedWithResponse: where <name> is the name of the operation.
- * If delegate does not implement method, it must implement operation:completedWithResponse:
- */
-- (void)operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response;
-@end
-
-@interface %«className» : NSObject <%«className»ResponseDelegate> {
-	BOOL	synchronousOperationComplete;
-}
-
+@interface %«className» : NSObject
 @property (nonatomic, copy) NSURL *address;
 @property (nonatomic) BOOL logXMLInOut;
 @property (nonatomic) BOOL ignoreEmptyResponse;
@@ -45,18 +35,17 @@
 
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString»;
-- (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id<%«className»ResponseDelegate>)responseDelegate;
+- (%«className»_%«operation.className»*)%«operation.invokeString» success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error;
 %ENDFOR
 @end
 
 @interface %«className»Operation : NSOperation <NSURLConnectionDelegate>
 @property(nonatomic, strong) %«className» *binding;
 @property(nonatomic, strong, readonly) %«className»Response *response;
-@property(nonatomic, weak) id <%«className»ResponseDelegate> delegate;
 @property(nonatomic, strong) NSMutableData *responseData;
 @property(nonatomic, strong) NSURLConnection *urlConnection;
 
-- (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate;
+- (id)initWithBinding:(%«className» *)aBinding success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error;
 
 /**
  * Cancels connection. Response has error with code kCFURLErrorCancelled in domain kCFErrorDomainCFNetwork.
@@ -75,7 +64,7 @@
 %ENDIF
 %ENDFOR
 
-- (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate
+- (id)initWithBinding:(%«className» *)aBinding success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error
 %FOREACH part in operation.input.bodyParts
 	%«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR

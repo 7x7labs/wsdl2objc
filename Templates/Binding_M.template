@@ -36,24 +36,19 @@
 }
 
 - (%«className»Response *)performSynchronousOperation:(%«className»Operation *)operation {
-    synchronousOperationComplete = NO;
     [operation start];
 
     // Now wait for response
     NSRunLoop *theRL = [NSRunLoop currentRunLoop];
 
-    while (!synchronousOperationComplete && [theRL runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]);
+    while (![operation isFinished] && [theRL runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]);
 
     return operation.response;
 }
 
-- (void)operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response {
-    synchronousOperationComplete = YES;
-}
-
 %FOREACH operation in operations
 - (%«className»Response *)%«operation.invokeString» {
-    %«className»_%«operation.className» *op = [[%«className»_%«operation.className» alloc] initWithBinding:self delegate:self
+    %«className»_%«operation.className» *op = [[%«className»_%«operation.className» alloc] initWithBinding:self success:nil error:nil
 %FOREACH part in operation.input.bodyParts
         %«part.name»:a%«part.uname»
 %ENDFOR
@@ -62,13 +57,13 @@
     return [self performSynchronousOperation:op];
 }
 
-- (%«className»_%«operation.className»*)%«operation.asyncInvokeString» delegate:(id <%«className»ResponseDelegate>)responseDelegate {
-    %«className»_%«operation.className» *op = [[%«className»_%«operation.className» alloc] initWithBinding:self delegate:responseDelegate
+- (%«className»_%«operation.className»*)%«operation.invokeString» success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error {
+    %«className»_%«operation.className» *op = [[%«className»_%«operation.className» alloc] initWithBinding:self success:success error:error
 %FOREACH part in operation.input.bodyParts
         %«part.name»:a%«part.uname»
 %ENDFOR
     ];
-	[op start];
+    [op start];
     return op;
 }
 %ENDFOR
@@ -110,18 +105,20 @@
 
 @end
 
-@interface %«className»Operation()
+@interface %«className»Operation ()
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error;
-@property(nonatomic, readwrite, strong) %«className»Response *response;
+@property(nonatomic, strong) %«className»Response *response;
+@property(nonatomic, strong) %«className»SuccessBlock success;
+@property(nonatomic, strong) %«className»ErrorBlock error;
+@property(nonatomic) BOOL isFinished;
 @end
 
 @implementation %«className»Operation
-
-
-- (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)aDelegate {
+- (id)initWithBinding:(%«className» *)aBinding success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error {
     if ((self = [super init])) {
         self.binding = aBinding;
-        self.delegate = aDelegate;
+        self.success = success;
+        self.error = error;
     }
 
     return self;
@@ -136,11 +133,18 @@
 }
 
 - (void)completedWithResponse:(%«className»Response *)aResponse {
-    [self.delegate operation:self completedWithResponse:aResponse];
+    if (aResponse.error) {
+        if (self.error)
+            self.error(aResponse.error);
+    }
+    else if (self.success)
+        self.success(aResponse.headers, aResponse.bodyParts);
+    self.success = nil;
+    self.error = nil;
+    self.isFinished = YES;
 }
 
-- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
-{
+- (BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace {
     return [self.binding.sslManager canAuthenticateForAuthenticationMethod:protectionSpace.authenticationMethod];
 }
 
@@ -171,7 +175,7 @@
     NSInteger contentLength = [httpResponse.allHeaderFields[@"Content-Length"] integerValue];
 
     if (contentLength == 0 && self.binding.ignoreEmptyResponse) {
-        [self.delegate operation:self completedWithResponse:self.response];
+        [self completedWithResponse:self.response];
         return;
     }
 
@@ -210,12 +214,12 @@
 %FOREACH operation in operations
 @implementation %«className»_%«operation.className»
 
-- (id)initWithBinding:(%«className» *)aBinding delegate:(id <%«className»ResponseDelegate>)responseDelegate
+- (id)initWithBinding:(%«className» *)aBinding success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error
 %FOREACH part in operation.input.bodyParts
 %«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
 %ENDFOR
 {
-    if ((self = [super initWithBinding:aBinding delegate:responseDelegate])) {
+    if ((self = [super initWithBinding:aBinding success:success error:error])) {
 %FOREACH part in operation.input.bodyParts
         self.%«part.name» = a%«part.uname»;
 %ENDFOR
@@ -328,7 +332,7 @@
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection {
-    if (!self.responseData || !self.delegate) return;
+    if (!self.responseData) return;
 
     if (self.binding.logXMLInOut) {
         NSLog(@"ResponseBody:\n%@", [[NSString alloc] initWithData:self.responseData encoding:NSUTF8StringEncoding]);
