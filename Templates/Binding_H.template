@@ -13,17 +13,7 @@
  * If delegate does not implement method, it must implement operation:completedWithResponse:
  */
 - (void)operation:(%«className»Operation *)operation completedWithResponse:(%«className»Response *)response;
-
 @end
-
-#define kServerAnchorCertificates   @"kServerAnchorCertificates"
-#define kServerAnchorsOnly          @"kServerAnchorsOnly"
-#define kClientIdentity             @"kClientIdentity"
-#define kClientCertificates         @"kClientCertificates"
-#define kClientUsername             @"kClientUsername"
-#define kClientPassword             @"kClientPassword"
-#define kNSURLCredentialPersistence @"kNSURLCredentialPersistence"
-#define kValidateResult             @"kValidateResult"
 
 @interface %«className» : NSObject <%«className»ResponseDelegate> {
 	BOOL	synchronousOperationComplete;
