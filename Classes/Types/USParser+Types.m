@@ -93,10 +93,10 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
 }
 
 - (USType *)parseRestriction:(NSXMLElement *)el type:(USType *)type schema:(USSchema *)schema {
-    NSMutableOrderedSet *enumerationValues = [NSMutableOrderedSet new];
+    NSMutableSet *enumerationValues = [NSMutableSet new];
     for (NSXMLElement *child in [el childElementsWithName:@"enumeration"])
         [enumerationValues addObject:[[child attributeForName:@"value"] stringValue]];
-    type.enumerationValues = [enumerationValues array];
+    type.enumerationValues = [[enumerationValues allObjects] sortedArrayUsingSelector:@selector(compare:)];
 
     [schema withTypeFromElement:el attrName:@"base" call:^(USType *baseType) {
         if (type.isSimpleType)
