@@ -22,6 +22,7 @@
 
 #import "USBinding.h"
 
+#import "NSArray+USAdditions.h"
 #import "NSBundle+USAdditions.h"
 #import "NSString+USAdditions.h"
 #import "NSXMLElement+Children.h"
@@ -93,7 +94,7 @@
     return @{@"name": self.name,
              @"className": self.className,
              @"soapVersion": self.soapVersion,
-             @"operations": [self.operations allValues],
+             @"operations": [[self.operations allValues] sortedArrayUsingKey:@"name" ascending:YES],
              @"inputHeaders": [inputHeaders allValues]};
 }
 

@@ -22,6 +22,7 @@
 
 #import "USSchema.h"
 
+#import "NSArray+USAdditions.h"
 #import "NSBundle+USAdditions.h"
 #import "USAttribute.h"
 #import "USBinding.h"
@@ -224,8 +225,8 @@ otherwiseEnqueueIn:(NSMutableDictionary *)waits
              @"prefix": self.prefix,
              @"typeCount": [@([self.types count]) stringValue],
              @"imports": self.imports,
-             @"uniqueTypes": [NSSet setWithArray:types],
-             @"types": types,
+             @"uniqueTypes": [[[NSSet setWithArray:types] allObjects] sortedArrayUsingKey:@"typeName" ascending:YES],
+             @"types": [types sortedArrayUsingKey:@"typeName" ascending:YES],
              @"wsdl": self.wsdl};
 }
 
