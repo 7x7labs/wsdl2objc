@@ -141,8 +141,7 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
     }
 
     // Sequence, Group, Choice or Any
-    for (NSXMLElement *child in [content childElementsWithName:@"element"])
-        [type.sequenceElements addObject:[self processSequenceElementElement:child schema:schema]];
+    [self processSequenceBody:content schema:schema type:type];
 
     int minOccurs, maxOccurs;
     readMinMax(content, &minOccurs, &maxOccurs);
@@ -154,6 +153,17 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
     }
 
     return type;
+}
+
+- (void)processSequenceBody:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type {
+    for (NSXMLElement *child in [el childElements]) {
+        NSString *localName = [child localName];
+        if ([localName isEqualToString:@"choice"]) {
+            [self processSequenceBody:child schema:schema type:type];
+        }
+        else if ([localName isEqualToString:@"element"])
+            [type.sequenceElements addObject:[self processSequenceElementElement:child schema:schema]];
+    }
 }
 
 - (USSequenceElement *)processSequenceElementElement:(NSXMLElement *)el schema:(USSchema *)schema {
