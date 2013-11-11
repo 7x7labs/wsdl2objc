@@ -160,7 +160,11 @@ static void readMinMax(NSXMLElement *el, int *min, int *max) {
         NSString *localName = [child localName];
         if ([localName isEqualToString:@"choice"]) {
             [self processSequenceBody:child schema:schema type:type];
-        }
+            int minOccurs, maxOccurs;
+            readMinMax(child, &minOccurs, &maxOccurs);
+            if (maxOccurs != 1)
+                type.isArray = YES;
+    }
         else if ([localName isEqualToString:@"element"])
             [type.sequenceElements addObject:[self processSequenceElementElement:child schema:schema]];
     }
