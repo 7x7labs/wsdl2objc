@@ -70,7 +70,7 @@
 
 - (void)addSimpleClassWithName:(NSString *)aName representationClass:(NSString *)aClass;
 
-- (BOOL)shouldNotWrite;
+- (BOOL)shouldWrite;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;

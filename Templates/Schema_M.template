@@ -2,6 +2,7 @@
 
 #import "NSDate+ISO8601Parsing.h"
 #import "NSDate+ISO8601Unparsing.h"
+#import "xsd.h"
 
 #import <libxml/xmlstring.h>
 #if TARGET_OS_IPHONE
@@ -32,8 +33,4 @@ static Class classForElement(xmlNodePtr cur) {
     }
 
     return NSClassFromString([instanceType stringByReplacingOccurrencesOfString:@":" withString:@"_"]);
-}
-
-static NSString *NSStringFromNodeList(xmlNodePtr node) {
-    return [NSString stringWithXmlString:xmlNodeListGetString(node->doc, node->children, 1) free:YES];
 }

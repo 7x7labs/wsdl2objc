@@ -30,7 +30,6 @@
 #import "USMessage.h"
 #import "USPortType.h"
 #import "USSchema.h"
-#import "USSequenceElement.h"
 #import "USService.h"
 #import "USType.h"
 #import "USWSDL.h"

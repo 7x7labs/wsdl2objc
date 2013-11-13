@@ -196,7 +196,7 @@
 	unsigned complement = 0;
 
     for (NSString *line in [templateString arrayBySeparatingLinesUsingEOLmarkers]) {
-		lineNumber++;
+        lineNumber++;
 		if (([line length] > 0) && ([line hasPrefix:startTag] == NO) && ([line characterAtIndex:0] == '%')) {
 			NSString *keyword = [line firstWordUsingDelimitersFromSet:whitespaceSet];
 			complement = (([keyword hasPrefix:@"%IFN"]) || ([keyword hasPrefix:@"%ELSIFN"]));

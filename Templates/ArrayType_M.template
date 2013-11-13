@@ -1,0 +1,41 @@
+@implementation %«className»
++ (%«variableTypeName»)deserializeNode:(xmlNodePtr)cur {
+    NSMutableArray *ret = [NSMutableArray new];
+    for (xmlNodePtr child = cur->children; child; child = child->next) {
+        if (false);
+%FOREACH element in choices
+        else if (xmlStrEqual(child->name, (const xmlChar *)"%«element.wsdlName»")) {
+            Class elementClass = classForElement(child) ?: [%«element.type.className» class];
+            [ret addObject:[elementClass deserializeNode:child]];
+        }
+%ENDFOR
+    }
+    return ret;
+}
+
++ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value {
+%IFDEF onlyChoice
+%IF onlyChoice.type.isEnum
+    for (NSNumber *item in value) {
+        xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«onlyChoice.wsdlName»", NULL);
+        [%«onlyChoice.type.className» serializeToNode:child value:(%«onlyChoice.type.variableTypeName»)[item intValue]];
+    }
+%ELSE
+    for (%«onlyChoice.type.variableTypeName» item in value) {
+        xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«onlyChoice.wsdlName»", NULL);
+        [%«onlyChoice.type.className» serializeToNode:child value:item];
+    }
+%ENDIF
+%ELSE
+    for (id item in value) {
+        if (false);
+%FOREACH element in choices
+        else if ([item isMemberOfClass:[%«element.type.className» class]]) {
+            xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«element.wsdlName»", NULL);
+            [%«element.type.className» serializeToNode:child value:item];
+        }
+%ENDFOR
+    }
+%ENDIF
+}
+@end

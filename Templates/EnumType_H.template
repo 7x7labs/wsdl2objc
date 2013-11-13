@@ -1,0 +1,18 @@
+typedef enum %«variableTypeName» {
+	%«className»_none = 0,
+%FOREACH value in mangledEnumerationValues
+	%«className»_%«value»,
+%ENDFOR
+} %«variableTypeName»;
+
+@interface %«className» : NSObject
++ (%«variableTypeName»)valueFromString:(NSString *)string;
++ (NSString *)stringFromValue:(%«variableTypeName»)value;
+
++ (NSNumber *)deserializeNode:(xmlNodePtr)node;
++ (%«variableTypeName»)deserializeNodeRaw:(xmlNodePtr)node;
++ (%«variableTypeName»)deserializeAttribute:(const char *)attrName ofNode:(xmlNodePtr)node;
++ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value;
++ (void)serializeToProperty:(const char *)property onNode:(xmlNodePtr)node
+                      value:(%«variableTypeName»)value;
+@end

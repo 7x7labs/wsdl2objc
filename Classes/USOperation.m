@@ -83,7 +83,7 @@
             [invokeString appendFormat:@" %@:", element.name];
         }
 
-        [invokeString appendFormat:@"(%@)a%@", element.type.classNameWithPtr, element.uname];
+        [invokeString appendFormat:@"(%@)a%@", element.type.variableTypeName, element.uname];
     }
 
     return invokeString;

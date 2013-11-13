@@ -216,7 +216,7 @@
 
 - (id)initWithBinding:(%«className» *)aBinding success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error
 %FOREACH part in operation.input.bodyParts
-%«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
+%«part.name»:(%«part.type.variableTypeName»)a%«part.uname»
 %ENDFOR
 {
     if ((self = [super initWithBinding:aBinding success:success error:error])) {
@@ -231,96 +231,50 @@
 - (void)main {
     self.response = [%«className»Response new];
 
-    %«className»_envelope *envelope = [%«className»_envelope sharedInstance];
-
-%IFDEF operation.input.headers
-    NSMutableDictionary *headerElements = [NSMutableDictionary dictionary];
-%FOREACH header in operation.input.headers
-%IFEQ header.type.assignOrRetain strong
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = self.binding.%«header.name»Header;
-%ELSIFEQ header.type.typeName boolean
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = [[USBoolean alloc] initWithBool:*%«header.name»Header];
-%ELSIFEQ header.type.typeName byte
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName int
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName integer
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName nonNegativeInteger
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName positiveInteger
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName unsignedByte
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName unsignedInt
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName long
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName unsignedLong
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName short
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName unsignedShort
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName double
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName float
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFEQ header.type.typeName decimal
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = @(self.binding.*%«header.name»Header);
-%ELSIFNEQ header.type.enumCount 0
-    if (self.binding.%«header.name»Header) headerElements[@"%«header.wsdlName»"] = %«header.type.className»_stringFromEnum(self.binding.%«header.name»Header);
-%ENDIF
-%ENDFOR
-%ENDIF
-
-%IFDEF operation.input.bodyParts
-    NSMutableDictionary *bodyElements = [NSMutableDictionary dictionary];
-%FOREACH part in operation.input.bodyParts
-%IFEQ part.type.assignOrRetain strong
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = self.%«part.name»;
-%ELSIFEQ part.type.typeName boolean
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = [[USBoolean alloc] initWithBool:self.*%«part.name»];
-%ELSIFEQ part.type.typeName byte
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName int
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName integer
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName nonNegativeInteger
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName positiveInteger
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName unsignedChar
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName unsignedInt
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName long
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName unsignedLong
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName short
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName unsignedShort
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName double
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName float
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFEQ part.type.typeName decimal
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = @(self.*%«part.name»);
-%ELSIFNEQ part.type.enumCount 0
-    if (self.%«part.name») bodyElements[@"%«part.wsdlName»"] = %«part.type.className»_stringFromEnum(self.%«part.name»);
-%ENDIF
-%ENDFOR
-%ENDIF
-
-    NSString *operationXMLString = [envelope serializedFormUsingHeaderElements:headerElements bodyElements:bodyElements];
+    NSString *operationXMLString = [%«className»_envelope serializedFormUsingDelegate:self];
     operationXMLString = self.binding.soapSigner ? [self.binding.soapSigner signRequest:operationXMLString] : operationXMLString;
-    
+
     [self.binding sendHTTPCallUsingBody:operationXMLString
                              soapAction:@"%«operation.soapAction»"
                            forOperation:self];
+}
+
+- (void)addSoapBody:(xmlNodePtr)root {
+%IFDEF operation.input.headers
+    xmlNodePtr headerNode = xmlNewDocNode(root->doc, NULL, (const xmlChar *)"Header", NULL);
+    xmlAddChild(root, headerNode);
+
+%FOREACH header in operation.input.headers
+    if (self.binding.%«header.name»Header) {
+        xmlNodePtr %«header.name»Node = xmlNewChild(headerNode, NULL, (const xmlChar *)"%«header.type.prefix»:%«header.name»", NULL);
+        [%«header.type.className» serializeToNode:%«header.name»Node value:self.binding.%«header.name»Header];
+    }
+
+%ENDFOR
+    xmlSetNs(headerNode, root->ns);
+%ENDIF
+%IFDEF operation.input.bodyParts
+    xmlNodePtr bodyNode = xmlNewDocNode(root->doc, NULL, (const xmlChar *)"Body", NULL);
+    xmlAddChild(root, bodyNode);
+
+%FOREACH part in operation.input.bodyParts
+    const xmlChar *%«part.name»Name = (const xmlChar *)"%«part.type.prefix»:%«part.wsdlName»";
+%IF part.isArray
+    for (%«part.type.variableTypeName» item in _%«part.name») {
+        xmlNodePtr %«part.name»Node = xmlNewChild(bodyNode, NULL, %«part.name»Name, NULL);
+        [%«part.type.className» serializeToNode:%«part.name»Node value:item];
+    }
+
+%ELSE
+    if (_%«part.name») {
+        xmlNodePtr %«part.name»Node = xmlNewChild(bodyNode, NULL, %«part.name»Name, NULL);
+        [%«part.type.className» serializeToNode:%«part.name»Node value:_%«part.name»];
+    }
+
+%ENDIF
+%ENDFOR
+    xmlSetNs(bodyNode, root->ns);
+%ENDIF
 }
 
 - (void)processResponseNode:(xmlNodePtr)node classes:(NSDictionary *)classes result:(NSMutableArray *)result {
@@ -353,7 +307,7 @@
             NSMutableArray *responseHeaders = [NSMutableArray array];
             NSDictionary *headers = @{
 %FOREACH header in operation.output.headers
-                @"%«header.wsdlName»": [%«header.type.classNameWithoutPtr» class],
+                @"%«header.wsdlName»": [%«header.type.className» class],
 %ENDFOR
             };
 
@@ -369,7 +323,7 @@
             NSMutableArray *responseBodyParts = [NSMutableArray array];
             NSDictionary *bodyParts = @{
 %FOREACH part in operation.output.bodyParts
-                @"%«part.wsdlName»": [%«part.type.classNameWithoutPtr» class],
+                @"%«part.wsdlName»": [%«part.type.className» class],
 %ENDFOR
             };
             for (xmlNodePtr bodyNode = cur->children; bodyNode; bodyNode = bodyNode->next) {
@@ -398,17 +352,7 @@ done:
 %ENDFOR
 
 @implementation %«className»_envelope
-+ (%«className»_envelope *)sharedInstance {
-    static %«className»_envelope *instance;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{ instance = [self new]; });
-
-    return instance;
-}
-
-- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements
-                                   bodyElements:(NSDictionary *)bodyElements
-{
++ (NSString *)serializedFormUsingDelegate:(id)delegate {
     xmlDocPtr doc = xmlNewDoc((const xmlChar *)XML_DEFAULT_VERSION);
 
     if (doc == NULL) {
@@ -436,26 +380,7 @@ done:
     xmlNewNs(root, (const xmlChar *)"%«schema.fullName»", (const xmlChar *)"%«schema.prefix»");
 %ENDFOR
 
-    if ([headerElements count] > 0) {
-        xmlNodePtr headerNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar *)"Header", NULL);
-        xmlAddChild(root, headerNode);
-
-        for (NSString *key in headerElements) {
-            id header = headerElements[key];
-            xmlAddChild(headerNode, [header xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
-        }
-    }
-
-    if ([bodyElements count] > 0) {
-        xmlNodePtr bodyNode = xmlNewDocNode(doc, soapEnvelopeNs, (const xmlChar *)"Body", NULL);
-
-        xmlAddChild(root, bodyNode);
-
-        for (NSString *key in bodyElements) {
-            id body = bodyElements[key];
-            xmlAddChild(bodyNode, [body xmlNodeForDoc:doc elementName:key elementNSPrefix:nil]);
-        }
-    }
+    [delegate addSoapBody:root];
 
     xmlChar *buf;
     int size;

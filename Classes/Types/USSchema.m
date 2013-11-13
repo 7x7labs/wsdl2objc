@@ -192,23 +192,15 @@ otherwiseEnqueueIn:(NSMutableDictionary *)waits
 }
 
 - (void)addSimpleClassWithName:(NSString *)name representationClass:(NSString *)repClass {
-    USType *type = [USType simpleTypeWithName:name prefix:self.prefix];
-    type.representationClass = repClass;
-    self.types[name] = type;
+    self.types[name] = [USType primitiveTypeWithName:name prefix:self.prefix type:repClass];
 }
 
-- (BOOL)shouldNotWrite {
-    if ([self.elements count] ||
-        [self.imports count] ||
-        [self.bindings count] ||
-        [self.services count]) return NO;
-
-    for (USType *type in [self.types allValues]) {
-        if (type.isComplexType) return NO;
-        if (![type.className isEqualToString:type.representationClass]) return NO;
-    }
-
-    return YES;
+- (BOOL)shouldWrite {
+    return [self.elements count]
+        || [self.imports count]
+        || [self.bindings count]
+        || [self.services count]
+        || [self.types count];
 }
 
 - (NSString *)templateFileHPath {
@@ -223,7 +215,6 @@ otherwiseEnqueueIn:(NSMutableDictionary *)waits
     NSArray *types = [self.types allValues];
     return @{@"fullName": self.fullName,
              @"prefix": self.prefix,
-             @"typeCount": [@([self.types count]) stringValue],
              @"imports": self.imports,
              @"uniqueTypes": [[[NSSet setWithArray:types] allObjects] sortedArrayUsingKey:@"typeName" ascending:YES],
              @"types": [types sortedArrayUsingKey:@"typeName" ascending:YES],

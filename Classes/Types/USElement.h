@@ -29,6 +29,7 @@
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *wsdlName;
 @property (nonatomic, strong) USType *type;
+@property (nonatomic) BOOL isArray;
 
 - (NSString *)uname;
 + (USElement *)elementWithElement:(NSXMLElement *)el schema:(USSchema *)schema;

@@ -1,0 +1,44 @@
+static NSString *%«className»_enumValues[] = {
+    @"",
+%FOREACH value in enumerationValues
+    @"%«value»",
+%ENDFOR
+};
+
+@implementation %«className»
++ (%«variableTypeName») valueFromString:(NSString *)string {
+    for (size_t i = 0; i <= sizeof(%«className»_enumValues) / sizeof(%«className»_enumValues[0]); ++i) {
+        if ([string isEqualToString:%«className»_enumValues[i]])
+            return (%«className»Enum)i;
+    }
+
+    return %«className»_none;
+}
+
++ (NSString *)stringFromValue:(%«variableTypeName»)value {
+    return %«className»_enumValues[(int)value];
+}
+
++ (%«variableTypeName»)deserializeAttribute:(const char *)attrName ofNode:(xmlNodePtr)node {
+    NSString *attrString = [NSString stringWithXmlString:xmlGetProp(node, (const xmlChar *)attrName) free:YES];
+    return attrString ? [self valueFromString:attrString] : %«className»_none;
+}
+
++ (%«variableTypeName»)deserializeNodeRaw:(xmlNodePtr)node {
+    return [self valueFromString:[NSString stringWithXmlString:xmlNodeListGetString(node->doc, node->children, 1) free:YES]];
+}
+
++ (NSNumber *)deserializeNode:(xmlNodePtr)node {
+    return @([self deserializeNodeRaw:node]);
+}
+
++ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value {
+    xmlNodeSetContent(node, [[self stringFromValue:value] xmlString]);
+}
+
++ (void)serializeToProperty:(const char *)property onNode:(xmlNodePtr)node
+                      value:(%«variableTypeName»)value
+{
+    xmlSetProp(node, (const xmlChar *)property, [[self stringFromValue:value] xmlString]);
+}
+@end

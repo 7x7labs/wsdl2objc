@@ -227,35 +227,6 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 }
 @end
 
-@interface USBoolean ()
-@property (nonatomic) BOOL value;
-@end
-
-@implementation USBoolean
-- (id)initWithBool:(BOOL)aValue {
-    self = [super init];
-    self.value = aValue;
-    return self;
-}
-
-- (NSString *)stringValue {
-    return self.value ? @"true" : @"false";
-}
-
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix {
-    return [[self stringValue] xmlNodeForDoc:doc elementName:elName elementNSPrefix:elNSPrefix];
-}
-
-+ (USBoolean *)deserializeNode:(xmlNodePtr)cur {
-    NSString *stringValue = [NSString deserializeNode:cur];
-    if ([stringValue isEqualToString:@"true"])
-        return [[USBoolean alloc] initWithBool:YES];
-    if ([stringValue isEqualToString:@"false"])
-        return [[USBoolean alloc] initWithBool:NO];
-    return nil;
-}
-@end
-
 @implementation SOAPFault
 + (id)deserializeFaultDetails:(xmlNodePtr)cur expectedExceptions:(NSDictionary *)exceptions {
     if (cur->children) {

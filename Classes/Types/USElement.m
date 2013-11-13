@@ -35,6 +35,13 @@
     element.wsdlName = [[el attributeForName:@"name"] stringValue];
     element.name = [USObjCKeywords mangleName:element.wsdlName];
 
+    NSXMLNode *maxOccursNode = [el attributeForName:@"maxOccurs"];
+    if (maxOccursNode) {
+        NSString *maxOccursValue = [maxOccursNode stringValue];
+        if ([maxOccursValue isEqualToString:@"unbounded"] || [maxOccursValue intValue] > 1)
+            element.isArray = YES;
+    }
+
     BOOL hasType = [schema withTypeFromElement:el attrName:@"type" call:^(USType *type) {
         element.type = type;
     }];

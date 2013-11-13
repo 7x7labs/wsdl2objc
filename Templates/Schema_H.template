@@ -6,13 +6,11 @@
 #import "USGlobals.h"
 
 %FOREACH type in uniqueTypes
-%IFEQ type.assignOrRetain strong
-@class %«type.classNameWithoutPtr»;
-%ENDIF
+@class %«type.className»;
 %ENDFOR
 
 %FOREACH schema in imports
-%IFNOT schema.shouldNotWrite
+%IF schema.shouldWrite
 #import "%«schema.prefix».h"
 %ENDIF
 %ENDFOR

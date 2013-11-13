@@ -1,0 +1,4 @@
+@interface %«className» : NSObject
++ (%«variableTypeName»)deserializeNode:(xmlNodePtr)cur;
++ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value;
+@end

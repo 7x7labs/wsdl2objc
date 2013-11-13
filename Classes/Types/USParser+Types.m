@@ -27,7 +27,6 @@
 #import "USAttribute.h"
 #import "USElement.h"
 #import "USSchema.h"
-#import "USSequenceElement.h"
 #import "USType.h"
 #import "USWSDL.h"
 
@@ -67,117 +66,170 @@ static int readMax(NSXMLElement *el) {
 #pragma mark - Simple
 - (USType *)parseSimpleType:(NSXMLElement *)el schema:(USSchema *)schema name:(NSString *)name {
     NSString *typename = [[el attributeForName:@"name"] stringValue] ?: [self uniqueName:name schema:schema];
-    USType *type = [USType simpleTypeWithName:typename prefix:schema.prefix];
-
     for (NSXMLElement *child in [el childElements]) {
         NSString *localName = [child localName];
-        if ([localName isEqualToString:@"restriction"]) {
-            return [self parseRestriction:child type:type schema:schema];
-        }
+        if ([localName isEqualToString:@"restriction"])
+            return [self parseSimpleRestriction:child name:typename schema:schema];
         else if ([localName isEqualToString:@"union"]) {
-            NSLog(@"Not handling union type %@ %@", type.typeName, el);
-            type.representationClass = @"NSString *";
+            NSLog(@"Not handling union type %@ %@", typename, el);
+            return [USType primitiveTypeWithName:typename prefix:schema.prefix type:@"NSString *"];
         }
         else if ([localName isEqualToString:@"list"]) {
-            NSLog(@"Not handling list type %@ %@", type.typeName, el);
-            type.representationClass = @"NSString *";
+            NSLog(@"Not handling list type %@ %@", typename, el);
+            return [USType primitiveTypeWithName:typename prefix:schema.prefix type:@"NSString *"];
         }
     }
 
-    return type;
+    return nil;
 }
 
-- (USType *)parseRestriction:(NSXMLElement *)el type:(USType *)type schema:(USSchema *)schema {
+- (USType *)parseSimpleRestriction:(NSXMLElement *)el name:(NSString *)name schema:(USSchema *)schema {
     NSMutableSet *enumerationValues = [NSMutableSet new];
     for (NSXMLElement *child in [el childElementsWithName:@"enumeration"])
         [enumerationValues addObject:[[child attributeForName:@"value"] stringValue]];
-    type.enumerationValues = [[enumerationValues allObjects] sortedArrayUsingSelector:@selector(compare:)];
+    if ([enumerationValues count])
+        return [USType enumTypeWithName:name prefix:schema.prefix
+                                 values:[[enumerationValues allObjects] sortedArrayUsingSelector:@selector(compare:)]];
 
+    // The base type may not exist yet, so in that case we need to return a proxy
+    // that will forward to the base type once it does exist
+    __block USProxyType *proxy = [[USProxyType alloc] initWithName:name];
     [schema withTypeFromElement:el attrName:@"base" call:^(USType *baseType) {
-        if (type.isSimpleType)
-            type.representationClass = baseType.representationClass;
-        else // Restriction on complex types is used to remove things from the base, which this doesn't handle
-            type.superClass = baseType;
+        proxy.type = [baseType deriveWithName:name prefix:schema.prefix];
     }];
 
-    return type;
+    return proxy.type ?: (USType *)proxy;
 }
 
 #pragma mark - Complex
 - (USType *)parseComplexType:(NSXMLElement *)el schema:(USSchema *)schema name:(NSString *)name
 {
     NSString *typename = [[el attributeForName:@"name"] stringValue] ?: [self uniqueName:name schema:schema];
-    USType *type = [USType complexTypeWithName:typename prefix:schema.prefix];
-    return [self processComplexTypeBody:el schema:schema type:type];
+    return [self processComplexTypeBody:el schema:schema name:typename base:nil];
 }
 
-- (USType *)processComplexTypeBody:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type
+- (USType *)processComplexTypeBody:(NSXMLElement *)el schema:(USSchema *)schema
+                              name:(NSString *)typeName base:(USType *)base
 {
+    NSMutableArray *attributes = [NSMutableArray new];
     for (NSXMLElement *child in [el childElementsWithName:@"attribute"])
-         [type.attributes addObject:[USAttribute attributeWithElement:child schema:schema]];
+         [attributes addObject:[USAttribute attributeWithElement:child schema:schema]];
     NSArray *attributeGroups = [el childElementsWithName:@"attributeGroup"];
     if ([attributeGroups count])
-        NSLog(@"Not handling attribute groups for %@", type.typeName);
+        NSLog(@"Not handling attribute groups for %@", typeName);
 
     NSXMLElement *content = [el childElementWithNames:@[@"simpleContent", @"complexContent", @"group",
                                                         @"sequence", @"choice", @"all",
                                                         @"restriction", @"extension"]
                                            parentName:@"complexType"];
     if (!content)
-        return type;
+        return [USType complexTypeWithName:typeName prefix:schema.prefix
+                                  elements:@[] attributes:attributes base:base];
 
     NSString *localName = [content localName];
     if ([localName isEqualToString:@"simpleContent"] || [localName isEqualToString:@"complexContent"]) {
         NSXMLElement *child = [content childElementWithNames:@[@"restriction", @"extension"] parentName:localName];
         localName = [child localName];
-        if ([localName isEqualToString:@"restriction"])
-            return [self parseRestriction:child type:type schema:schema];
-        return [self processExtensionElement:child type:type schema:schema];
+        if ([localName isEqualToString:@"restriction"]) {
+            __block USProxyType *proxy = [[USProxyType alloc] initWithName:typeName];
+            [schema withTypeFromElement:child attrName:@"base" call:^(USType *baseType) {
+                proxy.type = [baseType deriveWithName:typeName prefix:schema.prefix];
+            }];
+
+            return proxy.type ?: (USType *)proxy;
+        }
+        return [self processExtensionElement:child name:typeName schema:schema];
     }
 
-    // Sequence, Group, Choice or Any
-    [self processSequenceBody:content schema:schema type:type];
-
-    int maxOccurs = readMax(content);
-    if (maxOccurs != 1) {
-        if (type.sequenceElements.count == 1)
-            [[type.sequenceElements firstObject] setMaxOccurs:maxOccurs];
-        else
-            type.isArray = YES;
+    if ([localName isEqualToString:@"any"]) {
+        NSLog(@"xsd:any not handled: %@", typeName);
+        return nil;
     }
 
-    return type;
+    if ([localName isEqualToString:@"group"]) {
+        NSLog(@"xsd:group not handled: %@", typeName);
+        return nil;
+    }
+
+    BOOL isChoice = [localName isEqualToString:@"choice"];
+    // May be a sequence containing just a choice, and we want to flatten that
+    if ([localName isEqualToString:@"sequence"]) {
+        for (NSXMLElement *child in [content childElements]) {
+            NSString *childName = [child localName];
+            if ([childName isEqualToString:@"choice"])
+                isChoice = YES;
+            else if ([childName isEqualToString:@"element"]) {
+                isChoice = NO;
+                break;
+            }
+        }
+    }
+
+    NSMutableArray *elements = [self parseSequenceBody:content schema:schema];
+
+    if (attributes.count == 0 && isChoice) {
+        if (readMax(content) != 1)
+            return [USType arrayTypeWithName:typeName prefix:schema.prefix choices:elements];
+        return [USType choiceTypeWithName:typeName prefix:schema.prefix choices:elements];
+    }
+
+    if (attributes.count == 0 && elements.count == 1) {
+        USElement *element = [elements firstObject];
+        if (readMax(content) != 1 || element.isArray)
+            return [USType arrayTypeWithName:typeName prefix:schema.prefix choices:elements];
+    }
+
+    return [USType complexTypeWithName:typeName prefix:schema.prefix
+                              elements:elements attributes:attributes base:base];
 }
 
-- (void)processSequenceBody:(NSXMLElement *)el schema:(USSchema *)schema type:(USType *)type {
+- (NSMutableArray *)parseSequenceBody:(NSXMLElement *)el schema:(USSchema *)schema {
+    NSMutableArray *sequenceElements = [NSMutableArray new];
     for (NSXMLElement *child in [el childElements]) {
         NSString *localName = [child localName];
         if ([localName isEqualToString:@"choice"]) {
-            [self processSequenceBody:child schema:schema type:type];
-            if (readMax(child) != 1)
-                type.isArray = YES;
+            NSMutableArray *subElements = [self parseSequenceBody:child schema:schema];
+            if (readMax(child) != 1) {
+                // Not quite equivalent, but we don't enforce the choice anyway
+                for (USElement *element in subElements)
+                    element.isArray = YES;
+            }
+
+            if ([sequenceElements count] == 0)
+                sequenceElements = subElements;
+            else
+                [sequenceElements addObjectsFromArray:subElements];
+        }
+        else if ([localName isEqualToString:@"element"]) {
+            [sequenceElements addObject:[self processSequenceElementElement:child schema:schema]];
+        }
     }
-        else if ([localName isEqualToString:@"element"])
-            [type.sequenceElements addObject:[self processSequenceElementElement:child schema:schema]];
-    }
+    return sequenceElements;
 }
 
-- (USSequenceElement *)processSequenceElementElement:(NSXMLElement *)el schema:(USSchema *)schema {
-    USSequenceElement *seqElement = [USSequenceElement new];
-    seqElement.maxOccurs = readMax(el);
+- (USElement *)processSequenceElementElement:(NSXMLElement *)el schema:(USSchema *)schema {
+    USElement *seqElement = [USElement new];
+    seqElement.isArray = readMax(el) != 1;
 
     BOOL isRef = [schema withElementFromElement:el attrName:@"ref" call:^(USElement *element) {
+        seqElement.wsdlName = element.wsdlName;
         seqElement.name = element.name;
         seqElement.type = element.type;
     }];
     if (isRef) return seqElement;
 
-    seqElement.name = [[[el attributeForName:@"name"] stringValue] stringByRemovingIllegalCharacters];
+    seqElement.wsdlName = [[el attributeForName:@"name"] stringValue];
+    seqElement.name = [seqElement.wsdlName stringByRemovingIllegalCharacters];
 
+    USProxyType *proxy = [USProxyType alloc];
     BOOL hasTypeRef = [schema withTypeFromElement:el attrName:@"type" call:^(USType *t) {
-        seqElement.type = t;
+        proxy.typeName = t.typeName;
+        proxy.type = t;
     }];
-    if (hasTypeRef) return seqElement;
+    if (hasTypeRef) {
+        seqElement.type = proxy.type ?: (USType *)proxy;
+        return seqElement;
+    }
 
     // Anonymous type definition, so we need to convert it to a named type
     NSString *name = [@"SequenceElement_" stringByAppendingString:seqElement.name];
@@ -193,12 +245,13 @@ static int readMax(NSXMLElement *el) {
     return seqElement;
 }
 
-- (USType *)processExtensionElement:(NSXMLElement *)el type:(USType *)type schema:(USSchema *)schema
+- (USType *)processExtensionElement:(NSXMLElement *)el name:(NSString *)name schema:(USSchema *)schema
 {
-    [schema withTypeFromElement:el attrName:@"base" call:^(USType *base) {
-        type.superClass = base;
+    USProxyType *proxy = [[USProxyType alloc] initWithName:name];
+    [schema withTypeFromElement:el attrName:@"base" call:^(USType *baseType) {
+        proxy.type = baseType;
     }];
 
-    return [self processComplexTypeBody:el schema:schema type:type];
+    return [self processComplexTypeBody:el schema:schema name:name base:proxy.type ?: (USType *)proxy];
 }
 @end

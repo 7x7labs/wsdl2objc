@@ -68,7 +68,7 @@
 
 - (NSString *)className {
 	if ([self.bodyParts count] == 1)
-		return ((USElement *)[self.bodyParts firstObject]).type.classNameWithPtr;
+		return ((USElement *)[self.bodyParts firstObject]).type.variableTypeName;
 	return @"NSArray *";
 }
 

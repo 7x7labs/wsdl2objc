@@ -24,44 +24,47 @@
 
 @class USWSDL;
 @class USSchema;
-
-typedef enum {
-	TypeBehavior_uninitialized = 0,
-	TypeBehavior_simple,
-	TypeBehavior_complex
-} TypeBehavior;
+@class USComplexType;
 
 @interface USType : NSObject
-+ (USType *)simpleTypeWithName:(NSString *)name prefix:(NSString *)prefix;
-+ (USType *)complexTypeWithName:(NSString *)name prefix:(NSString *)prefix;
++ (instancetype)primitiveTypeWithName:(NSString *)name prefix:(NSString *)prefix type:(NSString *)type;
++ (instancetype)enumTypeWithName:(NSString *)name prefix:(NSString *)prefix values:(NSArray *)values;
++ (instancetype)arrayTypeWithName:(NSString *)name prefix:(NSString *)prefix choices:(NSArray *)choices;
++ (instancetype)choiceTypeWithName:(NSString *)name prefix:(NSString *)prefix choices:(NSArray *)choices;
++ (instancetype)complexTypeWithName:(NSString *)name prefix:(NSString *)prefix
+                           elements:(NSArray *)elements attributes:(NSArray *)attributes base:(USType *)base;
 
-@property (nonatomic, copy) NSString *typeName;
-@property (nonatomic, copy) NSString *prefix;
-@property (nonatomic) TypeBehavior behavior;
+@property (nonatomic, readonly) NSString *typeName;
+@property (nonatomic, readonly) NSString *prefix;
 @property (nonatomic) BOOL hasBeenWritten;
 
-#pragma mark Global type methods
-@property (nonatomic, readonly) BOOL isSimpleType;
-@property (nonatomic, readonly) BOOL isComplexType;
+@property (nonatomic, readonly) NSNumber *isEnum;
 
+// Name of class used to serialize and deserialize values of this type
 @property (nonatomic, readonly) NSString *className;
-@property (nonatomic, readonly) NSString *classNameWithPtr;
-@property (nonatomic, readonly) NSString *classNameWithoutPtr;
-@property (nonatomic, readonly) NSString *assignOrRetain;
+// Name of class which can create instances of this type, or nil for primitives
+// and things that can not be automatically created
+@property (nonatomic, readonly) NSString *factoryClassName;
+// Name of type for variables which are instances of this type
+@property (nonatomic, readonly) NSString *variableTypeName;
 
 - (NSString *)templateFileHPath;
 - (NSString *)templateFileMPath;
-- (NSDictionary *)templateKeyDictionary;
+- (NSMutableDictionary *)templateKeyDictionary;
 
-#pragma mark Simple type methods
-@property (nonatomic, copy) NSString *representationClass;
-@property (nonatomic, strong) NSArray *enumerationValues;
-@property (nonatomic, readonly) NSString *enumCount;
+- (USComplexType *)asComplex;
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix;
+@end
 
-#pragma mark Complex type methods
+@interface USComplexType : USType
+@property (nonatomic, strong) NSArray *sequenceElements;
+@property (nonatomic, strong) NSArray *attributes;
 @property (nonatomic, strong) USType *superClass;
-@property (nonatomic, strong) NSMutableArray *sequenceElements;
-@property (nonatomic, strong) NSMutableArray *attributes;
-@property (nonatomic) BOOL isArray;
+@end
 
+@interface USProxyType : NSProxy
+- (instancetype)initWithName:(NSString *)typeName;
+
+@property (nonatomic, strong) NSString *typeName;
+@property (nonatomic, strong) USType *type;
 @end

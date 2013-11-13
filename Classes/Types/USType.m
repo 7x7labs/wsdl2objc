@@ -24,146 +24,299 @@
 
 #import "NSBundle+USAdditions.h"
 #import "NSString+USAdditions.h"
+#import "USElement.h"
 #import "USSchema.h"
-#import "USSequenceElement.h"
 #import "USWSDL.h"
 
+@interface USType ()
+@property (nonatomic, strong) NSString *typeName;
+@property (nonatomic, strong) NSString *prefix;
+
+- (id)initWithName:(NSString *)name prefix:(NSString *)prefix;
+@end
+
+@interface USPrimitiveType : USType
+@property (nonatomic, copy) NSString *representationType;
+@end
+
+@implementation USPrimitiveType
+- (NSString *)templateFileHPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"PrimitiveType_H"];
+}
+
+- (NSString *)templateFileMPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"PrimitiveType_M"];
+}
+
+- (NSString *)variableTypeName {
+    return self.representationType;
+}
+
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix {
+    return [USPrimitiveType primitiveTypeWithName:newTypeName prefix:newTypePrefix type:self.representationType];
+}
+@end
+
+@interface USEnumType : USType
+@property (nonatomic, strong) NSArray *enumValues;
+@end
+
+@implementation USEnumType
+- (NSString *)templateFileHPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"EnumType_H"];
+}
+
+- (NSString *)templateFileMPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"EnumType_M"];
+}
+
+- (NSString *)variableTypeName {
+    return [self.className stringByAppendingString:@"Enum"];
+}
+
+- (NSNumber *)isEnum {
+    return @YES;
+}
+
+- (NSMutableDictionary *)templateKeyDictionary {
+    NSMutableDictionary *ret = [super templateKeyDictionary];
+    ret[@"enumerationValues"] = self.enumValues;
+
+    NSMutableArray *mangledEnumerationValues = [NSMutableArray arrayWithCapacity:self.enumValues.count];
+    for (NSString *str in self.enumValues)
+        [mangledEnumerationValues addObject:[[[str
+                                             stringByReplacingOccurrencesOfString:@" " withString:@"_"]
+                                             stringByReplacingOccurrencesOfString:@":" withString:@"_"]
+                                             stringByRemovingIllegalCharacters]];
+    ret[@"mangledEnumerationValues"] = mangledEnumerationValues;
+    return ret;
+}
+
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix {
+    return [USEnumType enumTypeWithName:newTypeName prefix:newTypePrefix values:self.enumValues];
+}
+@end
+
+@interface USArrayType : USType
+@property (nonatomic, strong) NSArray *choices;
+@end
+
+@implementation USArrayType
+- (NSString *)templateFileHPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"ArrayType_H"];
+}
+
+- (NSString *)templateFileMPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"ArrayType_M"];
+}
+
+- (NSString *)variableTypeName {
+    return @"NSArray *";
+}
+
+- (NSMutableDictionary *)templateKeyDictionary {
+    NSMutableDictionary *ret = [super templateKeyDictionary];
+    ret[@"choices"] = self.choices;
+    if (self.choices.count == 1)
+        ret[@"onlyChoice"] = self.choices.firstObject;
+    return ret;
+}
+
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix {
+    return [USArrayType arrayTypeWithName:newTypeName prefix:newTypePrefix choices:self.choices];
+}
+@end
+
+@interface USChoiceType : USType
+@property (nonatomic, strong) NSArray *choices;
+@end
+
+@implementation USChoiceType
+- (NSString *)templateFileHPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"ChoiceType_H"];
+}
+
+- (NSString *)templateFileMPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"ChoiceType_M"];
+}
+
+- (NSString *)variableTypeName {
+    return @"id"; // ARC doesn't support unions of Obj-C types :(
+}
+
+- (NSMutableDictionary *)templateKeyDictionary {
+    NSMutableDictionary *ret = [super templateKeyDictionary];
+    ret[@"choices"] = self.choices;
+    return ret;
+}
+
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix {
+    return [USChoiceType choiceTypeWithName:newTypeName prefix:newTypePrefix choices:self.choices];
+}
+@end
+
+@implementation USComplexType
+- (NSString *)templateFileHPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_H"];
+}
+
+- (NSString *)templateFileMPath {
+    return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_M"];
+}
+
+- (NSString *)factoryClassName {
+    return self.className;
+}
+
+- (USComplexType *)asComplex {
+    return self;
+}
+
+- (NSMutableDictionary *)templateKeyDictionary {
+    NSMutableDictionary *ret = [super templateKeyDictionary];
+    ret[@"superClassName"] = @"NSObject";
+    if (self.superClass) {
+        ret[@"superClass"] = self.superClass;
+        if (self.superClass.asComplex) {
+            ret[@"superClassName"] = self.superClass.className;
+            ret[@"complexSuper"] = @YES;
+        }
+        else
+            ret[@"attributedSimpleType"] = @YES;
+        for (USComplexType *parent = self.superClass.asComplex; parent; parent = parent.superClass.asComplex) {
+            if ([parent.sequenceElements count] > 0)
+                ret[@"hasSuperElements"] = @YES;
+            if ([parent.attributes count] > 0)
+                ret[@"hasSuperAttributes"] = @YES;
+        }
+    }
+    ret[@"sequenceElements"] = self.sequenceElements ?: @[];
+    ret[@"hasSequenceElements"] = @([self.sequenceElements count]);
+    ret[@"hasArrayElements"] = @NO;
+    for (USElement *element in self.sequenceElements) {
+        if (element.isArray) {
+            ret[@"hasArrayElements"] = @YES;
+            break;
+        }
+    }
+    ret[@"attributes"] = self.attributes ?: @[];
+    ret[@"hasAttributes"] = @([self.attributes count] > 0);
+    return ret;
+}
+
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix {
+    return [USComplexType complexTypeWithName:newTypeName prefix:newTypePrefix
+                                     elements:@[] attributes:@[] base:self];
+}
+@end
+
 @implementation USType
-+ (USType *)simpleTypeWithName:(NSString *)name prefix:(NSString *)prefix {
-    USType *type = [USType new];
-    type.behavior = TypeBehavior_simple;
-    type.typeName = name;
-    type.prefix = prefix;
+- (id)initWithName:(NSString *)name prefix:(NSString *)prefix {
+    self = [super init];
+    self.typeName = name;
+    self.prefix = prefix;
+    return self;
+}
+
++ (instancetype)primitiveTypeWithName:(NSString *)name prefix:(NSString *)prefix
+                                 type:(NSString *)representationType
+{
+    USPrimitiveType *type = [[USPrimitiveType alloc] initWithName:name prefix:prefix];
+    type.representationType = representationType;
     return type;
 }
 
-+ (USType *)complexTypeWithName:(NSString *)name prefix:(NSString *)prefix {
-    USType *type = [USType new];
-    type.behavior = TypeBehavior_complex;
-    type.typeName = name;
-    type.prefix = prefix;
++ (instancetype)enumTypeWithName:(NSString *)name prefix:(NSString *)prefix
+                          values:(NSArray *)values
+{
+    USEnumType *type = [[USEnumType alloc] initWithName:name prefix:prefix];
+    type.enumValues = values;
     return type;
 }
 
-- (id)init {
-	if ((self = [super init])) {
-		self.sequenceElements = [NSMutableArray array];
-		self.attributes = [NSMutableArray array];
-	}
-	return self;
++ (instancetype)arrayTypeWithName:(NSString *)name prefix:(NSString *)prefix choices:(NSArray *)choices {
+    USArrayType *type = [[USArrayType alloc] initWithName:name prefix:prefix];
+    type.choices = choices;
+    return type;
 }
 
-- (BOOL)isSimpleType {
-	return self.behavior == TypeBehavior_simple;
++ (instancetype)choiceTypeWithName:(NSString *)name prefix:(NSString *)prefix choices:(NSArray *)choices {
+    USChoiceType *type = [[USChoiceType alloc] initWithName:name prefix:prefix];
+    type.choices = choices;
+    return type;
 }
 
-- (BOOL)isComplexType {
-	return self.behavior == TypeBehavior_complex;
++ (instancetype)complexTypeWithName:(NSString *)name prefix:(NSString *)prefix
+                           elements:(NSArray *)elements attributes:(NSArray *)attributes base:(USType *)base
+{
+    USComplexType *type = [[USComplexType alloc] initWithName:name prefix:prefix];
+    type.sequenceElements = elements;
+    type.attributes = attributes;
+    type.superClass = base;
+    return type;
 }
 
 - (NSString *)className {
-    if (self.isSimpleType && [self.enumerationValues count] == 0)
-        return self.representationClass;
-
     return [NSString stringWithFormat:@"%@_%@",
             self.prefix, [self.typeName stringByRemovingIllegalCharacters]];
 }
 
-- (NSString *)classNameWithPtr {
-	if (self.isSimpleType)
-		return [self className];
-	if (self.isComplexType)
-		return [NSString stringWithFormat:@"%@ *", [self className]];
-
-	return self.typeName;
+- (NSString *)factoryClassName {
+    return nil;
 }
 
-- (NSString *)classNameWithoutPtr {
-	return [[self className] stringByReplacingOccurrencesOfString:@" *" withString:@""];
+- (NSString *)variableTypeName {
+    return [NSString stringWithFormat:@"%@_%@ *",
+            self.prefix, [self.typeName stringByRemovingIllegalCharacters]];
 }
-
-- (NSString *)assignOrRetain {
-	if (self.isSimpleType) {
-		if ([[self className] rangeOfString:@"*" options:NSLiteralSearch].location == NSNotFound)
-			return @"weak";
-	}
-
-	return @"strong";
-}
-
-- (NSString *)enumCount {
-	return [[NSNumber numberWithUnsignedInt:[self.enumerationValues count]] stringValue];
-}
-
 - (NSString *)templateFileHPath {
-	switch (self.behavior) {
-		case TypeBehavior_simple:
-			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_H"];
-		case TypeBehavior_complex:
-			return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_H"];
-		default:
-			return nil;
-	}
+    return nil;
 }
 
 - (NSString *)templateFileMPath {
-	switch (self.behavior) {
-		case TypeBehavior_simple:
-			return [[NSBundle mainBundle] pathForTemplateNamed:@"SimpleType_M"];
-		case TypeBehavior_complex:
-			return [[NSBundle mainBundle] pathForTemplateNamed:@"ComplexType_M"];
-		default:
-			return nil;
-	}
+    return nil;
 }
 
-- (NSDictionary *)templateKeyDictionary {
-	NSMutableDictionary *returning = [NSMutableDictionary dictionary];
-	returning[@"className"] = [self className];
-	returning[@"typeName"] = self.typeName;
-	returning[@"prefix"] = self.prefix;
-	returning[@"classNameWithPtr"] = [self classNameWithPtr];
-	returning[@"classNameWithoutPtr"] = [self classNameWithoutPtr];
-
-	switch (self.behavior) {
-		case TypeBehavior_simple: {
-			if (self.representationClass) returning[@"representationClass"] = self.representationClass;
-			returning[@"enumerationValues"] = self.enumerationValues;
-			returning[@"enumCount"] = [self enumCount];
-
-            NSMutableArray *mangledEnumerationValues = [NSMutableArray arrayWithCapacity:self.enumerationValues.count];
-            for (NSString *str in self.enumerationValues)
-                [mangledEnumerationValues addObject:[[[str
-                                                    stringByReplacingOccurrencesOfString:@" " withString:@"_"]
-                                                    stringByReplacingOccurrencesOfString:@":" withString:@"_"]
-                                                    stringByRemovingIllegalCharacters]];
-            returning[@"mangledEnumerationValues"] = mangledEnumerationValues;
-			break;
-        }
-
-		case TypeBehavior_complex: {
-			if (self.superClass) {
-				returning[@"superClass"] = self.superClass;
-				returning[@"superClassIsComplex"] = @([self.superClass isComplexType]);
-				for (USType *tempParent = self.superClass; tempParent; tempParent = tempParent.superClass) {
-					if ([tempParent.sequenceElements count] > 0)
-						returning[@"hasSuperElements"] = @YES;
-					if ([tempParent.attributes count] > 0)
-						returning[@"hasSuperAttributes"] = @YES;
-				}
-			}
-			returning[@"sequenceElements"] = self.sequenceElements ?: @[];
-			returning[@"hasSequenceElements"] = @([self.sequenceElements count]);
-			returning[@"attributes"] = self.attributes ?: @[];
-			returning[@"hasAttributes"] = @([self.attributes count] > 0);
-			break;
-		}
-
-		default:
-			break;
-	}
-
-	return returning;
+- (USComplexType *)asComplex {
+    return nil;
 }
 
+- (NSNumber *)isEnum {
+    return @NO;
+}
+
+- (NSMutableDictionary *)templateKeyDictionary {
+	NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+	ret[@"className"] = self.className;
+	ret[@"typeName"] = self.typeName;
+	ret[@"prefix"] = self.prefix;
+    if (self.factoryClassName)
+        ret[@"factoryClassName"] = self.factoryClassName;
+	ret[@"variableTypeName"] = self.variableTypeName;
+	ret[@"isEnum"] = self.isEnum;
+    return ret;
+}
+
+- (instancetype)deriveWithName:(NSString *)newTypeName prefix:(NSString *)newTypePrefix {
+    return nil;
+}
+@end
+
+@implementation USProxyType
+- (instancetype)initWithName:(NSString *)typeName {
+    self.typeName = typeName;
+    return self;
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+    return [self.type methodSignatureForSelector:sel];
+}
+
+- (void)forwardInvocation:(NSInvocation *)invocation {
+    [invocation invokeWithTarget:self.type];
+}
+
+- (BOOL)respondsToSelector:(SEL)sel {
+    return [self.type respondsToSelector:sel];
+}
 @end

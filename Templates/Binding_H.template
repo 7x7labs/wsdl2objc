@@ -19,10 +19,10 @@ typedef void (^%«className»ErrorBlock)(NSError *error);
 @property (nonatomic, strong) SOAPSigner *soapSigner;
 
 %FOREACH header in inputHeaders
-%IFEQ header.type.assignOrRetain strong
-@property(nonatomic, strong) %«header.type.classNameWithPtr» %«header.name»Header;
+%IF header.type.isEnum
+@property(nonatomic) %«header.type.variableTypeName» %«header.name»Header;
 %ELSE
-@property(nonatomic) %«header.type.classNameWithPtr» %«header.name»Header;
+@property(nonatomic, strong) %«header.type.variableTypeName» %«header.name»Header;
 %ENDIF
 %ENDFOR
 
@@ -57,25 +57,23 @@ typedef void (^%«className»ErrorBlock)(NSError *error);
 %FOREACH operation in operations
 @interface %«className»_%«operation.className» : %«className»Operation
 %FOREACH part in operation.input.bodyParts
-%IFEQ part.type.assignOrRetain strong
-@property(nonatomic, strong) %«part.type.classNameWithPtr» %«part.name»;
+%IF part.type.isEnum
+@property(nonatomic) %«part.type.variableTypeName» %«part.name»;
 %ELSE
-@property(nonatomic) %«part.type.classNameWithPtr» %«part.name»;
+@property(nonatomic, strong) %«part.type.variableTypeName» %«part.name»;
 %ENDIF
 %ENDFOR
 
 - (id)initWithBinding:(%«className» *)aBinding success:(%«className»SuccessBlock)success error:(%«className»ErrorBlock)error
 %FOREACH part in operation.input.bodyParts
-	%«part.name»:(%«part.type.classNameWithPtr»)a%«part.uname»
+	%«part.name»:(%«part.type.variableTypeName»)a%«part.uname»
 %ENDFOR
 ;
 @end
 %ENDFOR
 
 @interface %«className»_envelope : NSObject
-+ (%«className»_envelope *)sharedInstance;
-
-- (NSString *)serializedFormUsingHeaderElements:(NSDictionary *)headerElements bodyElements:(NSDictionary *)bodyElements;
++ (NSString *)serializedFormUsingDelegate:(id)delegate;
 @end
 
 @interface %«className»Response : NSObject

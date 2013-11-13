@@ -192,6 +192,7 @@
         NSLog(@"Writing debug info to console...");
 #endif
 
+#if 0
 		for (USSchema *schema in wsdl.schemas) {
 			NSLog(@"Schema: %@", schema.fullName);
 
@@ -223,6 +224,7 @@
                 }
             }
 		}
+#endif
     }
 }
 @end

@@ -50,16 +50,6 @@
 - (void)addToNode:(xmlNodePtr)node elementName:(NSString *)name elementNSPrefix:(NSString *)nsPrefix;
 @end
 
-@interface USBoolean : NSObject
-@property(nonatomic) BOOL boolValue;
-
-- (id)initWithBool:(BOOL)aValue;
-- (NSString *)stringValue;
-
-- (xmlNodePtr)xmlNodeForDoc:(xmlDocPtr)doc elementName:(NSString *)elName elementNSPrefix:(NSString *)elNSPrefix;
-+ (USBoolean *)deserializeNode:(xmlNodePtr)cur;
-@end
-
 @interface SOAPFault : NSObject
 @property(nonatomic, strong) NSString *faultcode;
 @property(nonatomic, strong) NSString *faultstring;

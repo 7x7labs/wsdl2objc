@@ -28,9 +28,9 @@
 #import "STSTemplateEngine.h"
 #import "USAttribute.h"
 #import "USBinding.h"
+#import "USElement.h"
 #import "USPort.h"
 #import "USSchema.h"
-#import "USSequenceElement.h"
 #import "USService.h"
 #import "USType.h"
 
@@ -58,7 +58,7 @@
 
 - (void)writeSchema:(USSchema *)schema {
     if (schema.hasBeenWritten == YES) return;
-    if ([schema shouldNotWrite]) return;
+    if (![schema shouldWrite]) return;
 
     schema.hasBeenWritten = YES;
 
@@ -100,24 +100,25 @@
     if (type.hasBeenWritten) return;
 
     type.hasBeenWritten = YES;
-    if (type.isSimpleType && [type.className isEqualToString:type.representationClass])
-        return;
 
-    if (type.superClass)
-        [self appendType:type.superClass toHString:hString mString:mString];
+    USComplexType *complexType = [type asComplex];
+    if (complexType) {
+        if (complexType.superClass)
+            [self appendType:complexType.superClass toHString:hString mString:mString];
 
-    // Simple types need to be written first, since they aren't forward declared
-    // Complex types need to wait though, since they may be subclasses of this type
-    for (USSequenceElement *seqElement in type.sequenceElements) {
-        if (seqElement.type.isSimpleType)
-            [self appendType:seqElement.type toHString:hString mString:mString];
+        // Simple types need to be written first, since they aren't forward declared
+        // Complex types need to wait though, since they may be subclasses of this type
+        for (USElement *seqElement in complexType.sequenceElements) {
+            if (![seqElement.type asComplex])
+                [self appendType:seqElement.type toHString:hString mString:mString];
+        }
+
+        for (USAttribute *attribute in complexType.attributes) {
+            if (![attribute.type asComplex])
+                [self appendType:attribute.type toHString:hString mString:mString];
+        }
     }
-
-    for (USAttribute *attribute in type.attributes) {
-        if (attribute.type.isSimpleType)
-            [self appendType:attribute.type toHString:hString mString:mString];
-    }
-
+    
     [self append:type toHString:hString mString:mString];
 }
 

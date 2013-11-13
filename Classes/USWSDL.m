@@ -39,7 +39,7 @@
     self.schemaPrefixes = [NSMutableDictionary new];
 
     USSchema *xsd = [self createSchemaForNamespace:@"http://www.w3.org/2001/XMLSchema" prefix:@"xsd"];
-	[xsd addSimpleClassWithName:@"boolean" representationClass:@"USBoolean *"];
+	[xsd addSimpleClassWithName:@"boolean" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"byte" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"int" representationClass:@"NSNumber *"];
 	[xsd addSimpleClassWithName:@"integer" representationClass:@"NSNumber *"];
