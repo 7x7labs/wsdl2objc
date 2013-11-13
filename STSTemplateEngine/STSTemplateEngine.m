@@ -178,7 +178,7 @@
 
 	NSString *remainder_ = nil, *key = nil, *operand = nil, *varName = nil;
 	NSMutableString *innerString = nil;
-	unsigned len, lineNumber = 0, unexpandIf = 0, unexpandFor = 0;
+	unsigned lineNumber = 0, unexpandIf = 0, unexpandFor = 0;
 
 	NSProcessInfo *processInfo = [NSProcessInfo processInfo];
 	_dictionary[@"_timestamp"] = [[NSDate date] description];
@@ -286,51 +286,14 @@
 						id value = [NSString valueForDictionary:_dictionary key:key];
 						remainder_ = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
                                       restOfWordsUsingDelimitersFromSet:whitespaceSet];
-						len = [remainder_ length];
-						if (len == 0) {
-							error = [TEError error:TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR
-											inLine:lineNumber atToken:TE_KEY];
-							[error setLiteral:key];
-							[_errorLog addObject:error];
-							[error logErrorMessageForTemplate:@""];
-							if (flags->condex) {
-								[stack pushObject:flags];
-								flags = [TEFlags flags];
-							}
-
-							flags->expand = false;
-							flags->consumed = true;
-							flags->condex = true;
-						}
-						else {
-							if (len == 1) {
-								operand = [remainder_ copy];
-							}
-							else {
-								if ([remainder_ characterAtIndex:0] == '\'') {
-									operand = [remainder_ substringWithStringInSingleQuotes];
-									if (operand == nil) {
-										operand = [remainder_ substringFromIndex:1];
-									}
-								}
-								else if ([remainder_ characterAtIndex:0] == '"') {
-									operand = [remainder_ substringWithStringInDoubleQuotes];
-									if (operand == nil) {
-										operand = [remainder_ substringFromIndex:1];
-									}
-								}
-								else {
-									operand = remainder_;
-								}
-							}
-							if (flags->condex) {
-								[stack pushObject:flags];
-								flags = [TEFlags flags];
-							}
-							flags->expand = ([value isEqual:operand] == YES) ^ complement;
-							flags->consumed = flags->expand;
-							flags->condex = true;
-						}
+                        operand = [remainder_ copy];
+                        if (flags->condex) {
+                            [stack pushObject:flags];
+                            flags = [TEFlags flags];
+                        }
+                        flags->expand = ([value isEqual:operand] == YES) ^ complement;
+                        flags->consumed = flags->expand;
+                        flags->condex = true;
 					}
 				} else {
 					++unexpandIf;
@@ -356,39 +319,9 @@
 							id value = [NSString valueForDictionary:_dictionary key:key];
 							remainder_ = [[line restOfWordsUsingDelimitersFromSet:whitespaceSet]
                                           restOfWordsUsingDelimitersFromSet:whitespaceSet];
-							len = [remainder_ length];
-							if (len == 0) {
-								error = [TEError error:TE_MISSING_IDENTIFIER_AFTER_TOKEN_ERROR
-												inLine:lineNumber atToken:TE_KEY];
-								[error setLiteral:key];
-								[_errorLog addObject:error];
-								[error logErrorMessageForTemplate:@""];
-								flags->expand = false;
-							}
-							else {
-								if (len == 1) {
-									operand = [remainder_ copy];
-								}
-								else {
-									if ([remainder_ characterAtIndex:0] == '\'') {
-										operand = [remainder_ substringWithStringInSingleQuotes];
-										if (operand == nil) {
-											operand = [remainder_ substringFromIndex:1];
-										}
-									}
-									else if ([remainder_ characterAtIndex:0] == '"') {
-										operand = [remainder_ substringWithStringInDoubleQuotes];
-										if (operand == nil) {
-											operand = [remainder_ substringFromIndex:1];
-										}
-									}
-									else {
-										operand = [remainder_ firstWordUsingDelimitersFromSet:whitespaceSet];
-									}
-								}
-								flags->expand = ([value isEqualToString:operand] == YES) ^ complement;
-								flags->consumed = flags->expand;
-							}
+                            operand = [remainder_ copy];
+                            flags->expand = ([value isEqualToString:operand] == YES) ^ complement;
+                            flags->consumed = flags->expand;
 						}
 					}
 				}

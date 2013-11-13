@@ -46,35 +46,6 @@
 	return ([self length] == 0);
 }
 
-- (NSString *)substringWithStringBetweenDelimiters:(unichar)delimChar
-{
-	NSString *delimStr = [NSString stringWithFormat:@"%C", delimChar];
-	NSRange range, delimiter;
-
-	delimiter = [self rangeOfString:delimStr];
-	if found(delimiter) {
-		range.location = delimiter.location + 1;
-		range.length = [self length] - range.location;
-		delimiter = [self rangeOfString:delimStr options:0 range:range];
-		if found(delimiter) {
-			range.length = range.location + delimiter.location - 1;
-			return [self substringWithRange:range];
-		}
-	}
-
-	return nil;
-}
-
-- (NSString *)substringWithStringInSingleQuotes
-{
-	return [self substringWithStringBetweenDelimiters:'\''];
-}
-
-- (NSString *)substringWithStringInDoubleQuotes
-{
-	return [self substringWithStringBetweenDelimiters:'"'];
-}
-
 - (int)numberOfWords
 {
 	NSMutableCharacterSet *delimiterSet = [[NSCharacterSet punctuationCharacterSet] mutableCopy];

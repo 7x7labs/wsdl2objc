@@ -52,28 +52,6 @@
 - (BOOL)isEmpty;
 
 // ---------------------------------------------------------------------------
-//	Instance Method:  substringWithStringInSingleQuotes
-// ---------------------------------------------------------------------------
-//
-//  Returns a new string containing the characters of the receiver between the
-//	first and the second ocurrence of the apostrophe character (U+0027).
-//  The returned string does not include the apostrophes. Returns nil
-//	if no matching pair of apostrophes is found in the receiver.
-
-- (NSString *)substringWithStringInSingleQuotes;
-
-// ---------------------------------------------------------------------------
-//	Instance Method:  substringWithStringInDoubleQuotes
-// ---------------------------------------------------------------------------
-//
-//  Returns a new string containing the characters of the receiver between the
-//	first and the second ocurrence of the quotation mark character (U+0022).
-//  The returned string does not include the quotation marks. Returns nil
-//	if no matching pair of quotation marks is found in the receiver.
-
-- (NSString *)substringWithStringInDoubleQuotes;
-
-// ---------------------------------------------------------------------------
 //	Instance Method:  numberOfWords
 // ---------------------------------------------------------------------------
 //
