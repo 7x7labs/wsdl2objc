@@ -168,14 +168,15 @@ static int readMax(NSXMLElement *el) {
     }
 
     NSMutableArray *elements = [self parseSequenceBody:content schema:schema];
+    BOOL needsToBeComplex = attributes.count || base;
 
-    if (attributes.count == 0 && isChoice) {
+    if (!needsToBeComplex && isChoice) {
         if (readMax(content) != 1)
             return [USType arrayTypeWithName:typeName prefix:schema.prefix choices:elements];
         return [USType choiceTypeWithName:typeName prefix:schema.prefix choices:elements];
     }
 
-    if (attributes.count == 0 && elements.count == 1) {
+    if (!needsToBeComplex && elements.count == 1) {
         USElement *element = [elements firstObject];
         if (readMax(content) != 1 || element.isArray)
             return [USType arrayTypeWithName:typeName prefix:schema.prefix choices:elements];
