@@ -13,27 +13,22 @@
     return ret;
 }
 
-+ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value {
++ (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
+    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
 %IFDEF onlyChoice
 %IF onlyChoice.type.isEnum
-    for (NSNumber *item in value) {
-        xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«onlyChoice.wsdlName»", NULL);
-        [%«onlyChoice.type.className» serializeToNode:child value:(%«onlyChoice.type.variableTypeName»)[item intValue]];
-    }
+    for (NSNumber *item in value)
+        [%«onlyChoice.type.className» serializeToChildOf:child withName:"%«prefix»:%«onlyChoice.wsdlName»" value:(%«onlyChoice.type.variableTypeName»)[item intValue]];
 %ELSE
-    for (%«onlyChoice.type.variableTypeName» item in value) {
-        xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«onlyChoice.wsdlName»", NULL);
-        [%«onlyChoice.type.className» serializeToNode:child value:item];
-    }
+    for (%«onlyChoice.type.variableTypeName» item in value)
+        [%«onlyChoice.type.className» serializeToChildOf:child withName:"%«prefix»:%«onlyChoice.wsdlName»" value:item];
 %ENDIF
 %ELSE
     for (id item in value) {
         if (false);
 %FOREACH element in choices
-        else if ([item isMemberOfClass:[%«element.type.className» class]]) {
-            xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)"%«prefix»:%«element.wsdlName»", NULL);
-            [%«element.type.className» serializeToNode:child value:item];
-        }
+        else if ([item isMemberOfClass:[%«element.type.className» class]])
+            [%«element.type.className» serializeToChildOf:child withName:"%«prefix»:%«element.wsdlName»" value:item];
 %ENDFOR
     }
 %ENDIF

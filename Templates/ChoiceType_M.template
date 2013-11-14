@@ -18,7 +18,7 @@
     return ret;
 }
 
-+ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value {
-    [[value class] serializeToNode:node value:value];
++ (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
+    [[value class] serializeToChildOf:node withName:childName value:value];
 }
 @end

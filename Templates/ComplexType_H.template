@@ -3,7 +3,7 @@
 %IF hasSequenceElements
 - (void)addElementsToNode:(xmlNodePtr)node;
 %ENDIF
-+ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value;
++ (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value;
 + (instancetype)deserializeNode:(xmlNodePtr)cur;
 
 %ENDIF

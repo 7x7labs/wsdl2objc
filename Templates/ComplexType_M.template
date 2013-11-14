@@ -1,24 +1,26 @@
 @implementation %«className»
-+ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value {
++ (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
 %IFDEF attributedPrimitive
-    if (value)
-        xmlNodeSetContent(node, [value._content xmlString]);
-
+    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, value ? [value._content xmlString] : NULL);
+%ELSE
+    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
+    (void)child;
 %ENDIF
+
 %IFDEF superClass
     xmlNsPtr xsi = xmlSearchNs(node->doc, xmlDocGetRootElement(node->doc), (const xmlChar *)"xsi");
-    xmlSetNsProp(node, xsi, (const xmlChar *)"type", (const xmlChar *)"%«prefix»:%«typeName»");
+    xmlSetNsProp(child, xsi, (const xmlChar *)"type", (const xmlChar *)"%«prefix»:%«typeName»");
 
 %ENDIF
 %IF hasAttributes
-    [value addAttributesToNode:node];
+    [value addAttributesToNode:child];
 %ELSIF hasSuperAttributes
-    [value addAttributesToNode:node];
+    [value addAttributesToNode:child];
 %ENDIF
 %IF hasSequenceElements
-    [value addElementsToNode:node];
+    [value addElementsToNode:child];
 %ELSIF hasSuperElements
-    [value addElementsToNode:node];
+    [value addElementsToNode:child];
 %ENDIF
 }
 %IF hasAttributes
@@ -41,18 +43,13 @@
 
 %ENDIF
 %FOREACH element in sequenceElements
-    const xmlChar *%«element.name»Name = (const xmlChar *)"%«prefix»:%«element.wsdlName»";
 %IF element.isArray
-    for (%«element.type.variableTypeName» item in _%«element.name») {
-        xmlNodePtr %«element.name»Node = xmlNewChild(node, NULL, %«element.name»Name, NULL);
-        [%«element.type.className» serializeToNode:%«element.name»Node value:item];
-    }
+    for (%«element.type.variableTypeName» item in _%«element.name»)
+        [%«element.type.className» serializeToChildOf:node withName:"%«prefix»:%«element.wsdlName»" value:item];
 
 %ELSE
-    if (_%«element.name») {
-        xmlNodePtr %«element.name»Node = xmlNewChild(node, NULL, %«element.name»Name, NULL);
-        [%«element.type.className» serializeToNode:%«element.name»Node value:_%«element.name»];
-    }
+    if (_%«element.name»)
+        [%«element.type.className» serializeToChildOf:node withName:"%«prefix»:%«element.wsdlName»" value:_%«element.name»];
 
 %ENDIF
 %ENDFOR

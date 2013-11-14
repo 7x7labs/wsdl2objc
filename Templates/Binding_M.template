@@ -245,10 +245,8 @@
     xmlAddChild(root, headerNode);
 
 %FOREACH header in operation.input.headers
-    if (self.binding.%«header.name»Header) {
-        xmlNodePtr %«header.name»Node = xmlNewChild(headerNode, NULL, (const xmlChar *)"%«header.type.prefix»:%«header.name»", NULL);
-        [%«header.type.className» serializeToNode:%«header.name»Node value:self.binding.%«header.name»Header];
-    }
+    if (self.binding.%«header.name»Header)
+        [%«header.type.className» serializeToChildOf:headerNode withName:"%«header.type.prefix»:%«header.name»" value:self.binding.%«header.name»Header];
 
 %ENDFOR
     xmlSetNs(headerNode, root->ns);
@@ -258,18 +256,13 @@
     xmlAddChild(root, bodyNode);
 
 %FOREACH part in operation.input.bodyParts
-    const xmlChar *%«part.name»Name = (const xmlChar *)"%«part.type.prefix»:%«part.wsdlName»";
 %IF part.isArray
-    for (%«part.type.variableTypeName» item in _%«part.name») {
-        xmlNodePtr %«part.name»Node = xmlNewChild(bodyNode, NULL, %«part.name»Name, NULL);
-        [%«part.type.className» serializeToNode:%«part.name»Node value:item];
-    }
+    for (%«part.type.variableTypeName» item in _%«part.name»)
+        [%«part.type.className» serializeToChildOf:bodyNode withName:"%«part.type.prefix»:%«part.wsdlName»" value:item];
 
 %ELSE
-    if (_%«part.name») {
-        xmlNodePtr %«part.name»Node = xmlNewChild(bodyNode, NULL, %«part.name»Name, NULL);
-        [%«part.type.className» serializeToNode:%«part.name»Node value:_%«part.name»];
-    }
+    if (_%«part.name»)
+        [%«part.type.className» serializeToChildOf:bodyNode withName:"%«part.type.prefix»:%«part.wsdlName»" value:_%«part.name»];
 
 %ENDIF
 %ENDFOR

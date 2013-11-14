@@ -32,8 +32,8 @@ static NSString *%«className»_enumValues[] = {
     return @([self deserializeNodeRaw:node]);
 }
 
-+ (void)serializeToNode:(xmlNodePtr)node value:(%«variableTypeName»)value {
-    xmlNodeSetContent(node, [[self stringFromValue:value] xmlString]);
++ (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
+    xmlNewChild(node, NULL, (const xmlChar *)childName, [[self stringFromValue:value] xmlString]);
 }
 
 + (void)serializeToProperty:(const char *)property onNode:(xmlNodePtr)node
