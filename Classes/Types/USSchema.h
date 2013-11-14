@@ -38,6 +38,7 @@
 @property (nonatomic, strong) NSMutableDictionary *types;
 @property (nonatomic, strong) NSMutableDictionary *elements;
 @property (nonatomic, strong) NSMutableDictionary *attributes;
+@property (nonatomic, strong) NSMutableDictionary *attributeGroups;
 @property (nonatomic, strong) NSMutableArray *imports;
 @property (nonatomic, strong) NSMutableDictionary *messages;
 @property (nonatomic, strong) NSMutableDictionary *portTypes;
@@ -56,6 +57,9 @@
 
 - (BOOL)withAttributeFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USAttribute *))block;
 - (void)registerAttribute:(USAttribute *)attribute;
+
+- (BOOL)withAttributeGroupFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(NSArray *group))block;
+- (void)registerAttributeGroup:(NSArray *)group named:(NSString *)name;
 
 - (BOOL)withMessageFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USMessage *))block;
 - (void)registerMessage:(USMessage *)attribute;

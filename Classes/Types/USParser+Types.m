@@ -114,9 +114,11 @@ static int readMax(NSXMLElement *el) {
     NSMutableArray *attributes = [NSMutableArray new];
     for (NSXMLElement *child in [el childElementsWithName:@"attribute"])
          [attributes addObject:[USAttribute attributeWithElement:child schema:schema]];
-    NSArray *attributeGroups = [el childElementsWithName:@"attributeGroup"];
-    if ([attributeGroups count])
-        NSLog(@"Not handling attribute groups for %@", typeName);
+    for (NSXMLElement *child in [el childElementsWithName:@"attributeGroup"]) {
+        [schema withAttributeGroupFromElement:child attrName:@"ref" call:^(NSArray *group) {
+            [attributes addObjectsFromArray:group];
+        }];
+    }
 
     NSXMLElement *content = [el childElementWithNames:@[@"simpleContent", @"complexContent", @"group",
                                                         @"sequence", @"choice", @"all",

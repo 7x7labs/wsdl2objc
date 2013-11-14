@@ -36,6 +36,7 @@
 
 @interface USSchema ()
 @property (nonatomic, strong) NSMutableDictionary *attributeWaits;
+@property (nonatomic, strong) NSMutableDictionary *attributeGroupWaits;
 @property (nonatomic, strong) NSMutableDictionary *elementWaits;
 @property (nonatomic, strong) NSMutableDictionary *typeWaits;
 @property (nonatomic, strong) NSMutableDictionary *messageWaits;
@@ -50,6 +51,7 @@
         self.types = [NSMutableDictionary new];
         self.elements = [NSMutableDictionary new];
         self.attributes = [NSMutableDictionary new];
+        self.attributeGroups = [NSMutableDictionary new];
         self.imports = [NSMutableArray new];
         self.messages = [NSMutableDictionary new];
         self.portTypes = [NSMutableDictionary new];
@@ -58,6 +60,7 @@
         self.wsdl = aWsdl;
 
         self.attributeWaits = [NSMutableDictionary new];
+        self.attributeGroupWaits = [NSMutableDictionary new];
         self.elementWaits = [NSMutableDictionary new];
         self.typeWaits = [NSMutableDictionary new];
         self.messageWaits = [NSMutableDictionary new];
@@ -143,6 +146,21 @@ otherwiseEnqueueIn:(NSMutableDictionary *)waits
 - (void)registerAttribute:(USAttribute *)attribute {
     self.attributes[attribute.name] = attribute;
     [self checkWaits:self.attributeWaits key:attribute.name value:attribute];
+}
+
+- (BOOL)withAttributeGroupFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(NSArray *))block
+{
+    NSXMLNode *node = [el attributeForName:attrName];
+    USSchema *targetSchema = [self schemaFromNode:node element:el];
+    return [targetSchema call:block
+              withValueForKey:node
+                      ifKeyIn:targetSchema.attributeGroups
+           otherwiseEnqueueIn:targetSchema.attributeGroupWaits];
+}
+
+- (void)registerAttributeGroup:(NSArray *)group named:(NSString *)name {
+    self.attributeGroups[name] = group;
+    [self checkWaits:self.attributeGroupWaits key:name value:group];
 }
 
 - (BOOL)withMessageFromElement:(NSXMLElement *)el attrName:(NSString *)attrName call:(void (^)(USMessage *))block {

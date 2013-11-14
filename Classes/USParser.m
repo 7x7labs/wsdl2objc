@@ -241,6 +241,12 @@
         [schema registerElement:[USElement elementWithElement:el schema:schema]];
     else if ([localName isEqualToString:@"attribute"])
         [schema registerAttribute:[USAttribute attributeWithElement:el schema:schema]];
+    else if ([localName isEqualToString:@"attributeGroup"]) {
+        NSMutableArray *group = [NSMutableArray new];
+        for (NSXMLElement *child in [el childElementsWithName:@"attribute"])
+            [group addObject:[USAttribute attributeWithElement:child schema:schema]];
+        [schema registerAttributeGroup:group named:[[el attributeForName:@"name"] stringValue]];
+    }
 }
 
 - (void)processSchemaImportElement:(NSXMLElement *)el schema:(USSchema *)schema
