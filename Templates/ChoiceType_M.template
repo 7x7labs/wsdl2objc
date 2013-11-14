@@ -19,6 +19,11 @@
 }
 
 + (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
-    [[value class] serializeToChildOf:node withName:childName value:value];
+    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
+    if (false);
+%FOREACH element in choices
+    else if ([value isMemberOfClass:[%«element.type.className» class]])
+        [%«element.type.className» serializeToChildOf:child withName:"%«prefix»:%«element.wsdlName»" value:value];
+%ENDFOR
 }
 @end
