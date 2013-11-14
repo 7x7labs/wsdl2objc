@@ -192,7 +192,7 @@ static NSArray *flattedSubstitutions(NSArray *elements) {
             ret[@"superClassName"] = self.superClass.className;
             ret[@"complexSuper"] = @YES;
         }
-        else
+        else if ([self.superClass isKindOfClass:[USPrimitiveType class]])
             ret[@"attributedSimpleType"] = @YES;
         for (USComplexType *parent = self.superClass.asComplex; parent; parent = parent.superClass.asComplex) {
             if ([parent.sequenceElements count] > 0)

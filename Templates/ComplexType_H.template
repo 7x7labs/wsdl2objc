@@ -7,7 +7,7 @@
 + (instancetype)deserializeNode:(xmlNodePtr)cur;
 
 %ENDIF
-%IFDEF attributedPrimitive
+%IFDEF attributedSimpleType
 /* content */
 @property (nonatomic, strong) %«superClass.variableTypeName» _content;
 

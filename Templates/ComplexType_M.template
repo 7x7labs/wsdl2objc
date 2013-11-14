@@ -1,7 +1,8 @@
 @implementation %«className»
 + (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
-%IFDEF attributedPrimitive
-    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, value ? [value._content xmlString] : NULL);
+%IFDEF attributedSimpleType
+    [%«superClass.className» serializeToChildOf:node withName:childName value:value._content];
+    xmlNodePtr child = node->last;
 %ELSE
     xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
     (void)child;
@@ -81,10 +82,8 @@
 %ENDIF
 + (%«variableTypeName»)deserializeNode:(xmlNodePtr)cur {
     %«className» *newObject = [self new];
-    
-%IFDEF attributedPrimitive
-    // Set the string content
-    newObject._content = [NSString stringWithXmlString:xmlNodeGetContent(cur) free:YES];
+%IFDEF attributedSimpleType
+    newObject._content = [%«superClass.className» deserializeNode:cur];
 %ENDIF
 
 %IF hasAttributes
