@@ -56,10 +56,19 @@
         [schema registerType:element.type];
     }
 
+    [schema withElementFromElement:el attrName:@"substitutionGroup" call:^(USElement *ele) {
+        [ele.substitutions addObject:element];
+    }];
+
     return element;
 }
 
 - (NSString *)uname {
 	return [self.name stringWithCapitalizedFirstCharacter];
+}
+
+- (NSMutableArray *)substitutions {
+    if (!_substitutions) _substitutions = [NSMutableArray new];
+    return _substitutions;
 }
 @end

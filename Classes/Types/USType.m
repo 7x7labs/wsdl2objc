@@ -28,6 +28,16 @@
 #import "USSchema.h"
 #import "USWSDL.h"
 
+static NSArray *flattedSubstitutions(NSArray *elements) {
+    NSMutableArray *ret = [NSMutableArray arrayWithCapacity:elements.count];
+    for (USElement *element in elements) {
+        [ret addObject:element];
+        for (USElement *substitution in element.substitutions)
+            [ret addObject:substitution];
+    }
+    return ret;
+}
+
 @interface USType ()
 @property (nonatomic, strong) NSString *typeName;
 @property (nonatomic, strong) NSString *prefix;
@@ -116,9 +126,10 @@
 
 - (NSMutableDictionary *)templateKeyDictionary {
     NSMutableDictionary *ret = [super templateKeyDictionary];
-    ret[@"choices"] = self.choices;
-    if (self.choices.count == 1)
-        ret[@"onlyChoice"] = self.choices.firstObject;
+    NSArray *choices = flattedSubstitutions(self.choices);
+    ret[@"choices"] = choices;
+    if (choices.count == 1)
+        ret[@"onlyChoice"] = choices.firstObject;
     return ret;
 }
 
@@ -146,7 +157,7 @@
 
 - (NSMutableDictionary *)templateKeyDictionary {
     NSMutableDictionary *ret = [super templateKeyDictionary];
-    ret[@"choices"] = self.choices;
+    ret[@"choices"] = flattedSubstitutions(self.choices);
     return ret;
 }
 
@@ -190,7 +201,7 @@
                 ret[@"hasSuperAttributes"] = @YES;
         }
     }
-    ret[@"sequenceElements"] = self.sequenceElements ?: @[];
+    ret[@"sequenceElements"] = flattedSubstitutions(self.sequenceElements ?: @[]);
     ret[@"hasSequenceElements"] = @([self.sequenceElements count]);
     ret[@"hasArrayElements"] = @NO;
     for (USElement *element in self.sequenceElements) {

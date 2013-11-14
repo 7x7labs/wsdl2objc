@@ -215,6 +215,7 @@ static int readMax(NSXMLElement *el) {
         seqElement.wsdlName = element.wsdlName;
         seqElement.name = element.name;
         seqElement.type = element.type;
+        seqElement.substitutions = element.substitutions;
     }];
     if (isRef) return seqElement;
 
