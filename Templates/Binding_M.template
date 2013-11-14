@@ -85,7 +85,7 @@
     [request setValue:@"wsdl2objc" forHTTPHeaderField:@"User-Agent"];
     [request setValue:soapAction forHTTPHeaderField:@"SOAPAction"];
     [request setValue:[[self MIMEType] stringByAppendingString:@"; charset=utf-8"] forHTTPHeaderField:@"Content-Type"];
-    [request setValue:[NSString stringWithFormat:@"%u", [bodyData length]] forHTTPHeaderField:@"Content-Length"];
+    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)[bodyData length]] forHTTPHeaderField:@"Content-Length"];
     [request setValue:self.address.host forHTTPHeaderField:@"Host"];
     for (NSString *eachHeaderField in self.customHeaders)
         [request setValue:[self.customHeaders objectForKey:eachHeaderField] forHTTPHeaderField:eachHeaderField];

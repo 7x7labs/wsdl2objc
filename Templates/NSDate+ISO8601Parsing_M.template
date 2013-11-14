@@ -325,7 +325,7 @@ static BOOL is_leap_year(NSInteger year) {
 
                             //Get month and/or date.
                             segment = read_segment_4digits(ch, &ch, &num_digits);
-                            NSLog(@"(%@) parsing month; segment is %u and ch is %s", str, segment, ch);
+                            NSLog(@"(%@) parsing month; segment is %d and ch is %s", str, (int)segment, ch);
                             switch (num_digits) {
                                 case 4: //YY-MMDD
                                     day = segment % 100;
@@ -376,7 +376,7 @@ static BOOL is_leap_year(NSInteger year) {
                         break;
 
                     case 1:; //-YY; -YY-MM (implicit century)
-                        NSLog(@"(%@) found %u digits and one hyphen, so this is either -YY or -YY-MM; segment (year) is %u", str, num_digits, segment);
+                        NSLog(@"(%@) found %u digits and one hyphen, so this is either -YY or -YY-MM; segment (year) is %d", str, num_digits, (int)segment);
                         NSInteger current_year = [dateComps year];
                         NSInteger century = (current_year % 100);
                         year = segment + (current_year - century);
@@ -386,7 +386,7 @@ static BOOL is_leap_year(NSInteger year) {
                         if (*ch == '-') {
                             ++ch;
                             month_or_week = read_segment_2digits(ch, &ch);
-                            NSLog(@"(%@) month is %u", str, month_or_week);
+                            NSLog(@"(%@) month is %d", str, (int)month_or_week);
                         } else {
                             month_or_week = 1;
                         }

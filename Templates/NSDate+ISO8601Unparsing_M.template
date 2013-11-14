@@ -94,7 +94,7 @@ static BOOL is_leap_year(NSInteger year) {
         timeString = [formatter stringForObjectValue:self];
     }
 
-    return [NSString stringWithFormat:@"%d-W%02d-%02d%@", year, week, dayOfWeek + 1, timeString];
+    return [NSString stringWithFormat:@"%d-W%02d-%02d%@", (int)year, (int)week, (int)dayOfWeek + 1, timeString];
 }
 
 - (NSString *)ISO8601OrdinalDateStringWithTime:(BOOL)includeTime timeSeparator:(unichar)timeSep {
@@ -112,7 +112,7 @@ static BOOL is_leap_year(NSInteger year) {
     } else
         timeString = @"";
 
-    return [NSString stringWithFormat:@"%u-%03u%@", year, dayOfYear, timeString];
+    return [NSString stringWithFormat:@"%d-%03d%@", (int)year, (int)dayOfYear, timeString];
 }
 
 #pragma mark -
