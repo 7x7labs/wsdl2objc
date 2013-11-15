@@ -39,6 +39,7 @@ static NSString *%«className»_enumValues[] = {
 + (void)serializeToProperty:(const char *)property onNode:(xmlNodePtr)node
                       value:(%«variableTypeName»)value
 {
-    xmlSetProp(node, (const xmlChar *)property, [[self stringFromValue:value] xmlString]);
+    if (value)
+        xmlSetProp(node, (const xmlChar *)property, [[self stringFromValue:value] xmlString]);
 }
 @end
