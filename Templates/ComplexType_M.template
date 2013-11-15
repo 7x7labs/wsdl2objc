@@ -8,11 +8,6 @@
     (void)child;
 %ENDIF
 
-%IFDEF superClass
-    xmlNsPtr xsi = xmlSearchNs(node->doc, xmlDocGetRootElement(node->doc), (const xmlChar *)"xsi");
-    xmlSetNsProp(child, xsi, (const xmlChar *)"type", (const xmlChar *)"%«prefix»:%«typeName»");
-
-%ENDIF
 %IF hasAttributes
     [value addAttributesToNode:child];
 %ELSIF hasSuperAttributes

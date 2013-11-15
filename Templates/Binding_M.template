@@ -365,10 +365,7 @@ done:
     xmlSetNs(root, soapEnvelopeNs);
 
     xmlNsPtr xslNs = xmlNewNs(root, (const xmlChar *)"http://www.w3.org/1999/XSL/Transform", (const xmlChar *)"xsl");
-    xmlNewNs(root, (const xmlChar *)"http://www.w3.org/2001/XMLSchema-instance", (const xmlChar *)"xsi");
-
     xmlNewNsProp(root, xslNs, (const xmlChar *)"version", (const xmlChar *)"1.0");
-
 %FOREACH schema in wsdl.schemas
     xmlNewNs(root, (const xmlChar *)"%«schema.fullName»", (const xmlChar *)"%«schema.prefix»");
 %ENDFOR

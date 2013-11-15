@@ -87,14 +87,6 @@
 					@"point",
 					@"style",
 					
-					// Variable names used during serialization
-					@"doc",
-					@"root",
-					@"ns",
-					@"xsi",
-					@"node",
-					@"buf",
-					
 					// more:
 					@"method",
 					@"category"];
