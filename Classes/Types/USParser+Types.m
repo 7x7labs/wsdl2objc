@@ -173,7 +173,11 @@ static int readMax(NSXMLElement *el) {
     if (!needsToBeComplex && isChoice) {
         if (readMax(content) != 1)
             return [USType arrayTypeWithName:typeName prefix:schema.prefix choices:elements];
-        return [USType choiceTypeWithName:typeName prefix:schema.prefix choices:elements];
+        for (USElement *element in elements) {
+            if (!element.isArray)
+                return [USType choiceTypeWithName:typeName prefix:schema.prefix choices:elements];
+        }
+        return [USType arrayTypeWithName:typeName prefix:schema.prefix choices:elements];
     }
 
     if (!needsToBeComplex && elements.count == 1) {
