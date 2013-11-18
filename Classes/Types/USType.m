@@ -212,6 +212,10 @@ static NSArray *flattedSubstitutions(NSArray *elements) {
     }
     ret[@"attributes"] = self.attributes ?: @[];
     ret[@"hasAttributes"] = @([self.attributes count] > 0);
+    ret[@"hasMembers"] = @([ret[@"hasSequenceElements"] boolValue]
+                        || [ret[@"hasSuperElements"] boolValue]
+                        || [ret[@"hasAttributes"] boolValue]
+                        || [ret[@"hasSuperAttributes"] boolValue]);
     return ret;
 }
 

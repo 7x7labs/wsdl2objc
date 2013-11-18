@@ -2,12 +2,18 @@
 + (void)serializeToChildOf:(xmlNodePtr)node withName:(const char *)childName value:(%«variableTypeName»)value {
 %IFDEF attributedSimpleType
     [%«superClass.className» serializeToChildOf:node withName:childName value:value._content];
+%IF hasMembers
     xmlNodePtr child = node->last;
-%ELSE
-    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
-    (void)child;
-%ENDIF
 
+%ENDIF
+%ELSE
+%IF hasMembers
+    xmlNodePtr child = xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
+
+%ELSE
+    xmlNewChild(node, NULL, (const xmlChar *)childName, NULL);
+%ENDIF
+%ENDIF
 %IF hasAttributes
     [value addAttributesToNode:child];
 %ELSIF hasSuperAttributes
