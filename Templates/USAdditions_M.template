@@ -113,9 +113,12 @@
 
 + (NSData *)deserializeNode:(xmlNodePtr)cur {
     if (cur) {
-        NSString *deserializedStringResult = [NSString deserializeNode:cur];
-        if (deserializedStringResult)
-            return [NSData dataWithBase64EncodedString:deserializedStringResult];
+		xmlChar *elementText = xmlNodeListGetString(cur->doc, cur->children, 1);
+        NSData *data = [NSData data];
+        if (elementText)
+            data = [NSData dataWithBase64EncodedString:(const char *)elementText];
+        xmlFree(elementText);
+        return data;
     }
     return nil;
 }
@@ -125,11 +128,11 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
 
 @implementation NSData(MBBase64)
 
-+ (id)dataWithBase64EncodedString:(NSString *)string {
++ (id)dataWithBase64EncodedString:(const char *)string {
     if (string == nil)
         [NSException raise:NSInvalidArgumentException format:@"Error: String must not be nil"];
 
-    if ([string length] == 0)
+    if (*string == 0)
         return [NSData data];
 
     static char decodingTable[256] = "";
@@ -139,10 +142,7 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
             decodingTable[encodingTable[i]] = i;
     }
 
-    const char *characters = [string cStringUsingEncoding:NSASCIIStringEncoding];
-    if (characters == NULL)     //  Not an ASCII string!
-        return nil;
-    char *bytes = malloc((([string length] + 3) / 4) * 3);
+    char *bytes = malloc(((strlen(string) + 3) / 4) * 3);
     if (bytes == NULL)
         return nil;
 
@@ -154,11 +154,11 @@ static const char encodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopq
         NSUInteger bufferLength;
 
         for (bufferLength = 0; bufferLength < 4; i++) {
-            if (characters[i] == '\0')
+            if (string[i] == '\0')
                 break;
-            if (isspace(characters[i]) || characters[i] == '=')
+            if (isspace(string[i]) || string[i] == '=')
                 continue;
-            buffer[bufferLength] = decodingTable[characters[i]];
+            buffer[bufferLength] = decodingTable[string[i]];
             if (buffer[bufferLength++] == CHAR_MAX) { //  Illegal character!
                 free(bytes);
                 return nil;

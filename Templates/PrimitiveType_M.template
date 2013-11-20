@@ -1,5 +1,11 @@
 @implementation %«className»
 + (%«variableTypeName»)deserializeNode:(xmlNodePtr)node {
+%IFEQ variableTypeName NSData *
+    xmlChar *str = xmlNodeListGetString(node->doc, node->children, 1);
+    NSData *data = [NSData dataWithBase64EncodedString:(const char *)str];
+    xmlFree(str);
+    return data;
+%ELSE
     NSString *str = [NSString stringWithXmlString:xmlNodeListGetString(node->doc, node->children, 1) free:YES];
 %IFEQ typeName boolean
     return @([str boolValue]);
@@ -31,8 +37,6 @@
     return @([str doubleValue]);
 %ELSIFEQ variableTypeName NSDate *
     return [NSDate dateWithISO8601String:str];
-%ELSIFEQ variableTypeName NSData *
-    return [NSData dataWithBase64EncodedString:str];
 %ELSIFEQ typeName decimal
     return [NSDecimalNumber decimalNumberWithString:str];
 %ELSIFEQ variableTypeName NSString *
@@ -43,9 +47,16 @@
 #warning Not handling node with type %«typeName» (%«variableTypeName»)
     return nil;
 %ENDIF
+%ENDIF
 }
 
 + (%«variableTypeName»)deserializeAttribute:(const char *)attrName ofNode:(xmlNodePtr)node {
+%IFEQ variableTypeName NSData *
+    xmlChar *str = xmlGetProp(node, (const xmlChar *)attrName);
+    NSData *data = [NSData dataWithBase64EncodedString:(const char *)str ?: ""];
+    xmlFree(str);
+    return data;
+%ELSE
     NSString *attrString = [NSString stringWithXmlString:xmlGetProp(node, (const xmlChar *)attrName) free:YES];
     if (!attrString) return nil;
 %IFEQ typeName boolean
@@ -78,8 +89,6 @@
     return @([attrString doubleValue]);
 %ELSIFEQ variableTypeName NSDate *
     return [NSDate dateWithISO8601String:attrString];
-%ELSIFEQ variableTypeName NSData *
-    return [NSData dataWithBase64EncodedString:attrString];
 %ELSIFEQ typeName decimal
     return [NSDecimalNumber decimalNumberWithString:attrString];
 %ELSIFEQ variableTypeName NSString *
@@ -89,6 +98,7 @@
 %ELSE
 #warning Not handling attribute with type %«typeName» (%«variableTypeName»)
     return nil;
+%ENDIF
 %ENDIF
 }
 
